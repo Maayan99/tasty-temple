@@ -307,7 +307,7 @@ export async function updateRecipe(id: number, data: Partial<Recipe>): Promise<R
 
   return {
     ...updatedRecipe,
-    nutrition: typeof updateRecipe.nutrition == 'string' ? JSON.parse(updateRecipe.nutrition as string) : updateRecipe.nutrition,
+    nutrition: typeof updatedRecipe.nutrition == 'string' ? JSON.parse(updatedRecipe.nutrition as string) : updatedRecipe.nutrition,
     createdAt: updatedRecipe.createdAt.toISOString(),
     updatedAt: updatedRecipe.updatedAt.toISOString(),
     categories: updatedRecipe.categories.map((rc): RecipeCategory => ({
