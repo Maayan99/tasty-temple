@@ -61,6 +61,7 @@ export async function getLatestRecipes(limit: number = 6): Promise<Recipe[]> {
         },
       },
       blogImages: true,
+      comments: true,
     },
   });
 
@@ -106,6 +107,7 @@ export async function getTrendingRecipes(limit: number = 3): Promise<Recipe[]> {
         },
       },
       blogImages: true,
+      comments: true,
     },
   });
 
@@ -161,6 +163,7 @@ export async function getRelatedRecipes(recipeSlug: string, limit: number = 3): 
         },
       },
       blogImages: true,
+      comments: true,
     },
     take: limit,
   });
