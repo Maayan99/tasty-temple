@@ -4,14 +4,13 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRecipes } from '@/hooks/useRecipes';
+import { Recipe } from '@/types/recipe';
 
-const LatestRecipes: React.FC = () => {
-  const { recipes, isLoading, error } = useRecipes(6, 'latest');
+interface LatestRecipesProps {
+  recipes: Recipe[];
+}
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error loading latest recipes</div>;
-
+const LatestRecipes: React.FC<LatestRecipesProps> = ({ recipes }) => {
   return (
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4">

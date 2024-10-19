@@ -5,7 +5,6 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Recipe } from '@/types/recipe';
-import { useRecipes } from '@/hooks/useRecipes';
 import { useSearchParams } from 'next/navigation';
 
 interface RecipeGridProps {
@@ -17,18 +16,20 @@ const RecipeGrid: React.FC<RecipeGridProps> = ({ initialRecipes }) => {
   const searchParams = useSearchParams();
   const searchTerm = searchParams.get('search') || '';
 
-  const { recipes: searchedRecipes, isLoading, error } = useRecipes(12, searchTerm ? 'search' : 'latest', searchTerm);
-
   useEffect(() => {
     if (searchTerm) {
-      setRecipes(searchedRecipes);
+      const fetchSearchResults = async () => {
+        const response = await fetch(`/api/recipes/search?term=${encodeURIComponent(searchTerm)}&limit=12`);
+        if (response.ok) {
+          const searchedRecipes = await response.json();
+          setRecipes(searchedRecipes);
+        }
+      };
+      fetchSearchResults();
     } else {
       setRecipes(initialRecipes);
     }
-  }, [searchTerm, searchedRecipes, initialRecipes]);
-
-  if (isLoading) return <div>Searching recipes...</div>;
-  if (error) return <div>Error: {error.message}</div>;
+  }, [searchTerm, initialRecipes]);
 
   if (recipes.length === 0) {
     return <div>No recipes found.</div>;

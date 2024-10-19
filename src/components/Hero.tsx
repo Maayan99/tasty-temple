@@ -9,14 +9,13 @@ import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRecipes } from '@/hooks/useRecipes';
+import { Recipe } from '@/types/recipe';
 
-const Hero: React.FC = () => {
-  const { recipes, isLoading, error } = useRecipes(3, 'trending');
+interface HeroProps {
+  recipes: Recipe[];
+}
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error loading trending recipes</div>;
-
+const Hero: React.FC<HeroProps> = ({ recipes }) => {
   return (
     <motion.section
       initial={{ opacity: 0 }}

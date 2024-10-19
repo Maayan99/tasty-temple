@@ -7,6 +7,7 @@ import FeaturedRecipes from '@/components/FeaturedRecipes';
 import AnimatedBanner from '@/components/AnimatedBanner';
 import Footer from '@/components/Footer';
 import Newsletter from '@/components/Newsletter';
+import { getLatestRecipes, getFeaturedRecipes } from '@/lib/recipes';
 
 export const metadata: Metadata = {
   title: 'Tasty Temple - Discover Delicious Recipes',
@@ -18,14 +19,17 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Home() {
+export default async function Home() {
+  const latestRecipes = await getLatestRecipes(6);
+  const featuredRecipes = await getFeaturedRecipes(3);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
       <main>
-        <Hero />
-        <FeaturedRecipes />
-        <LatestRecipes />
+        <Hero recipes={featuredRecipes} />
+        <FeaturedRecipes recipes={featuredRecipes} />
+        <LatestRecipes recipes={latestRecipes} />
         <AnimatedBanner />
         <Newsletter />
       </main>
