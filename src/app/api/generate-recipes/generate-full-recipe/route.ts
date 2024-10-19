@@ -85,6 +85,10 @@ export async function POST(request: Request) {
 
       const generatedRecipe = parseJSON(cleanedRecipeJson);
 
+
+      console.log("Generated recipe: ", generatedRecipe);
+      console.log("Recipe title: ", (generatedRecipe as any).title);
+
       // Call the next step in the process
       fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/generate-recipes/generate-images`, {
         method: 'POST',
