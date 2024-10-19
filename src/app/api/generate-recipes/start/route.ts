@@ -33,6 +33,8 @@ export async function POST(request: Request) {
       body: JSON.stringify({ recipeIdeas }),
     });
 
+    console.log('Recipe generation started', recipeIdeas)
+
     return NextResponse.json({ message: 'Recipe generation started', recipeIdeas }, { status: 200 });
   } catch (error) {
     console.error('Error starting recipe generation:', error);

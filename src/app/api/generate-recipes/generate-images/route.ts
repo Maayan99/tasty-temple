@@ -31,6 +31,7 @@ export async function POST(request: Request) {
     console.log("Slufigying main image: ", generatedRecipe.title)
     const mainImageKey = `recipes/${slugify(generatedRecipe.title, { lower: true, strict: true })}-main-${Date.now()}.png`;
     const mainImageUrl = await uploadToB2(mainImageBuffer, mainImageKey);
+    console.log("Main image url: ", mainImageUrl);
 
     // Generate and upload blog images
     const blogImages = [];
