@@ -30,23 +30,31 @@ export async function POST(request: Request) {
   try {
     // Generate 3 recipe ideas
     log.push('Generating recipe ideas...');
-    const ideasPrompt = `Generate 3 unique and creative recipe ideas ${direction ? `based on the following direction: ${direction}` : ''}. Each recipe should be innovative, delicious, and suitable for a food blog. Include a catchy title and a brief, appetizing description for each. Ensure diversity in cuisines, cooking methods, and ingredients. Format the output as a JSON array of objects with 'title' and 'description' fields. ${Math.random().toString(36)}  ${Math.random().toString(36).substring(7)}  ${Math.random().toString(36).substring(7)}  ${Math.random().toString(36).substring(7)}`;
-    const ideasResponse = await inference.textGeneration({
+    const ideasPrompt = `Generate 3 unique and creative recipe ideas ${direction ? `based on the following direction: ${direction}` : ''}. Each recipe should be innovative, delicious, and suitable for a food blog. Include a catchy title and a brief, appetizing description for each. Ensure diversity in cuisines, cooking methods, and ingredients. Format the output as a JSON array of objects with 'title' and 'description' fields.`;
+    
+    let ideasContent = '';
+    for await (const chunk of inference.chatCompletionStream({
       model: 'meta-llama/Llama-3.1-70B-Instruct',
-      inputs: ideasPrompt,
-      parameters: { max_new_tokens: 500 },
-    });
-    const cleanedIdeasJson = ideasResponse.generated_text.substring(
-      ideasResponse.generated_text.indexOf('['),
-      ideasResponse.generated_text.lastIndexOf(']') + 1
+      messages: [{ role: 'user', content: ideasPrompt }],
+      max_tokens: 500,
+    })) {
+      ideasContent += chunk.choices[0]?.delta?.content || '';
+    }
+
+    console.log('Raw ideas response:', ideasContent);
+
+    const cleanedIdeasJson = ideasContent.substring(
+      ideasContent.indexOf('['),
+      ideasContent.lastIndexOf(']') + 1
     );
-    console.log("Raw ideas response:", ideasResponse.generated_text);
-    console.log("Cleaned ideas JSON:", cleanedIdeasJson);
+
+    console.log('Cleaned ideas JSON:', cleanedIdeasJson);
+
     let recipeIdeas: RecipeIdea[];
     try {
       recipeIdeas = JSON.parse(cleanedIdeasJson);
     } catch (parseError) {
-      console.error("Error parsing ideas JSON:", parseError);
+      console.error('Error parsing ideas JSON:', parseError);
       throw new Error(`Failed to parse ideas JSON: ${(parseError as Error).message}`);
     }
     log.push(`Generated ${recipeIdeas.length} recipe ideas.`);
@@ -77,27 +85,31 @@ export async function POST(request: Request) {
         "imagePrompt": "Detailed prompt for generating an appetizing image of this recipe",
         "imageAltText": "Descriptive alt text for the recipe image"
       }
-      <CRITICAL> Make sure to write it out in the exact JSON format, and with properly escaped strings, since your response will be programatically parsed </CRITICAL>
-      Ensure all fields are filled with appropriate, realistic values. ${Math.random().toString(36).substring(7)}`;
+      Ensure all fields are filled with appropriate, realistic values.`;
 
-      const recipeResponse = await inference.textGeneration({
+      let recipeContent = '';
+      for await (const chunk of inference.chatCompletionStream({
         model: 'meta-llama/Llama-3.1-70B-Instruct',
-        inputs: recipePrompt,
-        parameters: { max_new_tokens: 2000 },
-      });
+        messages: [{ role: 'user', content: recipePrompt }],
+        max_tokens: 2000,
+      })) {
+        recipeContent += chunk.choices[0]?.delta?.content || '';
+      }
 
-      const cleanedRecipeJson = recipeResponse.generated_text.substring(
-        recipeResponse.generated_text.indexOf('{'),
-        recipeResponse.generated_text.lastIndexOf('}') + 1
+      console.log('Raw recipe response:', recipeContent);
+
+      const cleanedRecipeJson = recipeContent.substring(
+        recipeContent.indexOf('{'),
+        recipeContent.lastIndexOf('}') + 1
       );
 
-      console.log("Raw recipe response:", recipeResponse.generated_text);
-      console.log("Cleaned recipe JSON:", cleanedRecipeJson);
+      console.log('Cleaned recipe JSON:', cleanedRecipeJson);
+
       let generatedRecipe: GeneratedRecipe;
       try {
         generatedRecipe = JSON.parse(cleanedRecipeJson);
       } catch (parseError) {
-        console.error("Error parsing recipe JSON:", parseError);
+        console.error('Error parsing recipe JSON:', parseError);
         throw new Error(`Failed to parse recipe JSON: ${(parseError as Error).message}`);
       }
 
