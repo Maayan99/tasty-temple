@@ -36,7 +36,7 @@ export async function POST(request: Request) {
         servings: generatedRecipe.servings,
         imageUrl: mainImageUrl,
         instructions: generatedRecipe.instructions.join('\n'),
-        nutrition: JSON.stringify(generatedRecipe.nutrition),
+        nutrition: generatedRecipe.nutrition,
         blogContent: generatedRecipe.blogContent,
         blogImages: {
           create: blogImages
