@@ -31,34 +31,49 @@ export async function POST(request: Request) {
     const publishedRecipes = [];
 
     for (const recipe of generatedRecipes) {
-      // Generate all images simultaneously
-      const imagePromises = [
-        generateImage(recipe.imagePrompt),
-        ...recipe.blogImagePrompts.map((prompt: { prompt: string }) => generateImage(prompt.prompt))
-      ];
-
-      const generatedImages = await Promise.all(imagePromises);
-
+      // Generate main recipe image
+      const mainImageBlob = await generateImage(recipe.imagePrompt);
+      const mainImageBuffer = Buffer.from(await mainImageBlob.arrayBuffer());
+      
       // Upload main image to B2
-      const mainImageBuffer = Buffer.from(await generatedImages[0].arrayBuffer());
+      console.log("Slugifying main image: ", recipe.title)
       const mainImageKey = `recipes/${slugify(recipe.title, { lower: true, strict: true })}-main-${Date.now()}.png`;
       const mainImageUrl = await uploadToB2(mainImageBuffer, mainImageKey);
+      console.log("Main image url: ", mainImageUrl);
 
-      // Upload blog images to B2
+      // Generate and upload blog images
       const blogImages = [];
-      for (let i = 0; i < recipe.blogImagePrompts.length; i++) {
-        const blogImageBuffer = Buffer.from(await generatedImages[i + 1].arrayBuffer());
-        const blogImageKey = `recipes/${slugify(recipe.title, { lower: true, strict: true })}-blog-${i + 1}-${Date.now()}.png`;
-        const blogImageUrl = await uploadToB2(blogImageBuffer, blogImageKey);
+      if (recipe.blogImagePrompts) {
+        for (let i = 0; i < recipe.blogImagePrompts.length; i++) {
+          const imagePrompt = recipe.blogImagePrompts[i];
+          const blogImageBlob = await generateImage(imagePrompt.prompt);
+          const blogImageBuffer = Buffer.from(await blogImageBlob.arrayBuffer());
 
-        blogImages.push({
-          imageUrl: blogImageUrl,
-          altText: recipe.blogImagePrompts[i].altText
-        });
+          console.log("Slugifying blog image ", i, recipe.title)
+          const blogImageKey = `recipes/${slugify(recipe.title, { lower: true, strict: true })}-blog-${i + 1}-${Date.now()}.png`;
+          const blogImageUrl = await uploadToB2(blogImageBuffer, blogImageKey);
+
+          blogImages.push({
+            imageUrl: blogImageUrl,
+            altText: imagePrompt.altText
+          });
+        }
       }
 
       // Generate random comments
       const comments = await generateRandomComments(recipe);
+
+      console.log("About to save: ", recipe.title);
+      console.log("About to save: ", recipe.description);
+      console.log("About to save: ", recipe.cookingTime);
+      console.log("About to save: ", recipe.difficulty);
+      console.log("About to save: ", recipe.servings);
+      console.log("About to save: ", mainImageUrl);
+      console.log("About to save: ", recipe.instructions.join('\n'));
+      console.log("About to save: ", JSON.stringify(recipe.nutrition);
+      console.log("About to save: ", recipe.blogContent);
+      console.log("About to save: ", recipe.ingredients);
+      console.log("About to save: ", comments;
 
       // Save the recipe to the database
       const savedRecipe = await prisma.recipe.create({
@@ -71,14 +86,14 @@ export async function POST(request: Request) {
           servings: recipe.servings,
           imageUrl: mainImageUrl,
           instructions: recipe.instructions.join('\n'),
-          nutrition: recipe.nutrition,
+          nutrition: JSON.stringify(recipe.nutrition),
           blogContent: recipe.blogContent,
           blogImages: {
             create: blogImages
           },
           ingredients: {
             create: recipe.ingredients.map((ing: { name: string; quantity: string; unit: string }) => ({
-              quantity: parseFloat(ing.quantity),
+              quantity: parseFloat(ing.quantity) || 1,
               ingredient: {
                 connectOrCreate: {
                   where: { name: ing.name },
