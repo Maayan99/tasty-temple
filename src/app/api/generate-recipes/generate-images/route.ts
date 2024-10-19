@@ -34,7 +34,7 @@ export async function POST(request: Request) {
       // Generate all images simultaneously
       const imagePromises = [
         generateImage(recipe.imagePrompt),
-        ...recipe.blogImagePrompts.map((prompt: any) => generateImage(prompt.prompt))
+        ...recipe.blogImagePrompts?.map((prompt: any) => generateImage(prompt.prompt))
       ];
 
       const generatedImages = await Promise.all(imagePromises);
@@ -91,7 +91,7 @@ export async function POST(request: Request) {
             create: blogImages
           },
           ingredients: {
-            create: recipe.ingredients.map((ing: { name: string; quantity: string; unit: string }) => ({
+            create: recipe.ingredients?.map((ing: { name: string; quantity: string; unit: string }) => ({
               quantity: parseInt(ing.quantity) || 1,
               ingredient: {
                 connectOrCreate: {
