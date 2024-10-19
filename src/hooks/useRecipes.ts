@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Recipe } from '@/types/recipe';
-import { getLatestRecipes, getFeaturedRecipes, deleteRecipeById, searchRecipes } from '@/lib/recipes';
 
 type RecipeType = 'latest' | 'featured' | 'search' | 'trending';
 
@@ -13,19 +12,22 @@ export function useRecipes(limit: number, type: RecipeType, searchTerm?: string)
     async function fetchRecipes() {
       try {
         setIsLoading(true);
-        let fetchedRecipes: Recipe[];
+        let url = '';
         if (type === 'latest') {
-          fetchedRecipes = await getLatestRecipes(limit);
-        } else if (type === 'featured') {
-          fetchedRecipes = await getFeaturedRecipes(limit);
+          url = `/api/recipes/latest?limit=${limit}`;
+        } else if (type === 'featured' || type === 'trending') {
+          url = `/api/recipes/featured?limit=${limit}`;
         } else if (type === 'search' && searchTerm) {
-          fetchedRecipes = await searchRecipes(searchTerm, limit);
-        } else if (type === 'trending') {
-          // For now, we'll use featured recipes as trending
-          fetchedRecipes = await getFeaturedRecipes(limit);
+          url = `/api/recipes/search?term=${encodeURIComponent(searchTerm)}&limit=${limit}`;
         } else {
-          fetchedRecipes = [];
+          throw new Error('Invalid recipe type');
         }
+
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error('Failed to fetch recipes');
+        }
+        const fetchedRecipes = await response.json();
         setRecipes(fetchedRecipes);
         setIsLoading(false);
       } catch (err) {
@@ -39,7 +41,10 @@ export function useRecipes(limit: number, type: RecipeType, searchTerm?: string)
 
   const deleteRecipe = async (id: number) => {
     try {
-      await deleteRecipeById(id);
+      const response = await fetch(`/api/recipes/delete?id=${id}`, { method: 'DELETE' });
+      if (!response.ok) {
+        throw new Error('Failed to delete recipe');
+      }
       setRecipes(recipes.filter(recipe => recipe.id !== id));
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to delete recipe'));
