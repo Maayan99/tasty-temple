@@ -42,6 +42,7 @@ const Hero: React.FC = () => {
                 layout="fill"
                 objectFit="cover"
                 quality={100}
+                unoptimized
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent">
                 <div className="absolute bottom-0 left-0 right-0 p-8 md:p-16 text-white">
@@ -61,7 +62,7 @@ const Hero: React.FC = () => {
                   >
                     {recipe.description}
                   </motion.p>
-                  <Link href={`/recipe/${recipe.id}`}>
+                  <Link href={`/recipe/${recipe.slug}`}>
                     <motion.span
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}

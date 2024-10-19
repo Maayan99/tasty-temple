@@ -32,13 +32,14 @@ const LatestRecipes: React.FC = () => {
               transition={{ duration: 0.5, delay: index * 0.1 }}
               className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
             >
-              <Link href={`/recipe/${recipe.id}`}>
+              <Link href={`/recipe/${recipe.slug}`}>
                 <div className="relative h-64">
                   <Image
                     src={recipe.imageUrl}
                     alt={recipe.title}
                     layout="fill"
                     objectFit="cover"
+                    unoptimized
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
                   <div className="absolute bottom-0 left-0 right-0 p-4">

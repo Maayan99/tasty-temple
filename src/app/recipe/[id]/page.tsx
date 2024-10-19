@@ -1,11 +1,36 @@
 import React from 'react';
+import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import RecipeContent from '@/components/RecipeContent';
 import { getRecipeBySlug } from '@/lib/recipes';
 
-export default async function RecipePage({ params }: { params: { id: string } }) {
+interface RecipePageProps {
+  params: { id: string };
+}
+
+export async function generateMetadata({ params }: RecipePageProps): Promise<Metadata> {
+  const recipe = await getRecipeBySlug(params.id);
+
+  if (!recipe) {
+    return {
+      title: 'Recipe Not Found',
+    };
+  }
+
+  return {
+    title: `${recipe.title} - Tasty Temple`,
+    description: recipe.description,
+    openGraph: {
+      title: `${recipe.title} - Tasty Temple`,
+      description: recipe.description,
+      images: [{ url: recipe.imageUrl }],
+    },
+  };
+}
+
+export default async function RecipePage({ params }: RecipePageProps) {
   const recipe = await getRecipeBySlug(params.id);
 
   if (!recipe) {
