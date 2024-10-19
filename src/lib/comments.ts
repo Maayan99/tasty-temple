@@ -3,7 +3,7 @@ import { GeneratedRecipe } from '@/types/recipe';
 
 const inference = new HfInference(process.env.HUGGINGFACE_API_KEY);
 
-export async function generateRandomComments(recipe: GeneratedRecipe): Promise<{ content: string; createdAt: Date }[]> {
+export async function generateRandomComments(recipe: GeneratedRecipe): Promise<{ user: string, content: string; createdAt: Date }[]> {
   const commentCount = Math.floor(Math.random() * 5) + 3; // Random number between 3 and 7
   const comments = [];
 
