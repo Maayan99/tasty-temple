@@ -70,6 +70,7 @@ export async function POST(request: Request) {
         "imagePrompt": "Detailed prompt for generating an appetizing image of this recipe",
         "imageAltText": "Descriptive alt text for the recipe image"
       }
+      <CRITICAL> Make sure to write it out in the exact JSON format, and with properly escaped strings, since your respnse will be programatically parsed </CRITICAL>
       Ensure all fields are filled with appropriate, realistic values. ${Math.random().toString(36).substring(7)}`;
 
       const recipeResponse = await inference.textGeneration({
