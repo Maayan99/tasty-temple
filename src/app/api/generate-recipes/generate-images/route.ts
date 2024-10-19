@@ -3,8 +3,10 @@ import { uploadToB2 } from '@/lib/b2';
 import slugify from 'slugify';
 import { PrismaClient } from '@prisma/client';
 import { generateRandomComments } from '@/lib/comments';
+import { HfInference } from "@huggingface/inference";
 
 const prisma = new PrismaClient();
+const inference = new HfInference(process.env.HUGGINGFACE_API_KEY);
 
 async function generateImage(prompt: string): Promise<Blob> {
   const response = await fetch(
@@ -19,6 +21,41 @@ async function generateImage(prompt: string): Promise<Blob> {
     }
   );
   return await response.blob();
+}
+
+async function rewriteBlogPost(recipe: any): Promise<string> {
+  const blogRewritePrompt = `Rewrite and improve the following blog post for a recipe. Make sure to follow these rules:
+  1. Use '# ' for main titles and '## ' for subtitles.
+  2. Use '<<IMAGE X>>' placeholders where X is the image number (1, 2, 3, etc.) to indicate where images should be placed.
+  3. Use '\n' for line breaks.
+  4. The content should be engaging, informative, and optimized for SEO.
+  5. Include personal anecdotes, cooking tips, and variations of the recipe where appropriate.
+  6. Ensure the content is between 700-800 words.
+
+Here's the recipe information:
+Title: ${recipe.title}
+Description: ${recipe.description}
+Ingredients: ${JSON.stringify(recipe.ingredients)}
+Instructions: ${recipe.instructions.join('\n')}
+Cooking Time: ${recipe.cookingTime} minutes
+Difficulty: ${recipe.difficulty}
+Servings: ${recipe.servings}
+
+Here's the original blog post:
+${recipe.blogContent}
+
+Please rewrite and improve this blog post based on the given information and rules.`;
+
+  let rewrittenContent = '';
+  for await (const chunk of inference.chatCompletionStream({
+    model: 'meta-llama/Llama-3.1-70B-Instruct',
+    messages: [{ role: 'user', content: blogRewritePrompt }],
+    max_tokens: 2000,
+  })) {
+    rewrittenContent += chunk.choices[0]?.delta?.content || '';
+  }
+
+  return rewrittenContent;
 }
 
 export async function POST(request: Request) {
@@ -59,6 +96,12 @@ export async function POST(request: Request) {
         });
       }
 
+      // Rewrite the blog post
+      const rewrittenBlogContent = await rewriteBlogPost({
+        ...recipe,
+        blogImages
+      });
+
       // Generate random comments
       const comments = await generateRandomComments(recipe);
 
@@ -70,7 +113,7 @@ export async function POST(request: Request) {
       console.log("About to save: ", mainImageUrl);
       console.log("About to save: ", recipe.instructions.join('\n'));
       console.log("About to save: ", recipe.nutrition);
-      console.log("About to save: ", recipe.blogContent);
+      console.log("About to save: ", rewrittenBlogContent);
       console.log("About to save: ", recipe.ingredients);
       console.log("About to save: ", comments);
 
@@ -86,7 +129,7 @@ export async function POST(request: Request) {
           imageUrl: mainImageUrl,
           instructions: recipe.instructions.join('\n'),
           nutrition: recipe.nutrition,
-          blogContent: (typeof recipe.blogContent === 'string' ? recipe.blogContent : (recipe.blogContent?.join('\n') || "")),
+          blogContent: rewrittenBlogContent,
           blogImages: {
             create: blogImages
           },
