@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Recipe } from '@/types/recipe';
-import { getLatestRecipes, getTrendingRecipes } from '@/lib/recipes';
+import { getLatestRecipes, getTrendingRecipes, deleteRecipeById } from '@/lib/recipes';
 
 type RecipeType = 'latest' | 'trending';
 
@@ -30,5 +30,14 @@ export function useRecipes(limit: number, type: RecipeType) {
     fetchRecipes();
   }, [limit, type]);
 
-  return { recipes, isLoading, error };
+  const deleteRecipe = async (id: number) => {
+    try {
+      await deleteRecipeById(id);
+      setRecipes(recipes.filter(recipe => recipe.id !== id));
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Failed to delete recipe'));
+    }
+  };
+
+  return { recipes, isLoading, error, deleteRecipe };
 }

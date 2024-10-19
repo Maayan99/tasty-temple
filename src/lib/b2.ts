@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 
 const s3Client = new S3Client({
   endpoint: `https://${process.env.B2_ENDPOINT}`,
@@ -20,4 +20,18 @@ export async function uploadToB2(buffer: Buffer, key: string): Promise<string> {
   await s3Client.send(command);
 
   return `https://${process.env.B2_BUCKET_NAME}.s3.us-east-005.backblazeb2.com/${key}`;
+}
+
+export async function deleteImageFromB2(imageUrl: string): Promise<void> {
+  const key = imageUrl.split('/').pop();
+  if (!key) {
+    throw new Error('Invalid image URL');
+  }
+
+  const command = new DeleteObjectCommand({
+    Bucket: process.env.B2_BUCKET_NAME,
+    Key: key,
+  });
+
+  await s3Client.send(command);
 }
