@@ -3,18 +3,26 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 
+interface RecipeIdea {
+  title: string;
+  description: string;
+}
+
 const GenerateRecipeForm: React.FC = () => {
   const [direction, setDirection] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [generationLog, setGenerationLog] = useState<string[]>([]);
   const [isBulkGeneration, setIsBulkGeneration] = useState(false);
+  const [recipeIdeas, setRecipeIdeas] = useState<RecipeIdea[]>([]);
+  const [selectedIdeas, setSelectedIdeas] = useState<number[]>([]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
     setGenerationLog([]);
+    setRecipeIdeas([]);
 
     try {
       const directions = isBulkGeneration ? direction.split('\n').filter(d => d.trim() !== '') : [direction];
@@ -27,16 +35,19 @@ const GenerateRecipeForm: React.FC = () => {
         });
 
         if (!response.ok) {
-          throw new Error(`Failed to start recipe generation for: ${dir}`);
+          throw new Error(`Failed to generate recipe ideas for: ${dir}`);
         }
 
         return response.json();
       });
 
       const results = await Promise.all(generatePromises);
-      setGenerationLog(results.flatMap(r => r.recipeIdeas.map((idea: any) => `Generated idea: ${idea.title}`)));
+      const allIdeas = results.flatMap(r => r.recipeIdeas);
+      setRecipeIdeas(allIdeas);
+      setSelectedIdeas(allIdeas.map((_, index) => index));
+      setGenerationLog(allIdeas.map((idea: RecipeIdea) => `Generated idea: ${idea.title}`));
     } catch (err) {
-      setError('Error starting recipe generation. Please try again.');
+      setError('Error generating recipe ideas. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -56,6 +67,39 @@ const GenerateRecipeForm: React.FC = () => {
       setDirection(data.directions.join('\n'));
     } catch (err) {
       setError('Error generating directions. Please try again.');
+    }
+  };
+
+  const handleIdeaSelection = (index: number) => {
+    setSelectedIdeas(prev =>
+      prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]
+    );
+  };
+
+  const handleGenerateFullRecipes = async () => {
+    setIsLoading(true);
+    setError('');
+    setGenerationLog([]);
+
+    try {
+      const selectedRecipeIdeas = recipeIdeas.filter((_, index) => selectedIdeas.includes(index));
+
+      const response = await fetch('/api/generate-recipes/generate-full-recipe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ recipeIdeas: selectedRecipeIdeas }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to start full recipe generation');
+      }
+
+      const result = await response.json();
+      setGenerationLog([...generationLog, 'Full recipe generation started']);
+    } catch (err) {
+      setError('Error starting full recipe generation. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -106,7 +150,7 @@ const GenerateRecipeForm: React.FC = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            {isLoading ? 'Starting Generation...' : 'Generate Recipes'}
+            {isLoading ? 'Generating Ideas...' : 'Generate Recipe Ideas'}
           </motion.button>
         </div>
       </form>
@@ -118,6 +162,46 @@ const GenerateRecipeForm: React.FC = () => {
         >
           {error}
         </motion.p>
+      )}
+      {recipeIdeas.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-lg shadow-inner mb-8"
+        >
+          <h2 className="text-2xl font-bold mb-4 text-gray-800">Generated Recipe Ideas:</h2>
+          <ul className="space-y-4">
+            {recipeIdeas.map((idea, index) => (
+              <motion.li
+                key={index}
+                className="flex items-center space-x-4"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedIdeas.includes(index)}
+                  onChange={() => handleIdeaSelection(index)}
+                  className="form-checkbox h-5 w-5 text-blue-600"
+                />
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800">{idea.title}</h3>
+                  <p className="text-gray-600">{idea.description}</p>
+                </div>
+              </motion.li>
+            ))}
+          </ul>
+          <motion.button
+            onClick={handleGenerateFullRecipes}
+            disabled={isLoading || selectedIdeas.length === 0}
+            className="mt-6 bg-indigo-600 text-white px-6 py-3 rounded-md font-semibold text-lg hover:bg-indigo-700 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Generate Full Recipes for Selected Ideas
+          </motion.button>
+        </motion.div>
       )}
       {generationLog.length > 0 && (
         <motion.div

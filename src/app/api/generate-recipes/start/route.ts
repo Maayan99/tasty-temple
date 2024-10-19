@@ -26,21 +26,13 @@ export async function POST(request: Request) {
 
     const recipeIdeas = JSON.parse(cleanedIdeasJson);
 
-    console.log("Calling next step, ", `${process.env.NEXT_PUBLIC_API_URL}/api/generate-recipes/generate-full-recipe`);
-    // Call the next step in the process
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/generate-recipes/generate-full-recipe`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ recipeIdeas }),
-    });
+    console.log('Recipe ideas generated', recipeIdeas);
 
-    console.log('Recipe generation started', recipeIdeas);
-
-    return NextResponse.json({ message: 'Recipe generation started', recipeIdeas }, { status: 200 });
+    return NextResponse.json({ message: 'Recipe ideas generated', recipeIdeas }, { status: 200 });
   } catch (error) {
-    console.error('Error starting recipe generation:', error);
+    console.error('Error generating recipe ideas:', error);
     return NextResponse.json({
-      message: 'Error starting recipe generation',
+      message: 'Error generating recipe ideas',
       error: (error as Error).message,
     }, { status: 500 });
   }
