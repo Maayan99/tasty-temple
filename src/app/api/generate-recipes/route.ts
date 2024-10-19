@@ -98,6 +98,7 @@ export async function POST(request: Request) {
       }
 
       console.log('Raw recipe response:', recipeContent);
+      console.log('Length of raw recipe content: ', recipeContent.length);
 
       const cleanedRecipeJson = recipeContent.substring(
         recipeContent.indexOf('{'),
@@ -105,6 +106,7 @@ export async function POST(request: Request) {
       );
 
       console.log('Cleaned recipe JSON:', cleanedRecipeJson);
+      console.log('Length of cleaned recipe content: ', cleanedRecipeJson.length);
 
       let generatedRecipe: GeneratedRecipe;
       try {
