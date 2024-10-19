@@ -103,19 +103,21 @@ const GenerateRecipeForm: React.FC = () => {
     }
   };
 
-  const processNextBackloggedDirection = async () => {
-    if (backloggedDirections.length > 0 && !isLoading) {
-      const nextDirection = backloggedDirections[0];
-      setCurrentDirection(nextDirection);
-      setCurrentStepDescription('Generating recipe ideas');
-      await processDirection(nextDirection);
-    } else {
-      setIsProcessingBacklog(false);
-      setGenerationLog((prevLog) => [...prevLog, 'All backlogged directions processed']);
-      setCurrentDirection('');
-      setCurrentStepDescription('');
-    }
-  };
+const processNextBackloggedDirection = async () => {
+  if (backloggedDirections.length > 0 && !isLoading) {
+    const nextDirection = backloggedDirections[0];
+    // Remove the direction from the backlog immediately
+    setBackloggedDirections((prev) => prev.slice(1));
+    setCurrentDirection(nextDirection);
+    setCurrentStepDescription('Generating recipe ideas');
+    await processDirection(nextDirection);
+  } else {
+    setIsProcessingBacklog(false);
+    setGenerationLog((prevLog) => [...prevLog, 'All backlogged directions processed']);
+    setCurrentDirection('');
+    setCurrentStepDescription('');
+  }
+};
 
   const processDirection = async (dir: string) => {
     setIsLoading(true);
