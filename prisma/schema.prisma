@@ -29,12 +29,24 @@ model Recipe {
   imageUrl      String
   instructions  String
   nutrition     Json        // JSON object for dynamic nutrition values
+  blogContent   String      // New field for the blog content
+  blogImages    BlogImage[] // New relation to blog images
   categories    RecipeCategory[]
   ingredients   RecipeIngredient[]
   comments      Comment[]
   ratings       Rating[]
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
+}
+
+model BlogImage {
+  id        Int      @id @default(autoincrement())
+  recipe    Recipe   @relation(fields: [recipeId], references: [id])
+  recipeId  Int
+  imageUrl  String
+  altText   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Ingredient {

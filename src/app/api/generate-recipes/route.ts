@@ -23,6 +23,8 @@ interface GeneratedRecipe {
   nutrition: { [key: string]: number };
   imagePrompt: string;
   imageAltText: string;
+  blogContent: string;
+  blogImagePrompts: string[];
 }
 
 async function generateImage(prompt: string): Promise<Blob> {
@@ -79,7 +81,7 @@ export async function POST(request: Request) {
     // Generate full recipes for each idea
     for (const idea of recipeIdeas) {
       log.push(`Generating full recipe for: ${idea.title}`);
-      const recipePrompt = `Create a detailed, professional-quality recipe in English for "${idea.title}" based on this description: "${idea.description}". The recipe should be suitable for a high-quality food blog. Include precise measurements, clear instructions, and consider dietary variations or substitutions where appropriate. Format the output as a JSON object with the following structure:
+      const recipePrompt = `Create a detailed, professional-quality recipe in English for "${idea.title}" based on this description: "${idea.description}". The recipe should be suitable for a high-quality food blog. Include precise measurements, clear instructions, and consider dietary variations or substitutions where appropriate. Also, generate a blog post content about this recipe, detailing things to know about the recipe, the creation process, and some of the decisions behind the recipe. The blog content should be focused on increasing SEO visibility. Additionally, provide 3-5 image prompts for generating visuals related to the recipe, along with SEO-optimized alt text for each image. Format the output as a JSON object with the following structure:
       {
         "title": "Recipe Title",
         "description": "Engaging and appetizing description",
@@ -100,7 +102,12 @@ export async function POST(request: Request) {
           "fat": 15
         },
         "imagePrompt": "Detailed prompt for generating an appetizing image of this recipe",
-        "imageAltText": "Descriptive alt text for the recipe image"
+        "imageAltText": "Descriptive alt text for the recipe image",
+        "blogContent": "Detailed blog post content about the recipe",
+        "blogImagePrompts": [
+          { "prompt": "Image prompt 1", "altText": "SEO-optimized alt text for image 1" },
+          { "prompt": "Image prompt 2", "altText": "SEO-optimized alt text for image 2" }
+        ]
       }
       <CRITICAL> Make sure to abide by the JSON format specified and provide a valid JSON object, as your response will be programmatically analyzed </CRITICAL>
 
@@ -130,15 +137,32 @@ export async function POST(request: Request) {
       try {
         generatedRecipe = JSON.parse(cleanedRecipeJson);
 
-        // Generate image
-        log.push(`Generating image for: ${generatedRecipe.title}`);
-        const imageBlob = await generateImage(generatedRecipe.imagePrompt);
-        const imageBuffer = Buffer.from(await imageBlob.arrayBuffer());
+        // Generate main recipe image
+        log.push(`Generating main image for: ${generatedRecipe.title}`);
+        const mainImageBlob = await generateImage(generatedRecipe.imagePrompt);
+        const mainImageBuffer = Buffer.from(await mainImageBlob.arrayBuffer());
         
-        // Upload image to B2
-        const imageKey = `recipes/${slugify(generatedRecipe.title, { lower: true, strict: true })}-${Date.now()}.png`;
-        const imageUrl = await uploadToB2(imageBuffer, imageKey);
-        log.push(`Image uploaded to B2: ${imageUrl}`);
+        // Upload main image to B2
+        const mainImageKey = `recipes/${slugify(generatedRecipe.title, { lower: true, strict: true })}-main-${Date.now()}.png`;
+        const mainImageUrl = await uploadToB2(mainImageBuffer, mainImageKey);
+        log.push(`Main image uploaded to B2: ${mainImageUrl}`);
+
+        // Generate and upload blog images
+        const blogImages = [];
+        for (const [index, imagePrompt] of generatedRecipe.blogImagePrompts.entries()) {
+          log.push(`Generating blog image ${index + 1} for: ${generatedRecipe.title}`);
+          const blogImageBlob = await generateImage(imagePrompt.prompt);
+          const blogImageBuffer = Buffer.from(await blogImageBlob.arrayBuffer());
+          
+          const blogImageKey = `recipes/${slugify(generatedRecipe.title, { lower: true, strict: true })}-blog-${index + 1}-${Date.now()}.png`;
+          const blogImageUrl = await uploadToB2(blogImageBuffer, blogImageKey);
+          log.push(`Blog image ${index + 1} uploaded to B2: ${blogImageUrl}`);
+
+          blogImages.push({
+            imageUrl: blogImageUrl,
+            altText: imagePrompt.altText
+          });
+        }
 
         // Save the recipe to the database
         log.push(`Saving recipe to database: ${generatedRecipe.title}`);
@@ -150,9 +174,13 @@ export async function POST(request: Request) {
             cookingTime: generatedRecipe.cookingTime,
             difficulty: generatedRecipe.difficulty,
             servings: generatedRecipe.servings,
-            imageUrl: imageUrl,
+            imageUrl: mainImageUrl,
             instructions: generatedRecipe.instructions.join('\n'),
             nutrition: JSON.stringify(generatedRecipe.nutrition),
+            blogContent: generatedRecipe.blogContent,
+            blogImages: {
+              create: blogImages
+            },
             ingredients: {
               create: generatedRecipe.ingredients.map(ing => ({
                 quantity: parseFloat(ing.quantity),
