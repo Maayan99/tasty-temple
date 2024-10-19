@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { InferenceClient } from 'huggingface-hub';
+import { InferenceClient } from 'huggingface/hub';
 
 const client = new InferenceClient({
   apiKey: process.env.HUGGINGFACE_API_KEY,
