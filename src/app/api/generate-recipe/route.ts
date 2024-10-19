@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server';
-import { InferenceClient } from '@huggingface/hub';
+import { HfInference } from "@huggingface/inference";
 
-const client = new InferenceClient({
-  apiKey: process.env.HUGGINGFACE_API_KEY,
-});
+const inference = new HfInference(process.env.HUGGINGFACE_API_KEY);
 
 export async function POST(request: Request) {
   const { prompt } = await request.json();
@@ -14,7 +12,7 @@ export async function POST(request: Request) {
 
   try {
     let recipeContent = '';
-    for await (const message of client.chatCompletion({
+    for await (const message of inference.chatCompletionStream({
       model: 'meta-llama/Llama-3.1-70B-Instruct',
       messages: [{ role: 'user', content: prompt }],
       maxTokens: 1000,
