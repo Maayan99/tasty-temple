@@ -5,6 +5,8 @@ import RecipeGrid from '@/components/RecipeGrid';
 import RecipeFilter from '@/components/RecipeFilter';
 import Newsletter from '@/components/Newsletter';
 
+export const dynamic = 'force-dynamic';
+
 export default function RecipesPage() {
   return (
     <div className="min-h-screen bg-gray-50">

@@ -12,6 +12,7 @@ export function useRecipes(limit: number, type: RecipeType) {
   useEffect(() => {
     async function fetchRecipes() {
       try {
+        setIsLoading(true);
         let fetchedRecipes: Recipe[];
         if (type === 'latest') {
           fetchedRecipes = await getLatestRecipes(limit);
@@ -21,7 +22,7 @@ export function useRecipes(limit: number, type: RecipeType) {
         setRecipes(fetchedRecipes);
         setIsLoading(false);
       } catch (err) {
-        setError(err as Error);
+        setError(err instanceof Error ? err : new Error('An unknown error occurred'));
         setIsLoading(false);
       }
     }

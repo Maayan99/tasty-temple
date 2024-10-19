@@ -10,7 +10,11 @@ const RecipeGrid: React.FC = () => {
   const { recipes, isLoading, error } = useRecipes(12, 'latest');
 
   if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error loading recipes</div>;
+  if (error) return <div>Error loading recipes: {error.message}</div>;
+
+  if (recipes.length === 0) {
+    return <div>No recipes found.</div>;
+  }
 
   return (
     <motion.div
