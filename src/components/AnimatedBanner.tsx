@@ -22,9 +22,9 @@ const AnimatedBanner: React.FC = () => {
   }, []);
 
   return (
-    <div className="bg-gradient-to-r from-indigo-500 to-purple-600 py-8">
+    <div className="bg-gradient-to-r from-indigo-500 to-purple-600 py-12">
       <div className="container mx-auto px-4">
-        <div className="flex justify-center items-center h-16 overflow-hidden">
+        <div className="flex justify-center items-center h-24 overflow-hidden">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentTip}
@@ -32,7 +32,7 @@ const AnimatedBanner: React.FC = () => {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -20, opacity: 0 }}
               transition={{ duration: 0.5 }}
-              className="text-white text-2xl font-bold text-center"
+              className="text-white text-3xl font-bold text-center"
             >
               {tips[currentTip]}
             </motion.div>
