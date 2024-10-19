@@ -20,6 +20,8 @@ async function generateImage(prompt: string): Promise<Blob> {
 export async function POST(request: Request) {
   const { generatedRecipe } = await request.json();
 
+  console.log("Generated Recipe recieved at image route: ", generatedRecipe);
+
   try {
     // Generate main recipe image
     const mainImageBlob = await generateImage(generatedRecipe.imagePrompt);

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Recipe } from '@/types/recipe';
 import { getLatestRecipes, getFeaturedRecipes, deleteRecipeById, searchRecipes } from '@/lib/recipes';
 
-type RecipeType = 'latest' | 'featured' | 'search';
+type RecipeType = 'latest' | 'featured' | 'search' | 'trending';
 
 export function useRecipes(limit: number, type: RecipeType, searchTerm?: string) {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
