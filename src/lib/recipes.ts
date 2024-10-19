@@ -138,15 +138,10 @@ export async function getLatestRecipes(limit: number = 6): Promise<Recipe[]> {
   })) as Recipe[];
 }
 
-export async function getTrendingRecipes(limit: number = 3): Promise<Recipe[]> {
-  // This is a simplified version. In a real application, you might want to
-  // implement a more sophisticated algorithm to determine trending recipes.
+export async function getFeaturedRecipes(limit: number = 3): Promise<Recipe[]> {
   const recipes = await prisma.recipe.findMany({
     take: limit,
-    orderBy: [
-      { ratings: { _count: 'desc' } },
-      { comments: { _count: 'desc' } },
-    ],
+    orderBy: { ratings: { _count: 'desc' } },
     include: {
       ingredients: {
         include: {
@@ -329,4 +324,51 @@ export async function updateRecipe(id: number, data: Partial<Recipe>): Promise<R
       altText: image.altText,
     })),
   } as Recipe;
+}
+
+export async function searchRecipes(searchTerm: string, limit: number = 10): Promise<Recipe[]> {
+  const recipes = await prisma.recipe.findMany({
+    where: {
+      OR: [
+        { title: { contains: searchTerm, mode: 'insensitive' } },
+        { description: { contains: searchTerm, mode: 'insensitive' } },
+        { ingredients: { some: { ingredient: { name: { contains: searchTerm, mode: 'insensitive' } } } } },
+      ],
+    },
+    take: limit,
+    include: {
+      ingredients: {
+        include: {
+          ingredient: true,
+        },
+      },
+      categories: {
+        include: {
+          category: true,
+        },
+      },
+      blogImages: true,
+      comments: true,
+    },
+  });
+
+  return recipes.map((recipe) => ({
+    ...recipe,
+    nutrition: JSON.parse(recipe.nutrition as string),
+    createdAt: recipe.createdAt.toISOString(),
+    updatedAt: recipe.updatedAt.toISOString(),
+    categories: recipe.categories.map((rc): RecipeCategory => ({
+      id: rc.id,
+      category: {
+        ...rc.category,
+        slug: rc.category.name.toLowerCase().replace(/ /g, '-'),
+        recipeCount: 0,
+      },
+    })),
+    blogImages: recipe.blogImages.map((image) => ({
+      id: image.id,
+      imageUrl: image.imageUrl,
+      altText: image.altText,
+    })),
+  })) as Recipe[];
 }

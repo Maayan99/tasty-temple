@@ -2,9 +2,10 @@ import React from 'react';
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import LatestRecipes from '@/components/LatestRecipes';
+import FeaturedRecipes from '@/components/FeaturedRecipes';
+import SearchBar from '@/components/SearchBar';
 import AnimatedBanner from '@/components/AnimatedBanner';
 import Footer from '@/components/Footer';
-import FeaturedCategories from '@/components/FeaturedCategories';
 import Newsletter from '@/components/Newsletter';
 
 export default function Home() {
@@ -13,8 +14,9 @@ export default function Home() {
       <Header />
       <main>
         <Hero />
+        <SearchBar />
+        <FeaturedRecipes />
         <LatestRecipes />
-        <FeaturedCategories />
         <AnimatedBanner />
         <Newsletter />
       </main>

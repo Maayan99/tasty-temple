@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Recipe } from '@/types/recipe';
-import { getLatestRecipes, getTrendingRecipes, deleteRecipeById } from '@/lib/recipes';
+import { getLatestRecipes, getFeaturedRecipes, deleteRecipeById, searchRecipes } from '@/lib/recipes';
 
-type RecipeType = 'latest' | 'trending';
+type RecipeType = 'latest' | 'featured' | 'search';
 
-export function useRecipes(limit: number, type: RecipeType) {
+export function useRecipes(limit: number, type: RecipeType, searchTerm?: string) {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -16,8 +16,12 @@ export function useRecipes(limit: number, type: RecipeType) {
         let fetchedRecipes: Recipe[];
         if (type === 'latest') {
           fetchedRecipes = await getLatestRecipes(limit);
+        } else if (type === 'featured') {
+          fetchedRecipes = await getFeaturedRecipes(limit);
+        } else if (type === 'search' && searchTerm) {
+          fetchedRecipes = await searchRecipes(searchTerm, limit);
         } else {
-          fetchedRecipes = await getTrendingRecipes(limit);
+          throw new Error('Invalid recipe type or missing search term');
         }
         setRecipes(fetchedRecipes);
         setIsLoading(false);
@@ -28,7 +32,7 @@ export function useRecipes(limit: number, type: RecipeType) {
     }
 
     fetchRecipes();
-  }, [limit, type]);
+  }, [limit, type, searchTerm]);
 
   const deleteRecipe = async (id: number) => {
     try {
