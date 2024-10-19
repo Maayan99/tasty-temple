@@ -104,7 +104,7 @@ export async function POST(request: Request) {
         },
         "imagePrompt": "Detailed prompt for generating an appetizing image of this recipe",
         "imageAltText": "Descriptive alt text for the recipe image",
-        "blogContent": "Detailed 800-1200 words blog post content about the recipe. Don't use enters, use newline \n characters to indicate a newline",
+        "blogContent": "Detailed 800-1200 words blog post content about the recipe. Use <<IMAGE 1>>, <<IMAGE 2>>, etc. to indicate where images should be placed in the blog content.",
         "blogImagePrompts": [
           { "prompt": "Image prompt 1", "altText": "SEO-optimized alt text for image 1" },
           { "prompt": "Image prompt 2", "altText": "SEO-optimized alt text for image 2" }

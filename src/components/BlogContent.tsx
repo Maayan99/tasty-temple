@@ -11,35 +11,16 @@ interface BlogContentProps {
 }
 
 const BlogContent: React.FC<BlogContentProps> = ({ content, images }) => {
-  const contentWithImages = content.split('\n\n').map((paragraph, index) => {
+  const contentWithImages = content.split('\n').map((paragraph, index) => {
     if (paragraph.startsWith('# ')) {
       return { type: 'title', content: paragraph.slice(2) };
     }
+    if (paragraph.match(/^<<IMAGE \d+>>$/)) {
+      const imageIndex = parseInt(paragraph.match(/\d+/)![0]) - 1;
+      return { type: 'image', image: images[imageIndex] };
+    }
     return { type: 'paragraph', content: paragraph };
   });
-
-  const intertwineImagesWithContent = () => {
-    const result = [];
-    let imageIndex = 0;
-
-    contentWithImages.forEach((item, index) => {
-      result.push(item);
-      if (item.type === 'paragraph' && imageIndex < images.length) {
-        result.push({ type: 'image', image: images[imageIndex] });
-        imageIndex++;
-      }
-    });
-
-    // Add any remaining images at the end
-    while (imageIndex < images.length) {
-      result.push({ type: 'image', image: images[imageIndex] });
-      imageIndex++;
-    }
-
-    return result;
-  };
-
-  const interwoven = intertwineImagesWithContent();
 
   return (
     <motion.div
@@ -50,7 +31,7 @@ const BlogContent: React.FC<BlogContentProps> = ({ content, images }) => {
     >
       <h2 className="text-3xl font-semibold mb-6 text-gray-800">Recipe Blog</h2>
       <div className="prose prose-lg max-w-none mb-8">
-        {interwoven.map((item, index) => {
+        {contentWithImages.map((item, index) => {
           if (item.type === 'title') {
             return (
               <motion.h3
@@ -60,7 +41,7 @@ const BlogContent: React.FC<BlogContentProps> = ({ content, images }) => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1, duration: 0.3 }}
               >
-                {"content" in item ? (item.content as string) : ""}
+                {item.content}
               </motion.h3>
             );
           } else if (item.type === 'paragraph') {
@@ -72,7 +53,7 @@ const BlogContent: React.FC<BlogContentProps> = ({ content, images }) => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1, duration: 0.3 }}
               >
-                {"content" in item ? (item.content as string) : ""}
+                {item.content}
               </motion.p>
             );
           } else if (item.type === 'image') {
