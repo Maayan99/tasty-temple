@@ -18,6 +18,7 @@ export async function getRecipeBySlug(slug: string): Promise<Recipe | null> {
         },
       },
       blogImages: true,
+      comments: true,
     },
   });
 
