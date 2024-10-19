@@ -24,7 +24,7 @@ interface GeneratedRecipe {
   imagePrompt: string;
   imageAltText: string;
   blogContent: string;
-  blogImagePrompts: string[];
+  blogImagePrompts: { prompt: string; altText: string }[];
 }
 
 async function generateImage(prompt: string): Promise<Blob> {
@@ -149,14 +149,15 @@ export async function POST(request: Request) {
 
         // Generate and upload blog images
         const blogImages = [];
-        for (const [index, imagePrompt] of generatedRecipe.blogImagePrompts.entries()) {
-          log.push(`Generating blog image ${index + 1} for: ${generatedRecipe.title}`);
+        for (let i = 0; i < generatedRecipe.blogImagePrompts.length; i++) {
+          const imagePrompt = generatedRecipe.blogImagePrompts[i];
+          log.push(`Generating blog image ${i + 1} for: ${generatedRecipe.title}`);
           const blogImageBlob = await generateImage(imagePrompt.prompt);
           const blogImageBuffer = Buffer.from(await blogImageBlob.arrayBuffer());
           
-          const blogImageKey = `recipes/${slugify(generatedRecipe.title, { lower: true, strict: true })}-blog-${index + 1}-${Date.now()}.png`;
+          const blogImageKey = `recipes/${slugify(generatedRecipe.title, { lower: true, strict: true })}-blog-${i + 1}-${Date.now()}.png`;
           const blogImageUrl = await uploadToB2(blogImageBuffer, blogImageKey);
-          log.push(`Blog image ${index + 1} uploaded to B2: ${blogImageUrl}`);
+          log.push(`Blog image ${i + 1} uploaded to B2: ${blogImageUrl}`);
 
           blogImages.push({
             imageUrl: blogImageUrl,
