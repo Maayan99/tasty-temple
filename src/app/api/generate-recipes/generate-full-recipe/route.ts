@@ -65,11 +65,12 @@ export async function POST(request: Request) {
         },
         "imagePrompt": "Detailed prompt for generating an appetizing image of this recipe",
         "imageAltText": "Descriptive alt text for the recipe image",
-        "blogContent": "Detailed 500-600 words blog post content about the recipe. Use <<IMAGE 1>>, <<IMAGE 2>>, etc. to indicate where images should be placed in the blog content.",
+        "blogSummary": "Summary of the blog that will accompany this recipe",
         "blogImagePrompts": [
           { "prompt": "Image prompt 1", "altText": "SEO-optimized alt text for image 1" },
           { "prompt": "Image prompt 2", "altText": "SEO-optimized alt text for image 2" }
-        ]
+        ],  
+        "blogContent": "Detailed 700-800 words blog post content about the recipe. You must use <<IMAGE 1>>, <<IMAGE 2>>, etc. to indicate where images should be placed in the blog content, and include titles using # in the beggining of a line to indicate title. Use \n for a newline, must include at least 8 paragraphs.",
       }`;
 
       let recipeContent = '';
