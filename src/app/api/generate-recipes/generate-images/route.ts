@@ -85,14 +85,14 @@ export async function POST(request: Request) {
           servings: recipe.servings,
           imageUrl: mainImageUrl,
           instructions: recipe.instructions.join('\n'),
-          nutrition: {},
+          nutrition: recipe.nutrition,
           blogContent: recipe.blogContent?.join('\n') || "",
           blogImages: {
             create: blogImages
           },
           ingredients: {
             create: recipe.ingredients.map((ing: { name: string; quantity: string; unit: string }) => ({
-              quantity: parseFloat(ing.quantity) || 1,
+              quantity: parseInt(ing.quantity) || 1,
               ingredient: {
                 connectOrCreate: {
                   where: { name: ing.name },
