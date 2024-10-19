@@ -13,6 +13,7 @@
   "dependencies": {
     "react": "^18",
     "react-dom": "^18",
+    "swiper": "^11.1.14",
     "@huggingface/inference": "^2.8.1",
     "framer-motion": "^11.3.27",
     "next": "14.2.5"
