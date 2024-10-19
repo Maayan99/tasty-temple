@@ -30,6 +30,7 @@ export async function generateRandomComments(recipe: GeneratedRecipe): Promise<{
     const randomDaysAgo = Math.floor(Math.random() * 3) + 5; // Random number between 5 and 7
     const commentDate = new Date(currentDate.getTime() - randomDaysAgo * 24 * 60 * 60 * 1000);
     comments.push({
+      user: 'John Doe',
       content: comment,
       createdAt: commentDate
     });
