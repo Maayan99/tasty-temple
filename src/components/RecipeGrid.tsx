@@ -1,16 +1,17 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRecipes } from '@/hooks/useRecipes';
+import { Recipe } from '@/types/recipe';
 
-const RecipeGrid: React.FC = () => {
-  const { recipes, isLoading, error } = useRecipes(12, 'latest');
+interface RecipeGridProps {
+  initialRecipes: Recipe[];
+}
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error loading recipes: {error.message}</div>;
+const RecipeGrid: React.FC<RecipeGridProps> = ({ initialRecipes }) => {
+  const [recipes, setRecipes] = useState<Recipe[]>(initialRecipes);
 
   if (recipes.length === 0) {
     return <div>No recipes found.</div>;
@@ -38,6 +39,7 @@ const RecipeGrid: React.FC = () => {
                 alt={recipe.title}
                 layout="fill"
                 objectFit="cover"
+                unoptimized
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
               <div className="absolute bottom-0 left-0 right-0 p-4">

@@ -37,6 +37,7 @@ const RecipeContent: React.FC<RecipeContentProps> = ({ recipe }) => {
           layout="fill"
           objectFit="cover"
           className="transition-transform duration-300 hover:scale-105"
+          unoptimized
         />
       </motion.div>
       <motion.div
