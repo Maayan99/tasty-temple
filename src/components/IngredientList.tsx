@@ -61,7 +61,7 @@ const IngredientList: React.FC<IngredientListProps> = ({ ingredients, servings, 
               </span>
             </label>
             <span className="font-semibold text-gray-800">
-              {((ingredient.quantity * servings) / originalServings).toFixed(2)} {ingredient.ingredient.unit}
+              {((ingredient.quantity * servings) / originalServings).toFixed(0)} {ingredient.ingredient.unit}
             </span>
           </motion.li>
         ))}
