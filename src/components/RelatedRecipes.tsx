@@ -29,15 +29,15 @@ const RelatedRecipes: React.FC<RelatedRecipesProps> = ({ recipeSlug }) => {
         {relatedRecipes.map((recipe: Recipe) => (
           <Link href={`/recipe/${recipe.slug}`} key={recipe.id}>
             <motion.div
-              className="flex items-center space-x-4 p-4 rounded-xl bg-white shadow-md hover:shadow-lg transition duration-300"
+              className="flex items-center space-x-4 p-4 rounded-xl bg-white shadow-sm hover:shadow-md transition duration-300"
               whileHover={{ scale: 1.03 }}
             >
               <Image
                 src={recipe.imageUrl}
                 alt={recipe.title}
-                width={100}
-                height={100}
-                className="rounded-lg"
+                width={80}
+                height={80}
+                className="rounded-lg object-cover"
               />
               <div>
                 <h3 className="font-semibold text-lg text-gray-800 mb-1">{recipe.title}</h3>

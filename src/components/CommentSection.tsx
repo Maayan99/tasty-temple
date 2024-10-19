@@ -52,7 +52,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ recipeId }) => {
         {comments.map((comment) => (
           <motion.div
             key={comment.id}
-            className="bg-white p-6 rounded-lg shadow-md mb-6"
+            className="bg-white p-6 rounded-lg shadow-sm mb-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
