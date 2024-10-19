@@ -9,6 +9,18 @@ const prisma = new PrismaClient();
 export async function POST(request: Request) {
   const { generatedRecipe, mainImageUrl, blogImages } = await request.json();
 
+  console.log("Received recipe for saving: ", generatedRecipe);
+  console.log("Received recipe for saving: ", generatedRecipe.ingredients);
+  console.log("Received recipe for saving: ", generatedRecipe.title);
+  console.log("Received recipe for saving: ", generatedRecipe.description);
+  console.log("Received recipe for saving: ", generatedRecipe.difficulty);
+  console.log("Received recipe for saving: ", generatedRecipe.mainImageUrl);
+  console.log("Received recipe for saving: ", generatedRecipe.instructions);
+  console.log("Received recipe for saving: ", generatedRecipe.nutrition);
+  console.log("Received recipe for saving: ", generatedRecipe.blogContent);
+
+  console.log("Received recipe for saving, blogImages: ", blogImages);
+
   try {
     // Generate random comments
     const comments = await generateRandomComments(generatedRecipe);
