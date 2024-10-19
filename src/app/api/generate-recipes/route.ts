@@ -30,31 +30,35 @@ export async function POST(request: Request) {
   try {
     // Generate 3 recipe ideas
     log.push('Generating recipe ideas...');
-    const ideasPrompt = `Generate 3 unique recipe ideas ${direction ? `based on the following direction: ${direction}` : ''}. Include a title and brief description for each. ${Math.random().toString(36).substring(7)}`;
+    const ideasPrompt = `Generate 3 unique and creative recipe ideas ${direction ? `based on the following direction: ${direction}` : ''}. Each recipe should be innovative, delicious, and suitable for a food blog. Include a catchy title and a brief, appetizing description for each. Ensure diversity in cuisines, cooking methods, and ingredients. Format the output as a JSON array of objects with 'title' and 'description' fields. ${Math.random().toString(36).substring(7)}`;
     const ideasResponse = await inference.textGeneration({
       model: 'meta-llama/Llama-3.1-70B-Instruct',
       inputs: ideasPrompt,
-      parameters: { max_new_tokens: 250 },
+      parameters: { max_new_tokens: 500 },
     });
-    const recipeIdeas: RecipeIdea[] = JSON.parse(ideasResponse.generated_text);
+    const cleanedIdeasJson = ideasResponse.generated_text.substring(
+      ideasResponse.generated_text.indexOf('['),
+      ideasResponse.generated_text.lastIndexOf(']') + 1
+    );
+    const recipeIdeas: RecipeIdea[] = JSON.parse(cleanedIdeasJson);
     log.push(`Generated ${recipeIdeas.length} recipe ideas.`);
 
     // Generate full recipes for each idea
     for (const idea of recipeIdeas) {
       log.push(`Generating full recipe for: ${idea.title}`);
-      const recipePrompt = `Generate a detailed recipe for "${idea.title}" in the following JSON format:
+      const recipePrompt = `Create a detailed, professional-quality recipe for "${idea.title}" based on this description: "${idea.description}". The recipe should be suitable for a high-quality food blog. Include precise measurements, clear instructions, and consider dietary variations or substitutions where appropriate. Format the output as a JSON object with the following structure:
       {
         "title": "Recipe Title",
-        "description": "Brief description",
-        "cookingTime": 30,
+        "description": "Engaging and appetizing description",
+        "cookingTime": 30, // Total time in minutes
         "difficulty": "Easy|Medium|Hard",
         "servings": 4,
         "ingredients": [
           { "name": "Ingredient", "quantity": 1, "unit": "cup" }
         ],
         "instructions": [
-          "Step 1",
-          "Step 2"
+          "Detailed step 1",
+          "Detailed step 2"
         ],
         "nutrition": {
           "calories": 300,
@@ -62,18 +66,22 @@ export async function POST(request: Request) {
           "carbs": 30,
           "fat": 15
         },
-        "imagePrompt": "Prompt for generating an image of this recipe",
-        "imageAltText": "Alt text for the recipe image"
+        "imagePrompt": "Detailed prompt for generating an appetizing image of this recipe",
+        "imageAltText": "Descriptive alt text for the recipe image"
       }
-      ${Math.random().toString(36).substring(7)}`;
+      Ensure all fields are filled with appropriate, realistic values. ${Math.random().toString(36).substring(7)}`;
 
       const recipeResponse = await inference.textGeneration({
         model: 'meta-llama/Llama-3.1-70B-Instruct',
         inputs: recipePrompt,
-        parameters: { max_new_tokens: 1000 },
+        parameters: { max_new_tokens: 2000 },
       });
 
-      const generatedRecipe: GeneratedRecipe = JSON.parse(recipeResponse.generated_text);
+      const cleanedRecipeJson = recipeResponse.generated_text.substring(
+        recipeResponse.generated_text.indexOf('{'),
+        recipeResponse.generated_text.lastIndexOf('}') + 1
+      );
+      const generatedRecipe: GeneratedRecipe = JSON.parse(cleanedRecipeJson);
 
       // Save the recipe to the database
       log.push(`Saving recipe to database: ${generatedRecipe.title}`);
