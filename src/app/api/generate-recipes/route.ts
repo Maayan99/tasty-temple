@@ -40,7 +40,7 @@ export async function POST(request: Request) {
       ideasResponse.generated_text.indexOf('['),
       ideasResponse.generated_text.lastIndexOf(']') + 1
     );
-    console.log("Parsing: ", cleanedIdeasJson);
+    console.log("Parsing ideas JSON:", cleanedIdeasJson);
     const recipeIdeas: RecipeIdea[] = JSON.parse(cleanedIdeasJson);
     log.push(`Generated ${recipeIdeas.length} recipe ideas.`);
 
@@ -84,7 +84,7 @@ export async function POST(request: Request) {
         recipeResponse.generated_text.lastIndexOf('}') + 1
       );
 
-      console.log("Parsing: ", cleanedRecipeJson);
+      console.log("Parsing recipe JSON:", cleanedRecipeJson);
       const generatedRecipe: GeneratedRecipe = JSON.parse(cleanedRecipeJson);
 
       // Save the recipe to the database
@@ -118,6 +118,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: 'Recipes generated and saved successfully', log }, { status: 200 });
   } catch (error) {
     console.error('Error generating recipes:', error);
-    return NextResponse.json({ message: 'Error generating recipes', log, error: (error as Error).message }, { status: 500 });
+    return NextResponse.json({ message: 'Error generating recipes', log, error: (error as Error).message, stack: (error as Error).stack }, { status: 500 });
   }
 }
