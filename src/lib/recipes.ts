@@ -78,7 +78,7 @@ export async function getRecipeById(id: number): Promise<Recipe | null> {
 
   return {
     ...recipe,
-    nutrition: JSON.parse(recipe.nutrition as string),
+    nutrition: typeof recipe.nutrition == 'string' ? JSON.parse(recipe.nutrition as string) : recipe.nutrition,
     createdAt: recipe.createdAt.toISOString(),
     updatedAt: recipe.updatedAt.toISOString(),
     categories: recipe.categories.map((rc): RecipeCategory => ({
@@ -119,7 +119,7 @@ export async function getLatestRecipes(limit: number = 6): Promise<Recipe[]> {
 
   return recipes.map((recipe) => ({
     ...recipe,
-    nutrition: JSON.parse(recipe.nutrition as string),
+    nutrition: typeof recipe.nutrition == 'string' ? JSON.parse(recipe.nutrition as string) : recipe.nutrition,
     createdAt: recipe.createdAt.toISOString(),
     updatedAt: recipe.updatedAt.toISOString(),
     categories: recipe.categories.map((rc): RecipeCategory => ({
@@ -160,7 +160,7 @@ export async function getFeaturedRecipes(limit: number = 3): Promise<Recipe[]> {
 
   return recipes.map((recipe) => ({
     ...recipe,
-    nutrition: JSON.parse(recipe.nutrition as string),
+    nutrition: typeof recipe.nutrition == 'string' ? JSON.parse(recipe.nutrition as string) : recipe.nutrition,
     createdAt: recipe.createdAt.toISOString(),
     updatedAt: recipe.updatedAt.toISOString(),
     categories: recipe.categories.map((rc): RecipeCategory => ({
@@ -217,7 +217,7 @@ export async function getRelatedRecipes(recipeSlug: string, limit: number = 3): 
 
   return relatedRecipes.map((recipe) => ({
     ...recipe,
-    nutrition: JSON.parse(recipe.nutrition as string),
+    nutrition: typeof recipe.nutrition == 'string' ? JSON.parse(recipe.nutrition as string) : recipe.nutrition,
     createdAt: recipe.createdAt.toISOString(),
     updatedAt: recipe.updatedAt.toISOString(),
     categories: recipe.categories.map((rc): RecipeCategory => ({
@@ -307,7 +307,7 @@ export async function updateRecipe(id: number, data: Partial<Recipe>): Promise<R
 
   return {
     ...updatedRecipe,
-    nutrition: JSON.parse(updatedRecipe.nutrition as string),
+    nutrition: typeof recipe.nutrition == 'string' ? JSON.parse(recipe.nutrition as string) : recipe.nutrition,
     createdAt: updatedRecipe.createdAt.toISOString(),
     updatedAt: updatedRecipe.updatedAt.toISOString(),
     categories: updatedRecipe.categories.map((rc): RecipeCategory => ({
@@ -354,7 +354,7 @@ export async function searchRecipes(searchTerm: string, limit: number = 10): Pro
 
   return recipes.map((recipe) => ({
     ...recipe,
-    nutrition: JSON.parse(recipe.nutrition as string),
+    nutrition: typeof recipe.nutrition == 'string' ? JSON.parse(recipe.nutrition as string) : recipe.nutrition,
     createdAt: recipe.createdAt.toISOString(),
     updatedAt: recipe.updatedAt.toISOString(),
     categories: recipe.categories.map((rc): RecipeCategory => ({
