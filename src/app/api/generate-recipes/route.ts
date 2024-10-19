@@ -40,6 +40,7 @@ export async function POST(request: Request) {
       ideasResponse.generated_text.indexOf('['),
       ideasResponse.generated_text.lastIndexOf(']') + 1
     );
+    console.log("Parsing: ", cleanedIdeasJson)
     const recipeIdeas: RecipeIdea[] = JSON.parse(cleanedIdeasJson);
     log.push(`Generated ${recipeIdeas.length} recipe ideas.`);
 
@@ -81,6 +82,8 @@ export async function POST(request: Request) {
         recipeResponse.generated_text.indexOf('{'),
         recipeResponse.generated_text.lastIndexOf('}') + 1
       );
+
+      console.log("Parsing: ", cleanedRecipeJson)
       const generatedRecipe: GeneratedRecipe = JSON.parse(cleanedRecipeJson);
 
       // Save the recipe to the database
