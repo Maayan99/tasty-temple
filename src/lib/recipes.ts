@@ -25,6 +25,8 @@ export async function getRecipeById(id: number): Promise<Recipe | null> {
   return {
     ...recipe,
     nutrition: JSON.parse(recipe.nutrition as string),
+    createdAt: recipe.createdAt.toISOString(),
+    updatedAt: recipe.updatedAt.toISOString(),
   } as Recipe;
 }
 
@@ -65,5 +67,7 @@ export async function getRelatedRecipes(recipeId: number, limit: number = 3): Pr
   return relatedRecipes.map((recipe) => ({
     ...recipe,
     nutrition: JSON.parse(recipe.nutrition as string),
+    createdAt: recipe.createdAt.toISOString(),
+    updatedAt: recipe.updatedAt.toISOString(),
   })) as Recipe[];
 }
