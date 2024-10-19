@@ -70,9 +70,12 @@ export async function POST(request: Request) {
     for (const recipe of generatedRecipes) {
       // Generate all images simultaneously
       const imagePromises = [
-        generateImage(recipe.imagePrompt),
-        ...recipe.blogImagePrompts?.map((prompt: any) => generateImage(prompt.prompt))
-      ];
+  generateImage(recipe.imagePrompt),
+  ...(Array.isArray(recipe.blogImagePrompts)
+    ? recipe.blogImagePrompts.map((prompt: any) => generateImage(prompt.prompt))
+    : [])
+];
+
 
       const generatedImages = await Promise.all(imagePromises);
 
