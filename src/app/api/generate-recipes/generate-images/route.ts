@@ -75,7 +75,7 @@ export async function POST(request: Request) {
       console.log("About to save: ", comments);
 
       // Save the recipe to the database
-      const savedRecipe = await prisma.recipe.create({
+      const savedRecipe = await prisma.Recipe.create({
         data: {
           title: recipe.title,
           slug: slugify(recipe.title, { lower: true, strict: true }),
