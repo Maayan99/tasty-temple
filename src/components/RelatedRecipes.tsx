@@ -8,11 +8,11 @@ import { Recipe } from '@/types/recipe';
 import { useRelatedRecipes } from '@/hooks/useRelatedRecipes';
 
 interface RelatedRecipesProps {
-  recipeId: number;
+  recipeSlug: string;
 }
 
-const RelatedRecipes: React.FC<RelatedRecipesProps> = ({ recipeId }) => {
-  const { relatedRecipes, isLoading, error } = useRelatedRecipes(recipeId);
+const RelatedRecipes: React.FC<RelatedRecipesProps> = ({ recipeSlug }) => {
+  const { relatedRecipes, isLoading, error } = useRelatedRecipes(recipeSlug);
 
   if (isLoading) return <div>Loading related recipes...</div>;
   if (error) return <div>Error loading related recipes</div>;

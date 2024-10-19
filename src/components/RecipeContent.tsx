@@ -81,7 +81,7 @@ const RecipeContent: React.FC<RecipeContentProps> = ({ recipe }) => {
               ))}
             </ul>
           </motion.div>
-          <RelatedRecipes recipeId={recipe.id} />
+          <RelatedRecipes recipeSlug={recipe.slug} />
         </div>
       </div>
       <CommentSection recipeId={recipe.id} />
