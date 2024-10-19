@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { HfInference } from "@huggingface/inference";
 import { PrismaClient } from '@prisma/client';
 import slugify from 'slugify';
+import { uploadToB2 } from '@/lib/b2';
 
 const inference = new HfInference(process.env.HUGGINGFACE_API_KEY);
 const prisma = new PrismaClient();
@@ -133,7 +134,11 @@ export async function POST(request: Request) {
         log.push(`Generating image for: ${generatedRecipe.title}`);
         const imageBlob = await generateImage(generatedRecipe.imagePrompt);
         const imageBuffer = Buffer.from(await imageBlob.arrayBuffer());
-        const imageBase64 = imageBuffer.toString('base64');
+        
+        // Upload image to B2
+        const imageKey = `recipes/${slugify(generatedRecipe.title, { lower: true, strict: true })}-${Date.now()}.png`;
+        const imageUrl = await uploadToB2(imageBuffer, imageKey);
+        log.push(`Image uploaded to B2: ${imageUrl}`);
 
         // Save the recipe to the database
         log.push(`Saving recipe to database: ${generatedRecipe.title}`);
@@ -145,12 +150,12 @@ export async function POST(request: Request) {
             cookingTime: generatedRecipe.cookingTime,
             difficulty: generatedRecipe.difficulty,
             servings: generatedRecipe.servings,
-            imageUrl: `data:image/png;base64,${imageBase64}`, // Store image as base64 for now
+            imageUrl: imageUrl,
             instructions: generatedRecipe.instructions.join('\n'),
             nutrition: JSON.stringify(generatedRecipe.nutrition),
             ingredients: {
               create: generatedRecipe.ingredients.map(ing => ({
-                quantity: parseInt(ing.quantity),
+                quantity: parseFloat(ing.quantity),
                 ingredient: {
                   connectOrCreate: {
                     where: { name: ing.name },
