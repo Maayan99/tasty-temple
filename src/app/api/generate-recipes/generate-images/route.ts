@@ -128,7 +128,7 @@ export async function POST(request: Request) {
           servings: recipe.servings,
           imageUrl: mainImageUrl,
           instructions: recipe.instructions.join('\n'),
-          nutrition: recipe.nutrition,
+          nutrition: recipe.nutrition || {},
           blogContent: rewrittenBlogContent,
           blogImages: {
             create: blogImages
