@@ -47,7 +47,7 @@ export interface Comment {
   id: number;
   content: string;
   user: string;
-  createdAt: string;
+  createdAt: string | Date;
 }
 
 export interface BlogImage {
