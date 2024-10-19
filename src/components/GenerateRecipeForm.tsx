@@ -38,6 +38,8 @@ const GenerateRecipeForm: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [backloggedDirections, setBackloggedDirections] = useState<string[]>([]);
   const [isProcessingBacklog, setIsProcessingBacklog] = useState(false);
+  const [currentDirection, setCurrentDirection] = useState('');
+  const [currentStepDescription, setCurrentStepDescription] = useState('');
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -78,7 +80,7 @@ const GenerateRecipeForm: React.FC = () => {
       if (isBulkGeneration) {
         setBackloggedDirections(directions);
         setIsProcessingBacklog(true);
-        setGenerationLog([...generationLog, 'Backlogged directions added to queue']);
+        setGenerationLog([...generationLog, `Added ${directions.length} directions to the backlog`]);
       } else {
         await processDirection(directions[0]);
       }
@@ -92,11 +94,15 @@ const GenerateRecipeForm: React.FC = () => {
   const processNextBackloggedDirection = async () => {
     if (backloggedDirections.length > 0) {
       const nextDirection = backloggedDirections[0];
+      setCurrentDirection(nextDirection);
+      setCurrentStepDescription('Generating recipe ideas');
       await processDirection(nextDirection);
       setBackloggedDirections(backloggedDirections.slice(1));
     } else {
       setIsProcessingBacklog(false);
       setGenerationLog([...generationLog, 'All backlogged directions processed']);
+      setCurrentDirection('');
+      setCurrentStepDescription('');
     }
   };
 
@@ -118,6 +124,7 @@ const GenerateRecipeForm: React.FC = () => {
       setGenerationLog([...generationLog, `Generated ideas for: ${dir}`]);
       setCurrentStep(1);
       setTimer(8);
+      setCurrentStepDescription('Selecting recipe ideas');
     } catch (err) {
       setError(`Error generating recipe ideas for: ${dir}. Please try again.`);
     }
@@ -149,7 +156,8 @@ const GenerateRecipeForm: React.FC = () => {
   const handleGenerateFullRecipes = async () => {
     setIsLoading(true);
     setError('');
-    setGenerationLog([]);
+    setGenerationLog([...generationLog, 'Generating full recipes']);
+    setCurrentStepDescription('Generating full recipes');
 
     try {
       const selectedRecipeIdeas = recipeIdeas.filter((_, index) => selectedIdeas.includes(index));
@@ -170,6 +178,7 @@ const GenerateRecipeForm: React.FC = () => {
       setGenerationLog([...generationLog, 'Full recipes generated']);
       setCurrentStep(2);
       setTimer(8);
+      setCurrentStepDescription('Selecting recipes to publish');
     } catch (err) {
       setError('Error generating full recipes. Please try again.');
     } finally {
@@ -186,7 +195,8 @@ const GenerateRecipeForm: React.FC = () => {
   const handlePublishRecipes = async () => {
     setIsLoading(true);
     setError('');
-    setGenerationLog([]);
+    setGenerationLog([...generationLog, 'Publishing recipes']);
+    setCurrentStepDescription('Publishing recipes');
 
     try {
       const selectedRecipesToPublish = generatedRecipes.filter((_, index) => selectedRecipes.includes(index));
@@ -210,6 +220,7 @@ const GenerateRecipeForm: React.FC = () => {
       setSelectedRecipes([]);
       setCurrentStep(0);
       setTimer(8);
+      setCurrentStepDescription('');
 
       if (isProcessingBacklog) {
         processNextBackloggedDirection();
@@ -281,6 +292,22 @@ const GenerateRecipeForm: React.FC = () => {
           {error}
         </motion.p>
       )}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-lg shadow-inner mb-8"
+      >
+        <h2 className="text-2xl font-bold mb-4 text-gray-800">Backlog Status:</h2>
+        <p>Backlogged Directions: {backloggedDirections.length}</p>
+        <p>Current Direction: {currentDirection || 'None'}</p>
+        <p>Current Step: {currentStepDescription || 'None'}</p>
+        <h3 className="text-xl font-semibold mt-4 mb-2">Backlogged Directions:</h3>
+        <ul className="list-disc pl-5">
+          {backloggedDirections.map((dir, index) => (
+            <li key={index} className={index === 0 ? 'font-bold' : ''}>{dir}</li>
+          ))}
+        </ul>
+      </motion.div>
       {recipeIdeas.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
