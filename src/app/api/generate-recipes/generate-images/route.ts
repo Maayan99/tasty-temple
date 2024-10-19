@@ -31,33 +31,30 @@ export async function POST(request: Request) {
     const publishedRecipes = [];
 
     for (const recipe of generatedRecipes) {
-      // Generate main recipe image
-      const mainImageBlob = await generateImage(recipe.imagePrompt);
-      const mainImageBuffer = Buffer.from(await mainImageBlob.arrayBuffer());
-      
+      // Generate all images simultaneously
+      const imagePromises = [
+        generateImage(recipe.imagePrompt),
+        ...recipe.blogImagePrompts.map((prompt: { prompt: string }) => generateImage(prompt.prompt))
+      ];
+
+      const generatedImages = await Promise.all(imagePromises);
+
       // Upload main image to B2
-      console.log("Slugifying main image: ", recipe.title)
+      const mainImageBuffer = Buffer.from(await generatedImages[0].arrayBuffer());
       const mainImageKey = `recipes/${slugify(recipe.title, { lower: true, strict: true })}-main-${Date.now()}.png`;
       const mainImageUrl = await uploadToB2(mainImageBuffer, mainImageKey);
-      console.log("Main image url: ", mainImageUrl);
 
-      // Generate and upload blog images
+      // Upload blog images to B2
       const blogImages = [];
-      if (recipe.blogImagePrompts) {
-        for (let i = 0; i < recipe.blogImagePrompts.length; i++) {
-          const imagePrompt = recipe.blogImagePrompts[i];
-          const blogImageBlob = await generateImage(imagePrompt.prompt);
-          const blogImageBuffer = Buffer.from(await blogImageBlob.arrayBuffer());
+      for (let i = 0; i < recipe.blogImagePrompts.length; i++) {
+        const blogImageBuffer = Buffer.from(await generatedImages[i + 1].arrayBuffer());
+        const blogImageKey = `recipes/${slugify(recipe.title, { lower: true, strict: true })}-blog-${i + 1}-${Date.now()}.png`;
+        const blogImageUrl = await uploadToB2(blogImageBuffer, blogImageKey);
 
-          console.log("Slugifying blog image ", i, recipe.title)
-          const blogImageKey = `recipes/${slugify(recipe.title, { lower: true, strict: true })}-blog-${i + 1}-${Date.now()}.png`;
-          const blogImageUrl = await uploadToB2(blogImageBuffer, blogImageKey);
-
-          blogImages.push({
-            imageUrl: blogImageUrl,
-            altText: imagePrompt.altText
-          });
-        }
+        blogImages.push({
+          imageUrl: blogImageUrl,
+          altText: recipe.blogImagePrompts[i].altText
+        });
       }
 
       // Generate random comments
