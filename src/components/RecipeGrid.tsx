@@ -17,7 +17,7 @@ const RecipeGrid: React.FC<RecipeGridProps> = ({ initialRecipes }) => {
   const searchParams = useSearchParams();
   const searchTerm = searchParams.get('search') || '';
 
-  const { recipes: searchedRecipes, isLoading, error } = useRecipes(12, 'search', searchTerm);
+  const { recipes: searchedRecipes, isLoading, error } = useRecipes(12, searchTerm ? 'search' : 'latest', searchTerm);
 
   useEffect(() => {
     if (searchTerm) {

@@ -20,8 +20,11 @@ export function useRecipes(limit: number, type: RecipeType, searchTerm?: string)
           fetchedRecipes = await getFeaturedRecipes(limit);
         } else if (type === 'search' && searchTerm) {
           fetchedRecipes = await searchRecipes(searchTerm, limit);
+        } else if (type === 'trending') {
+          // For now, we'll use featured recipes as trending
+          fetchedRecipes = await getFeaturedRecipes(limit);
         } else {
-          throw new Error('Invalid recipe type or missing search term');
+          fetchedRecipes = [];
         }
         setRecipes(fetchedRecipes);
         setIsLoading(false);
