@@ -43,6 +43,33 @@ async function generateImage(prompt: string): Promise<Blob> {
   return await response.blob();
 }
 
+async function parseJSON(content: string, retryCount: number = 0): Promise<any> {
+  try {
+    return JSON.parse(content);
+  } catch (error) {
+    if (retryCount >= 2) {
+      throw error;
+    }
+    
+    const errorMessage = (error as Error).message;
+    const match = errorMessage.match(/position (\d+)/);
+    const position = match ? parseInt(match[1]) : null;
+
+    const fixPrompt = `The following JSON has an error ${position ? `at position ${position}` : ''}. Please fix and rewrite the entire JSON correctly:\n\n${content}`;
+
+    let fixedContent = '';
+    for await (const chunk of inference.chatCompletionStream({
+      model: 'meta-llama/Llama-3.1-70B-Instruct',
+      messages: [{ role: 'user', content: fixPrompt }],
+      max_tokens: 7000,
+    })) {
+      fixedContent += chunk.choices[0]?.delta?.content || '';
+    }
+
+    return parseJSON(fixedContent, retryCount + 1);
+  }
+}
+
 export async function POST(request: Request) {
   const { direction } = await request.json();
   const log: string[] = [];
@@ -72,7 +99,7 @@ export async function POST(request: Request) {
 
     let recipeIdeas: RecipeIdea[];
     try {
-      recipeIdeas = JSON.parse(cleanedIdeasJson);
+      recipeIdeas = await parseJSON(cleanedIdeasJson);
     } catch (parseError) {
       console.error('Error parsing ideas JSON:', parseError);
       throw new Error(`Failed to parse ideas JSON: ${(parseError as Error).message}`);
@@ -138,7 +165,7 @@ export async function POST(request: Request) {
 
       let generatedRecipe: GeneratedRecipe;
       try {
-        generatedRecipe = JSON.parse(cleanedRecipeJson);
+        generatedRecipe = await parseJSON(cleanedRecipeJson);
 
         // Generate main recipe image
         log.push(`Generating main image for: ${generatedRecipe.title}`);
