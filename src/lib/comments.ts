@@ -7,7 +7,7 @@ export async function generateRandomComments(recipe: GeneratedRecipe): Promise<{
   const commentCount = Math.floor(Math.random() * 5) + 3; // Random number between 3 and 7
   const comments = [];
 
-  const commentPrompt = `Generate ${commentCount} unique, engaging, and mostly positive comments for a recipe titled "${recipe.title}" with the following blog "${recipe.blog}". The comments should be relevant to the recipe and reflect different aspects such as taste, ease of preparation, or personal experiences. Each comment should be concise, about 1-2 sentences long. Format the output as a JSON array of this format:
+  const commentPrompt = `Generate ${commentCount} unique, engaging, and mostly positive comments for a recipe titled "${recipe.title}" with the following blog . The comments should be relevant to the recipe and reflect different aspects such as taste, ease of preparation, or personal experiences. Each comment should be concise, about 1-2 sentences long. Format the output as a JSON array of this format:
   {
     "content": "Comment content",
     "name": "Random name",
