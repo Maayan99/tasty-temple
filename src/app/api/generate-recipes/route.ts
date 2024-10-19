@@ -40,7 +40,7 @@ export async function POST(request: Request) {
       ideasResponse.generated_text.indexOf('['),
       ideasResponse.generated_text.lastIndexOf(']') + 1
     );
-    console.log("Parsing: ", cleanedIdeasJson)
+    console.log("Parsing: ", cleanedIdeasJson);
     const recipeIdeas: RecipeIdea[] = JSON.parse(cleanedIdeasJson);
     log.push(`Generated ${recipeIdeas.length} recipe ideas.`);
 
@@ -51,7 +51,7 @@ export async function POST(request: Request) {
       {
         "title": "Recipe Title",
         "description": "Engaging and appetizing description",
-        "cookingTime": 30, // Total time in minutes
+        "cookingTime": 30,
         "difficulty": "Easy|Medium|Hard",
         "servings": 4,
         "ingredients": [
@@ -70,7 +70,7 @@ export async function POST(request: Request) {
         "imagePrompt": "Detailed prompt for generating an appetizing image of this recipe",
         "imageAltText": "Descriptive alt text for the recipe image"
       }
-      <CRITICAL> Make sure to write it out in the exact JSON format, and with properly escaped strings, since your respnse will be programatically parsed </CRITICAL>
+      <CRITICAL> Make sure to write it out in the exact JSON format, and with properly escaped strings, since your response will be programatically parsed </CRITICAL>
       Ensure all fields are filled with appropriate, realistic values. ${Math.random().toString(36).substring(7)}`;
 
       const recipeResponse = await inference.textGeneration({
@@ -84,7 +84,7 @@ export async function POST(request: Request) {
         recipeResponse.generated_text.lastIndexOf('}') + 1
       );
 
-      console.log("Parsing: ", cleanedRecipeJson)
+      console.log("Parsing: ", cleanedRecipeJson);
       const generatedRecipe: GeneratedRecipe = JSON.parse(cleanedRecipeJson);
 
       // Save the recipe to the database
@@ -118,6 +118,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: 'Recipes generated and saved successfully', log }, { status: 200 });
   } catch (error) {
     console.error('Error generating recipes:', error);
-    return NextResponse.json({ message: 'Error generating recipes', log }, { status: 500 });
+    return NextResponse.json({ message: 'Error generating recipes', log, error: (error as Error).message }, { status: 500 });
   }
 }
