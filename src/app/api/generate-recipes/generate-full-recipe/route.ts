@@ -83,7 +83,7 @@ export async function POST(request: Request) {
         recipeContent.lastIndexOf('}') + 1
       );
 
-      const generatedRecipe = parseJSON(cleanedRecipeJson);
+      const generatedRecipe = await parseJSON(cleanedRecipeJson);
 
 
       console.log("Generated recipe: ", generatedRecipe);
