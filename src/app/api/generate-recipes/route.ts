@@ -71,7 +71,7 @@ export async function POST(request: Request) {
         "difficulty": "Easy|Medium|Hard",
         "servings": 4,
         "ingredients": [
-          { "name": "Ingredient", "quantity": "1", "unit": "cup" }
+          { "name": "Ingredient", "quantity": 1, "unit": "cup" }
         ],
         "instructions": [
           "Detailed step 1",
@@ -86,7 +86,7 @@ export async function POST(request: Request) {
         "imagePrompt": "Detailed prompt for generating an appetizing image of this recipe",
         "imageAltText": "Descriptive alt text for the recipe image"
       }
-      <CRITICAL> Make sure to adbide by the JSON format specified and provide a valid JSON object, as your response will be programatically analyzed </CRITICAL>
+      <CRITICAL> Make sure to abide by the JSON format specified and provide a valid JSON object, as your response will be programmatically analyzed </CRITICAL>
       Ensure all fields are filled with appropriate, realistic values.`;
 
       let recipeContent = '';
@@ -113,36 +113,38 @@ export async function POST(request: Request) {
       try {
         generatedRecipe = JSON.parse(cleanedRecipeJson);
 
-      // Save the recipe to the database
-      log.push(`Saving recipe to database: ${generatedRecipe.title}`);
-      await prisma.recipe.create({
-        data: {
-          title: generatedRecipe.title,
-          slug: slugify(generatedRecipe.title, { lower: true, strict: true }),
-          description: generatedRecipe.description,
-          cookingTime: generatedRecipe.cookingTime,
-          difficulty: generatedRecipe.difficulty,
-          servings: generatedRecipe.servings,
-          imageUrl: '', // We'll update this later when we implement image generation
-          instructions: generatedRecipe.instructions.join('\n'),
-          nutrition: JSON.stringify(generatedRecipe.nutrition),
-          ingredients: {
-            create: generatedRecipe.ingredients.map(ing => ({
-              quantity: ing.quantity,
-              ingredient: {
-                connectOrCreate: {
-                  where: { name: ing.name },
-                  create: { name: ing.name, unit: ing.unit },
+        // Save the recipe to the database
+        log.push(`Saving recipe to database: ${generatedRecipe.title}`);
+        await prisma.recipe.create({
+          data: {
+            title: generatedRecipe.title,
+            slug: slugify(generatedRecipe.title, { lower: true, strict: true }),
+            description: generatedRecipe.description,
+            cookingTime: generatedRecipe.cookingTime,
+            difficulty: generatedRecipe.difficulty,
+            servings: generatedRecipe.servings,
+            imageUrl: '', // We'll update this later when we implement image generation
+            instructions: generatedRecipe.instructions.join('\n'),
+            nutrition: JSON.stringify(generatedRecipe.nutrition),
+            ingredients: {
+              create: generatedRecipe.ingredients.map(ing => ({
+                quantity: ing.quantity,
+                ingredient: {
+                  connectOrCreate: {
+                    where: { name: ing.name },
+                    create: { name: ing.name, unit: ing.unit },
+                  },
                 },
-              },
-            })),
+              })),
+            },
           },
-        },
-      });
-      log.push(`Recipe saved successfully: ${generatedRecipe.title}`);
+        });
+        log.push(`Recipe saved successfully: ${generatedRecipe.title}`);
       } catch (parseError) {
         console.error('Error parsing recipe JSON:', parseError);
-        // throw new Error(`Failed to parse recipe JSON: ${(parseError as Error).message}`);
+        log.push(`Error parsing recipe JSON for ${idea.title}: ${(parseError as Error).message}`);
+        // Continue to the next recipe instead of throwing an error
+        continue;
       }
     }
 
