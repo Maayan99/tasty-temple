@@ -40,8 +40,15 @@ export async function POST(request: Request) {
       ideasResponse.generated_text.indexOf('['),
       ideasResponse.generated_text.lastIndexOf(']') + 1
     );
-    console.log("Parsing ideas JSON:", cleanedIdeasJson);
-    const recipeIdeas: RecipeIdea[] = JSON.parse(cleanedIdeasJson);
+    console.log("Raw ideas response:", ideasResponse.generated_text);
+    console.log("Cleaned ideas JSON:", cleanedIdeasJson);
+    let recipeIdeas: RecipeIdea[];
+    try {
+      recipeIdeas = JSON.parse(cleanedIdeasJson);
+    } catch (parseError) {
+      console.error("Error parsing ideas JSON:", parseError);
+      throw new Error(`Failed to parse ideas JSON: ${(parseError as Error).message}`);
+    }
     log.push(`Generated ${recipeIdeas.length} recipe ideas.`);
 
     // Generate full recipes for each idea
@@ -84,8 +91,15 @@ export async function POST(request: Request) {
         recipeResponse.generated_text.lastIndexOf('}') + 1
       );
 
-      console.log("Parsing recipe JSON:", cleanedRecipeJson);
-      const generatedRecipe: GeneratedRecipe = JSON.parse(cleanedRecipeJson);
+      console.log("Raw recipe response:", recipeResponse.generated_text);
+      console.log("Cleaned recipe JSON:", cleanedRecipeJson);
+      let generatedRecipe: GeneratedRecipe;
+      try {
+        generatedRecipe = JSON.parse(cleanedRecipeJson);
+      } catch (parseError) {
+        console.error("Error parsing recipe JSON:", parseError);
+        throw new Error(`Failed to parse recipe JSON: ${(parseError as Error).message}`);
+      }
 
       // Save the recipe to the database
       log.push(`Saving recipe to database: ${generatedRecipe.title}`);
@@ -118,6 +132,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: 'Recipes generated and saved successfully', log }, { status: 200 });
   } catch (error) {
     console.error('Error generating recipes:', error);
-    return NextResponse.json({ message: 'Error generating recipes', log, error: (error as Error).message, stack: (error as Error).stack }, { status: 500 });
+    return NextResponse.json({
+      message: 'Error generating recipes',
+      log,
+      error: (error as Error).message,
+      stack: (error as Error).stack,
+      rawError: JSON.stringify(error, Object.getOwnPropertyNames(error))
+    }, { status: 500 });
   }
 }
