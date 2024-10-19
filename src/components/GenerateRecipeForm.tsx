@@ -286,6 +286,7 @@ const GenerateRecipeForm: React.FC = () => {
                 <div>
                   <h3 className="text-lg font-semibold text-gray-800">{recipe.title}</h3>
                   <p className="text-gray-600">{recipe.description}</p>
+                  <p className="text-sm text-gray-500">{recipe.cookingTime} mins | {recipe.difficulty} | Serves {recipe.servings}</p>
                 </div>
               </motion.li>
             ))}
