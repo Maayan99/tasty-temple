@@ -2,7 +2,16 @@ import { PrismaClient } from '@prisma/client';
 import { Recipe, Category, RecipeCategory } from '@/types/recipe';
 import { deleteImageFromB2 } from '@/lib/b2';
 
-const prisma = new PrismaClient();
+let prisma: PrismaClient;
+
+if (process.env.NODE_ENV === 'production') {
+  prisma = new PrismaClient();
+} else {
+  if (!global.prisma) {
+    global.prisma = new PrismaClient();
+  }
+  prisma = global.prisma;
+}
 
 export async function getRecipeBySlug(slug: string): Promise<Recipe | null> {
   const recipe = await prisma.recipe.findUnique({
