@@ -17,6 +17,7 @@ export async function getRecipeBySlug(slug: string): Promise<Recipe | null> {
           category: true,
         },
       },
+      blogImages: true,
     },
   });
 
@@ -34,6 +35,11 @@ export async function getRecipeBySlug(slug: string): Promise<Recipe | null> {
         slug: rc.category.name.toLowerCase().replace(/ /g, '-'),
         recipeCount: 0, // You might want to fetch this separately if needed
       },
+    })),
+    blogImages: recipe.blogImages.map((image) => ({
+      id: image.id,
+      imageUrl: image.imageUrl,
+      altText: image.altText,
     })),
   } as Recipe;
 }
@@ -53,6 +59,7 @@ export async function getLatestRecipes(limit: number = 6): Promise<Recipe[]> {
           category: true,
         },
       },
+      blogImages: true,
     },
   });
 
@@ -68,6 +75,11 @@ export async function getLatestRecipes(limit: number = 6): Promise<Recipe[]> {
         slug: rc.category.name.toLowerCase().replace(/ /g, '-'),
         recipeCount: 0, // You might want to fetch this separately if needed
       },
+    })),
+    blogImages: recipe.blogImages.map((image) => ({
+      id: image.id,
+      imageUrl: image.imageUrl,
+      altText: image.altText,
     })),
   })) as Recipe[];
 }
@@ -92,6 +104,7 @@ export async function getTrendingRecipes(limit: number = 3): Promise<Recipe[]> {
           category: true,
         },
       },
+      blogImages: true,
     },
   });
 
@@ -107,6 +120,11 @@ export async function getTrendingRecipes(limit: number = 3): Promise<Recipe[]> {
         slug: rc.category.name.toLowerCase().replace(/ /g, '-'),
         recipeCount: 0, // You might want to fetch this separately if needed
       },
+    })),
+    blogImages: recipe.blogImages.map((image) => ({
+      id: image.id,
+      imageUrl: image.imageUrl,
+      altText: image.altText,
     })),
   })) as Recipe[];
 }
@@ -141,6 +159,7 @@ export async function getRelatedRecipes(recipeSlug: string, limit: number = 3): 
           category: true,
         },
       },
+      blogImages: true,
     },
     take: limit,
   });
@@ -157,6 +176,11 @@ export async function getRelatedRecipes(recipeSlug: string, limit: number = 3): 
         slug: rc.category.name.toLowerCase().replace(/ /g, '-'),
         recipeCount: 0, // You might want to fetch this separately if needed
       },
+    })),
+    blogImages: recipe.blogImages.map((image) => ({
+      id: image.id,
+      imageUrl: image.imageUrl,
+      altText: image.altText,
     })),
   })) as Recipe[];
 }
