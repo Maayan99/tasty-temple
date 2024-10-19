@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { Recipe, Category } from '@/types/recipe';
+import { Recipe, Category, RecipeCategory } from '@/types/recipe';
 
 const prisma = new PrismaClient();
 
@@ -27,6 +27,14 @@ export async function getRecipeBySlug(slug: string): Promise<Recipe | null> {
     nutrition: JSON.parse(recipe.nutrition as string),
     createdAt: recipe.createdAt.toISOString(),
     updatedAt: recipe.updatedAt.toISOString(),
+    categories: recipe.categories.map((rc): RecipeCategory => ({
+      id: rc.id,
+      category: {
+        ...rc.category,
+        slug: rc.category.name.toLowerCase().replace(/ /g, '-'),
+        recipeCount: 0, // You might want to fetch this separately if needed
+      },
+    })),
   } as Recipe;
 }
 
@@ -53,6 +61,14 @@ export async function getLatestRecipes(limit: number = 6): Promise<Recipe[]> {
     nutrition: JSON.parse(recipe.nutrition as string),
     createdAt: recipe.createdAt.toISOString(),
     updatedAt: recipe.updatedAt.toISOString(),
+    categories: recipe.categories.map((rc): RecipeCategory => ({
+      id: rc.id,
+      category: {
+        ...rc.category,
+        slug: rc.category.name.toLowerCase().replace(/ /g, '-'),
+        recipeCount: 0, // You might want to fetch this separately if needed
+      },
+    })),
   })) as Recipe[];
 }
 
@@ -84,6 +100,14 @@ export async function getTrendingRecipes(limit: number = 3): Promise<Recipe[]> {
     nutrition: JSON.parse(recipe.nutrition as string),
     createdAt: recipe.createdAt.toISOString(),
     updatedAt: recipe.updatedAt.toISOString(),
+    categories: recipe.categories.map((rc): RecipeCategory => ({
+      id: rc.id,
+      category: {
+        ...rc.category,
+        slug: rc.category.name.toLowerCase().replace(/ /g, '-'),
+        recipeCount: 0, // You might want to fetch this separately if needed
+      },
+    })),
   })) as Recipe[];
 }
 
@@ -126,6 +150,14 @@ export async function getRelatedRecipes(recipeSlug: string, limit: number = 3): 
     nutrition: JSON.parse(recipe.nutrition as string),
     createdAt: recipe.createdAt.toISOString(),
     updatedAt: recipe.updatedAt.toISOString(),
+    categories: recipe.categories.map((rc): RecipeCategory => ({
+      id: rc.id,
+      category: {
+        ...rc.category,
+        slug: rc.category.name.toLowerCase().replace(/ /g, '-'),
+        recipeCount: 0, // You might want to fetch this separately if needed
+      },
+    })),
   })) as Recipe[];
 }
 
