@@ -36,6 +36,8 @@ const GenerateRecipeForm: React.FC = () => {
   const [selectedRecipes, setSelectedRecipes] = useState<number[]>([]);
   const [timer, setTimer] = useState(8);
   const [currentStep, setCurrentStep] = useState(0);
+  const [backloggedDirections, setBackloggedDirections] = useState<string[]>([]);
+  const [isProcessingBacklog, setIsProcessingBacklog] = useState(false);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -48,6 +50,12 @@ const GenerateRecipeForm: React.FC = () => {
     }
     return () => clearInterval(interval);
   }, [timer, currentStep]);
+
+  useEffect(() => {
+    if (isProcessingBacklog && backloggedDirections.length > 0) {
+      processNextBackloggedDirection();
+    }
+  }, [isProcessingBacklog, backloggedDirections]);
 
   const handleAutoProgress = () => {
     if (currentStep === 1) {
@@ -67,31 +75,51 @@ const GenerateRecipeForm: React.FC = () => {
     try {
       const directions = isBulkGeneration ? direction.split('\n').filter(d => d.trim() !== '') : [direction];
 
-      const generatePromises = directions.map(async (dir) => {
-        const response = await fetch('/api/generate-recipes/start', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ direction: dir }),
-        });
+      if (isBulkGeneration) {
+        setBackloggedDirections(directions);
+        setIsProcessingBacklog(true);
+        setGenerationLog([...generationLog, 'Backlogged directions added to queue']);
+      } else {
+        await processDirection(directions[0]);
+      }
+    } catch (err) {
+      setError('Error processing directions. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-        if (!response.ok) {
-          throw new Error(`Failed to generate recipe ideas for: ${dir}`);
-        }
+  const processNextBackloggedDirection = async () => {
+    if (backloggedDirections.length > 0) {
+      const nextDirection = backloggedDirections[0];
+      await processDirection(nextDirection);
+      setBackloggedDirections(backloggedDirections.slice(1));
+    } else {
+      setIsProcessingBacklog(false);
+      setGenerationLog([...generationLog, 'All backlogged directions processed']);
+    }
+  };
 
-        return response.json();
+  const processDirection = async (dir: string) => {
+    try {
+      const response = await fetch('/api/generate-recipes/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ direction: dir }),
       });
 
-      const results = await Promise.all(generatePromises);
-      const allIdeas = results.flatMap(r => r.recipeIdeas);
-      setRecipeIdeas(allIdeas);
-      setSelectedIdeas(allIdeas.map((_, index) => index));
-      setGenerationLog(allIdeas.map((idea: RecipeIdea) => `Generated idea: ${idea.title}`));
+      if (!response.ok) {
+        throw new Error(`Failed to generate recipe ideas for: ${dir}`);
+      }
+
+      const result = await response.json();
+      setRecipeIdeas(result.recipeIdeas);
+      setSelectedIdeas(result.recipeIdeas.map((_: any, index: number) => index));
+      setGenerationLog([...generationLog, `Generated ideas for: ${dir}`]);
       setCurrentStep(1);
       setTimer(8);
     } catch (err) {
-      setError('Error generating recipe ideas. Please try again.');
-    } finally {
-      setIsLoading(false);
+      setError(`Error generating recipe ideas for: ${dir}. Please try again.`);
     }
   };
 
@@ -182,6 +210,10 @@ const GenerateRecipeForm: React.FC = () => {
       setSelectedRecipes([]);
       setCurrentStep(0);
       setTimer(8);
+
+      if (isProcessingBacklog) {
+        processNextBackloggedDirection();
+      }
     } catch (err) {
       setError('Error publishing recipes. Please try again.');
     } finally {
@@ -236,7 +268,7 @@ const GenerateRecipeForm: React.FC = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            {isLoading ? 'Generating Ideas...' : 'Generate Recipe Ideas'}
+            {isLoading ? 'Processing...' : isBulkGeneration ? 'Add to Backlog' : 'Generate Recipe Ideas'}
           </motion.button>
         </div>
       </form>
