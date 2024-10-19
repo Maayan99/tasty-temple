@@ -16,20 +16,20 @@ const GenerateRecipeForm: React.FC = () => {
     setGenerationLog([]);
 
     try {
-      const response = await fetch('/api/generate-recipes', {
+      const response = await fetch('/api/generate-recipes/start', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ direction }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate recipes');
+        throw new Error('Failed to start recipe generation');
       }
 
       const data = await response.json();
-      setGenerationLog(data.log);
+      setGenerationLog(['Recipe generation started. This process will continue in the background.']);
     } catch (err) {
-      setError('Error generating recipes. Please try again.');
+      setError('Error starting recipe generation. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -60,7 +60,7 @@ const GenerateRecipeForm: React.FC = () => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          {isLoading ? 'Generating...' : 'Generate Recipes'}
+          {isLoading ? 'Starting Generation...' : 'Generate Recipes'}
         </motion.button>
       </form>
       {error && (
