@@ -54,10 +54,10 @@ const GenerateRecipeForm: React.FC = () => {
   }, [timer, currentStep]);
 
   useEffect(() => {
-    if (isProcessingBacklog && backloggedDirections.length > 0) {
+    if (isProcessingBacklog && backloggedDirections.length > 0 && !isLoading) {
       processNextBackloggedDirection();
     }
-  }, [isProcessingBacklog, backloggedDirections]);
+  }, [isProcessingBacklog, backloggedDirections, isLoading]);
 
   const handleAutoProgress = () => {
     if (currentStep === 1) {
@@ -92,12 +92,11 @@ const GenerateRecipeForm: React.FC = () => {
   };
 
   const processNextBackloggedDirection = async () => {
-    if (backloggedDirections.length > 0) {
+    if (backloggedDirections.length > 0 && !isLoading) {
       const nextDirection = backloggedDirections[0];
       setCurrentDirection(nextDirection);
       setCurrentStepDescription('Generating recipe ideas');
       await processDirection(nextDirection);
-      setBackloggedDirections(backloggedDirections.slice(1));
     } else {
       setIsProcessingBacklog(false);
       setGenerationLog([...generationLog, 'All backlogged directions processed']);
@@ -107,6 +106,7 @@ const GenerateRecipeForm: React.FC = () => {
   };
 
   const processDirection = async (dir: string) => {
+    setIsLoading(true);
     try {
       const response = await fetch('/api/generate-recipes/start', {
         method: 'POST',
@@ -127,6 +127,8 @@ const GenerateRecipeForm: React.FC = () => {
       setCurrentStepDescription('Selecting recipe ideas');
     } catch (err) {
       setError(`Error generating recipe ideas for: ${dir}. Please try again.`);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -223,6 +225,7 @@ const GenerateRecipeForm: React.FC = () => {
       setCurrentStepDescription('');
 
       if (isProcessingBacklog) {
+        setBackloggedDirections(prev => prev.slice(1));
         processNextBackloggedDirection();
       }
     } catch (err) {
