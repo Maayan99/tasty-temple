@@ -11,12 +11,19 @@ interface CommentSectionProps {
 const CommentSection: React.FC<CommentSectionProps> = ({ recipeId }) => {
   const { comments, addComment, isLoading, error } = useComments(recipeId);
   const [newComment, setNewComment] = useState('');
+  const [username, setUsername] = useState('');
+  const [commentError, setCommentError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newComment.trim()) {
-      addComment(newComment);
-      setNewComment('');
+    if (newComment.trim() && username.trim()) {
+      const error = await addComment(newComment, username);
+      if (error) {
+        setCommentError(error);
+      } else {
+        setNewComment('');
+        setCommentError(null);
+      }
     }
   };
 
@@ -32,13 +39,25 @@ const CommentSection: React.FC<CommentSectionProps> = ({ recipeId }) => {
     >
       <h2 className="text-3xl font-semibold mb-8 text-gray-800">Comments</h2>
       <form onSubmit={handleSubmit} className="mb-10">
+        <input
+          type="text"
+          className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-300 mb-4"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder="Your name"
+          required
+        />
         <textarea
           className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-300"
           rows={3}
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
           placeholder="Add a comment..."
+          required
         />
+        {commentError && (
+          <p className="text-red-500 mt-2">{commentError}</p>
+        )}
         <motion.button
           type="submit"
           className="mt-4 bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition duration-300"
