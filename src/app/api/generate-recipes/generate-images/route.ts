@@ -86,7 +86,7 @@ export async function POST(request: Request) {
           imageUrl: mainImageUrl,
           instructions: recipe.instructions.join('\n'),
           nutrition: recipe.nutrition,
-          blogContent: recipe.blogContent?.join('\n') || "",
+          blogContent: (typeof recipe.blogContent === 'string' ? recipe.blogContent : (recipe.blogContent?.join('\n') || "")),
           blogImages: {
             create: blogImages
           },
