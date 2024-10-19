@@ -30,7 +30,7 @@ export async function POST(request: Request) {
   try {
     // Generate 3 recipe ideas
     log.push('Generating recipe ideas...');
-    const ideasPrompt = `Generate 3 unique and creative recipe ideas ${direction ? `based on the following direction: ${direction}` : ''}. Each recipe should be innovative, delicious, and suitable for a food blog. Include a catchy title and a brief, appetizing description for each. Ensure diversity in cuisines, cooking methods, and ingredients. Format the output as a JSON array of objects with 'title' and 'description' fields. ${Math.random().toString(36).substring(7)}`;
+    const ideasPrompt = `Generate 3 unique and creative recipe ideas ${direction ? `based on the following direction: ${direction}` : ''}. Each recipe should be innovative, delicious, and suitable for a food blog. Include a catchy title and a brief, appetizing description for each. Ensure diversity in cuisines, cooking methods, and ingredients. Format the output as a JSON array of objects with 'title' and 'description' fields. ${Math.random().toString(36)}  ${Math.random().toString(36).substring(7)}  ${Math.random().toString(36).substring(7)}  ${Math.random().toString(36).substring(7)}`;
     const ideasResponse = await inference.textGeneration({
       model: 'meta-llama/Llama-3.1-70B-Instruct',
       inputs: ideasPrompt,
