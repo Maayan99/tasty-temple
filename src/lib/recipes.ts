@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { Recipe } from '@/types/recipe';
+import { Recipe, Category } from '@/types/recipe';
 
 const prisma = new PrismaClient();
 
@@ -127,4 +127,20 @@ export async function getRelatedRecipes(recipeSlug: string, limit: number = 3): 
     createdAt: recipe.createdAt.toISOString(),
     updatedAt: recipe.updatedAt.toISOString(),
   })) as Recipe[];
+}
+
+export async function getCategories(): Promise<Category[]> {
+  const categories = await prisma.category.findMany({
+    include: {
+      _count: {
+        select: { recipes: true },
+      },
+    },
+  });
+
+  return categories.map((category) => ({
+    ...category,
+    recipeCount: category._count.recipes,
+    slug: category.name.toLowerCase().replace(/ /g, '-'),
+  }));
 }

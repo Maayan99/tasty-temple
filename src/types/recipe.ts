@@ -36,6 +36,8 @@ export interface Category {
   id: number;
   name: string;
   description: string | null;
+  slug: string;
+  recipeCount: number;
 }
 
 export interface Comment {

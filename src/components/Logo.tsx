@@ -2,10 +2,10 @@ import React from 'react';
 
 const Logo: React.FC = () => (
   <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="20" cy="20" r="20" fill="#4F46E5"/>
-    <path d="M12 20C12 16.6863 14.6863 14 18 14H22C25.3137 14 28 16.6863 28 20V26H12V20Z" fill="white"/>
-    <rect x="15" y="26" width="10" height="2" fill="white"/>
-    <circle cx="20" cy="19" r="2" fill="#4F46E5"/>
+    <rect width="40" height="40" rx="8" fill="#4F46E5"/>
+    <path d="M8 14C8 11.7909 9.79086 10 12 10H28C30.2091 10 32 11.7909 32 14V26C32 28.2091 30.2091 30 28 30H12C9.79086 30 8 28.2091 8 26V14Z" fill="white"/>
+    <path d="M13 18H27M13 22H27M13 26H27" stroke="#4F46E5" strokeWidth="2" strokeLinecap="round"/>
+    <path d="M20 8L23 14H17L20 8Z" fill="#FFD700"/>
   </svg>
 );
 
