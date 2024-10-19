@@ -29,7 +29,7 @@ export async function POST(request: Request) {
 
     console.log("Calling next stop, ", `/api/generate-recipes/generate-full-recipe`)
     // Call the next step in the process
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/generate-recipes/generate-full-recipe`, {
+    fetch(`/api/generate-recipes/generate-full-recipe`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ recipeIdeas }),
