@@ -66,7 +66,12 @@ async function parseJSON(content: string, retryCount: number = 0): Promise<any> 
       fixedContent += chunk.choices[0]?.delta?.content || '';
     }
 
-    return parseJSON(fixedContent, retryCount + 1);
+    const cleanedFixedContent = fixedContent.substring(
+      fixedContent.indexOf('{'),
+      fixedContent.lastIndexOf('}') + 1
+    );
+
+    return parseJSON(cleanedFixedContent, retryCount + 1);
   }
 }
 
