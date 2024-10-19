@@ -99,7 +99,14 @@ export async function POST(request: Request) {
       publishedRecipes.push(savedRecipe);
     }
 
-    return NextResponse.json({ message: 'Recipes published successfully', publishedRecipes }, { status: 200 });
+    const response = NextResponse.json({ message: 'Recipes published successfully', publishedRecipes }, { status: 200 });
+
+    // Add headers to prevent caching for error responses too
+    response.headers.set('Cache-Control', 'no-store, max-age=0');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+
+    return response;
   } catch (error) {
     console.error('Error publishing recipes:', error);
     const response = NextResponse.json({
