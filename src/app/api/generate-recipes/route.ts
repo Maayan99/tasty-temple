@@ -17,7 +17,7 @@ interface GeneratedRecipe {
   cookingTime: number;
   difficulty: string;
   servings: number;
-  ingredients: { name: string; quantity: number; unit: string }[];
+  ingredients: { name: string; quantity: string; unit: string }[];
   instructions: string[];
   nutrition: { [key: string]: number };
   imagePrompt: string;
@@ -71,7 +71,7 @@ export async function POST(request: Request) {
         "difficulty": "Easy|Medium|Hard",
         "servings": 4,
         "ingredients": [
-          { "name": "Ingredient", "quantity": 1, "unit": "cup" }
+          { "name": "Ingredient", "quantity": "1", "unit": "cup" }
         ],
         "instructions": [
           "Detailed step 1",
@@ -128,7 +128,7 @@ export async function POST(request: Request) {
             nutrition: JSON.stringify(generatedRecipe.nutrition),
             ingredients: {
               create: generatedRecipe.ingredients.map(ing => ({
-                quantity: ing.quantity,
+                quantity: parseInt(ing.quantity),
                 ingredient: {
                   connectOrCreate: {
                     where: { name: ing.name },
