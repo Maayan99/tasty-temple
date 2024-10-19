@@ -3,6 +3,37 @@ import { HfInference } from "@huggingface/inference";
 
 const inference = new HfInference(process.env.HUGGINGFACE_API_KEY);
 
+async function parseJSON(content: string, retryCount: number = 0): Promise<any> {
+  try {
+    return JSON.parse(content);
+  } catch (error) {
+    if (retryCount >= 2) {
+      throw error;
+    }
+
+    const errorMessage = (error as Error).message;
+    const match = errorMessage.match(/position (\d+)/);
+    const position = match ? parseInt(match[1]) : null;
+
+    const fixPrompt = `The following JSON has an error ${position ? `at position ${position}` : ''}. Please fix and rewrite the entire JSON correctly:\n\n${content}`;
+
+    let fixedContent = '';
+    for await (const chunk of inference.chatCompletionStream({
+      model: 'meta-llama/Llama-3.1-70B-Instruct',
+      messages: [{ role: 'user', content: fixPrompt }],
+      max_tokens: 7000,
+    })) {
+      fixedContent += chunk.choices[0]?.delta?.content || '';
+    }
+
+    const cleanedFixedContent = fixedContent.substring(
+      fixedContent.indexOf('{'),
+      fixedContent.lastIndexOf('}') + 1
+    );
+
+    return parseJSON(cleanedFixedContent, retryCount + 1);
+  }
+
 export async function POST(request: Request) {
   const { recipeIdeas } = await request.json();
 
@@ -51,7 +82,7 @@ export async function POST(request: Request) {
         recipeContent.lastIndexOf('}') + 1
       );
 
-      const generatedRecipe = JSON.parse(cleanedRecipeJson);
+      const generatedRecipe = parseJSON(cleanedRecipeJson);
 
       // Call the next step in the process
       fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/generate-recipes/generate-images`, {
