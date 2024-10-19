@@ -28,15 +28,11 @@ export async function POST(request: Request) {
 
     console.log("Calling next step, ", `${process.env.NEXT_PUBLIC_API_URL}/api/generate-recipes/generate-full-recipe`);
     // Call the next step in the process
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/generate-recipes/generate-full-recipe`, {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/generate-recipes/generate-full-recipe`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ recipeIdeas }),
     });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
 
     console.log('Recipe generation started', recipeIdeas);
 

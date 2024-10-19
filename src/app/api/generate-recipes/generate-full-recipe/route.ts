@@ -92,14 +92,19 @@ export async function POST(request: Request) {
       console.log("Recipe title: ", (generatedRecipe as any).title);
 
       // Call the next step in the process
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/generate-recipes/generate-images`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/generate-recipes/generate-images`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ generatedRecipe }),
       });
 
-      
-      console.log('called generate-images');
+      if (!response.ok) {
+        console.error(`HTTP error! status: ${response.status}`);
+        console.error('Response:', await response.text());
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      console.log('Successfully called generate-images');
     }
 
     return NextResponse.json({ message: 'Full recipes generated' }, { status: 200 });

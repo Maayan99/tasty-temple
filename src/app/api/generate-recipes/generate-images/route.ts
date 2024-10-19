@@ -36,33 +36,29 @@ export async function POST(request: Request) {
 
     // Generate and upload blog images
     const blogImages = [];
-    for (let i = 0; i < generatedRecipe.blogImagePrompts.length; i++) {
-      const imagePrompt = generatedRecipe.blogImagePrompts[i];
-      const blogImageBlob = await generateImage(imagePrompt.prompt);
-      const blogImageBuffer = Buffer.from(await blogImageBlob.arrayBuffer());
+    if (generatedRecipe.blogImagePrompts) {
+      for (let i = 0; i < generatedRecipe.blogImagePrompts.length; i++) {
+        const imagePrompt = generatedRecipe.blogImagePrompts[i];
+        const blogImageBlob = await generateImage(imagePrompt.prompt);
+        const blogImageBuffer = Buffer.from(await blogImageBlob.arrayBuffer());
 
-      console.log("Slugifying blog image ", i, generatedRecipe.title)
-      const blogImageKey = `recipes/${slugify(generatedRecipe.title, { lower: true, strict: true })}-blog-${i + 1}-${Date.now()}.png`;
-      const blogImageUrl = await uploadToB2(blogImageBuffer, blogImageKey);
+        console.log("Slugifying blog image ", i, generatedRecipe.title)
+        const blogImageKey = `recipes/${slugify(generatedRecipe.title, { lower: true, strict: true })}-blog-${i + 1}-${Date.now()}.png`;
+        const blogImageUrl = await uploadToB2(blogImageBuffer, blogImageKey);
 
-      blogImages.push({
-        imageUrl: blogImageUrl,
-        altText: imagePrompt.altText
-      });
+        blogImages.push({
+          imageUrl: blogImageUrl,
+          altText: imagePrompt.altText
+        });
+      }
     }
 
     // Call the next step in the process
-    const saveResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/generate-recipes/save-recipe`, {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/generate-recipes/save-recipe`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ generatedRecipe, mainImageUrl, blogImages }),
     });
-
-    if (!saveResponse.ok) {
-      console.error(`HTTP error! status: ${saveResponse.status}`);
-      console.error('Response:', await saveResponse.text());
-      throw new Error(`Failed to save recipe. Status: ${saveResponse.status}`);
-    }
 
     console.log('Successfully called save-recipe');
 
