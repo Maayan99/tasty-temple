@@ -1,3 +1,5 @@
+"use client"
+
 import React from 'react';
 import GenerateRecipeForm from '@/components/GenerateRecipeForm';
 import { cookies } from 'next/headers';
