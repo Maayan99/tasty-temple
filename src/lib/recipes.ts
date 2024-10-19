@@ -36,7 +36,7 @@ export async function getRecipeBySlug(slug: string): Promise<Recipe | null> {
 
   return {
     ...recipe,
-    nutrition: JSON.parse(recipe.nutrition as string),
+    nutrition: typeof recipe.nutrition == 'string' ? JSON.parse(recipe.nutrition as string) : recipe.nutrition,
     createdAt: recipe.createdAt.toISOString(),
     updatedAt: recipe.updatedAt.toISOString(),
     categories: recipe.categories.map((rc): RecipeCategory => ({
