@@ -44,7 +44,7 @@ const GenerateRecipeForm: React.FC = () => {
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (currentStep > 0) {
-      setTimer(8); // Reset the timer when currentStep changes
+      setTimer(3); // Reset the timer when currentStep changes
       interval = setInterval(() => {
         setTimer((prevTimer) => {
           if (prevTimer > 1) {
@@ -60,11 +60,15 @@ const GenerateRecipeForm: React.FC = () => {
     return () => clearInterval(interval);
   }, [currentStep]);
 
+
   useEffect(() => {
-    if (isProcessingBacklog && backloggedDirections.length > 0 && !isLoading) {
+    if (isProcessingBacklog && backloggedDirections.length > 0 && !isLoading && currentStep === 0) {
       processNextBackloggedDirection();
+    } else if (backloggedDirections.length === 0 && isProcessingBacklog) {
+      setIsProcessingBacklog(false);
+      setGenerationLog((prevLog) => [...prevLog, 'All backlogged directions processed']);
     }
-  }, [isProcessingBacklog, backloggedDirections, isLoading]);
+  }, [isProcessingBacklog, backloggedDirections, isLoading, currentStep]);
 
   const handleAutoProgress = () => {
     if (currentStep === 1) {
@@ -218,6 +222,7 @@ const processNextBackloggedDirection = async () => {
     );
   };
 
+  
   const handlePublishRecipes = async () => {
     setIsLoading(true);
     setError('');
@@ -248,21 +253,18 @@ const processNextBackloggedDirection = async () => {
       setSelectedRecipes([]);
       setCurrentStep(0);
       setCurrentStepDescription('');
-
-      if (isProcessingBacklog) {
-        setBackloggedDirections((prev) => prev.slice(1));
-        // Let useEffect handle the next direction
-      }
     } catch (err) {
       setError('Error publishing recipes. Please try again.');
+      setGenerationLog((prevLog) => [...prevLog, 'Error publishing recipes']);
       // Proceed to next direction on error
       if (isProcessingBacklog) {
-        setBackloggedDirections((prev) => prev.slice(1));
         setCurrentStep(0);
         setCurrentStepDescription('');
       }
     } finally {
       setIsLoading(false);
+      // Remove the direct call to processNextBackloggedDirection()
+      // Let useEffect handle the next direction
     }
   };
 
