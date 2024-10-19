@@ -3,6 +3,7 @@ import { HfInference } from "@huggingface/inference";
 import { PrismaClient } from '@prisma/client';
 import slugify from 'slugify';
 import { uploadToB2 } from '@/lib/b2';
+import { generateRandomComments } from '@/lib/comments';
 
 const inference = new HfInference(process.env.HUGGINGFACE_API_KEY);
 const prisma = new PrismaClient();
@@ -165,6 +166,9 @@ export async function POST(request: Request) {
           });
         }
 
+        // Generate random comments
+        const comments = await generateRandomComments(generatedRecipe);
+
         // Save the recipe to the database
         log.push(`Saving recipe to database: ${generatedRecipe.title}`);
         await prisma.recipe.create({
@@ -193,6 +197,9 @@ export async function POST(request: Request) {
                 },
               })),
             },
+            comments: {
+              create: comments
+            }
           },
         });
         log.push(`Recipe saved successfully: ${generatedRecipe.title}`);

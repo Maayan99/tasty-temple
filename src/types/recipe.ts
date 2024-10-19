@@ -13,6 +13,7 @@ export interface Recipe {
   categories: RecipeCategory[];
   blogContent: string;
   blogImages: BlogImage[];
+  comments: Comment[];
   createdAt: string;
   updatedAt: string;
 }
@@ -59,4 +60,19 @@ export interface BlogImage {
   id: number;
   imageUrl: string;
   altText: string;
+}
+
+export interface GeneratedRecipe {
+  title: string;
+  description: string;
+  cookingTime: number;
+  difficulty: string;
+  servings: number;
+  ingredients: { name: string; quantity: string; unit: string }[];
+  instructions: string[];
+  nutrition: { [key: string]: number };
+  imagePrompt: string;
+  imageAltText: string;
+  blogContent: string;
+  blogImagePrompts: { prompt: string; altText: string }[];
 }
