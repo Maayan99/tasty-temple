@@ -2,7 +2,6 @@ import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import RecipeGrid from '@/components/RecipeGrid';
-import SearchBar from '@/components/SearchBar';
 import Newsletter from '@/components/Newsletter';
 import { getLatestRecipes } from '@/lib/recipes';
 
@@ -16,7 +15,6 @@ export default async function RecipesPage() {
       <Header />
       <main className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold text-gray-800 mb-8">Explore Our Recipes</h1>
-        <SearchBar />
         <RecipeGrid initialRecipes={recipes} />
       </main>
       <Newsletter />
