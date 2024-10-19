@@ -15,7 +15,7 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({ recipe }) => {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setEditedRecipe(prev => ({ ...prev, [name]: value }));
   };
