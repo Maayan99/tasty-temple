@@ -61,7 +61,7 @@ const BlogContent: React.FC<BlogContentProps> = ({ content, images }) => {
             );
           } else if (item.type === 'subtitle') {
             const Tag = `h${(item.level || 2) + 2}` as keyof JSX.IntrinsicElements;
-            const MotionTag = motion(Tag); // Dynamically create the motion component
+            const MotionTag = motion(Tag) || ""; // Dynamically create the motion component
             return (
               <MotionTag
                 key={index}
