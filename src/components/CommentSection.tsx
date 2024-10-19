@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useComments } from '@/hooks/useComments';
 
 interface CommentSectionProps {
@@ -25,40 +25,46 @@ const CommentSection: React.FC<CommentSectionProps> = ({ recipeId }) => {
 
   return (
     <motion.div
-      className="mt-12"
+      className="mt-16"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.8, duration: 0.3 }}
     >
-      <h2 className="text-2xl font-semibold mb-4">Comments</h2>
-      <form onSubmit={handleSubmit} className="mb-6">
+      <h2 className="text-3xl font-semibold mb-8 text-gray-800">Comments</h2>
+      <form onSubmit={handleSubmit} className="mb-10">
         <textarea
-          className="w-full p-2 border rounded-md"
+          className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-300"
           rows={3}
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
           placeholder="Add a comment..."
         />
-        <button
+        <motion.button
           type="submit"
-          className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-200"
+          className="mt-4 bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition duration-300"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
           Post Comment
-        </button>
+        </motion.button>
       </form>
-      <div className="space-y-4">
+      <AnimatePresence>
         {comments.map((comment) => (
           <motion.div
             key={comment.id}
-            className="bg-gray-50 p-4 rounded-lg"
+            className="bg-white p-6 rounded-lg shadow-md mb-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
           >
-            <p className="mb-2">{comment.content}</p>
-            <p className="text-sm text-gray-500">By {comment.user.name} on {new Date(comment.createdAt).toLocaleDateString()}</p>
+            <p className="text-gray-800 mb-4">{comment.content}</p>
+            <div className="flex justify-between items-center text-sm text-gray-500">
+              <span>{comment.user.name}</span>
+              <span>{new Date(comment.createdAt).toLocaleDateString()}</span>
+            </div>
           </motion.div>
         ))}
-      </div>
+      </AnimatePresence>
     </motion.div>
   );
 };

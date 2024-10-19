@@ -1,5 +1,6 @@
 export interface Recipe {
   id: number;
+  slug: string;
   title: string;
   description: string;
   cookingTime: number;

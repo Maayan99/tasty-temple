@@ -3,9 +3,9 @@ import { Recipe } from '@/types/recipe';
 
 const prisma = new PrismaClient();
 
-export async function getRecipeById(id: number): Promise<Recipe | null> {
+export async function getRecipeBySlug(slug: string): Promise<Recipe | null> {
   const recipe = await prisma.recipe.findUnique({
-    where: { id },
+    where: { slug },
     include: {
       ingredients: {
         include: {

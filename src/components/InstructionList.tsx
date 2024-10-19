@@ -13,7 +13,7 @@ const InstructionList: React.FC<InstructionListProps> = ({ instructions }) => {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
+        staggerChildren: 0.2
       }
     }
   };
@@ -27,16 +27,17 @@ const InstructionList: React.FC<InstructionListProps> = ({ instructions }) => {
 
   return (
     <motion.div
-      className="mb-8"
+      className="mb-12"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
     >
-      <h2 className="text-2xl font-semibold mb-4">Instructions</h2>
-      <ol className="list-decimal list-inside space-y-4">
+      <h2 className="text-3xl font-semibold mb-6 text-gray-800">Instructions</h2>
+      <ol className="space-y-6 bg-white p-6 rounded-2xl shadow-lg">
         {instructionSteps.map((step, index) => (
-          <motion.li key={index} variants={itemVariants} className="pl-4">
-            {step}
+          <motion.li key={index} variants={itemVariants} className="flex">
+            <span className="flex-shrink-0 w-8 h-8 bg-indigo-500 text-white rounded-full flex items-center justify-center mr-4 mt-1">{index + 1}</span>
+            <p className="text-gray-700 leading-relaxed">{step}</p>
           </motion.li>
         ))}
       </ol>

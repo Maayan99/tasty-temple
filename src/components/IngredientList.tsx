@@ -28,17 +28,17 @@ const IngredientList: React.FC<IngredientListProps> = ({ ingredients, servings, 
 
   return (
     <motion.div
-      className="mb-8"
+      className="mb-12"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
     >
-      <h2 className="text-2xl font-semibold mb-4">Ingredients</h2>
-      <ul className="space-y-2">
+      <h2 className="text-3xl font-semibold mb-6 text-gray-800">Ingredients</h2>
+      <ul className="space-y-4 bg-white p-6 rounded-2xl shadow-lg">
         {ingredients.map((ingredient, index) => (
-          <motion.li key={index} variants={itemVariants} className="flex justify-between">
-            <span>{ingredient.ingredient.name}</span>
-            <span className="font-semibold">
+          <motion.li key={index} variants={itemVariants} className="flex justify-between items-center border-b border-gray-200 pb-2 last:border-b-0 last:pb-0">
+            <span className="text-lg text-gray-700">{ingredient.ingredient.name}</span>
+            <span className="font-semibold text-gray-800">
               {((ingredient.quantity * servings) / originalServings).toFixed(2)} {ingredient.ingredient.unit}
             </span>
           </motion.li>

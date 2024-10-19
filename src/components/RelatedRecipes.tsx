@@ -24,23 +24,23 @@ const RelatedRecipes: React.FC<RelatedRecipesProps> = ({ recipeId }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.7, duration: 0.3 }}
     >
-      <h2 className="text-2xl font-semibold mb-4">Related Recipes</h2>
-      <div className="space-y-4">
+      <h2 className="text-2xl font-semibold mb-6 text-gray-800">Related Recipes</h2>
+      <div className="space-y-6">
         {relatedRecipes.map((recipe: Recipe) => (
-          <Link href={`/recipe/${recipe.id}`} key={recipe.id}>
+          <Link href={`/recipe/${recipe.slug}`} key={recipe.id}>
             <motion.div
-              className="flex items-center space-x-4 p-2 rounded-lg hover:bg-gray-100 transition duration-200"
-              whileHover={{ scale: 1.05 }}
+              className="flex items-center space-x-4 p-4 rounded-xl bg-white shadow-md hover:shadow-lg transition duration-300"
+              whileHover={{ scale: 1.03 }}
             >
               <Image
                 src={recipe.imageUrl}
                 alt={recipe.title}
-                width={80}
-                height={80}
-                className="rounded-md"
+                width={100}
+                height={100}
+                className="rounded-lg"
               />
               <div>
-                <h3 className="font-semibold">{recipe.title}</h3>
+                <h3 className="font-semibold text-lg text-gray-800 mb-1">{recipe.title}</h3>
                 <p className="text-sm text-gray-600">{recipe.cookingTime} mins | {recipe.difficulty}</p>
               </div>
             </motion.div>
