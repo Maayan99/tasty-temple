@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import slugify from 'slugify';
 import { generateRandomComments } from '@/lib/comments';
+import { GeneratedRecipe } from '@/types/recipe';
 
 const prisma = new PrismaClient();
 
@@ -29,7 +30,7 @@ export async function POST(request: Request) {
           create: blogImages
         },
         ingredients: {
-          create: generatedRecipe.ingredients.map(ing => ({
+          create: generatedRecipe.ingredients.map((ing: { name: string; quantity: string; unit: string }) => ({
             quantity: parseFloat(ing.quantity),
             ingredient: {
               connectOrCreate: {
