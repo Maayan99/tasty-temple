@@ -37,37 +37,59 @@ const GenerateRecipeForm: React.FC = () => {
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
+      className="bg-white shadow-xl rounded-lg p-8"
     >
-      <form onSubmit={handleSubmit} className="mb-4">
-        <textarea
+      <form onSubmit={handleSubmit} className="mb-8">
+        <motion.textarea
           value={direction}
           onChange={(e) => setDirection(e.target.value)}
           placeholder="Enter a direction for recipe ideas (optional)..."
-          className="w-full p-2 border rounded-md mb-2"
+          className="w-full p-4 border border-gray-300 rounded-md mb-4 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           rows={4}
+          initial={{ scale: 0.95 }}
+          whileFocus={{ scale: 1 }}
+          transition={{ duration: 0.2 }}
         />
-        <button
+        <motion.button
           type="submit"
           disabled={isLoading}
-          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-200"
+          className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-md font-semibold text-lg hover:from-blue-600 hover:to-purple-700 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
           {isLoading ? 'Generating...' : 'Generate Recipes'}
-        </button>
+        </motion.button>
       </form>
-      {error && <p className="text-red-500 mb-4">{error}</p>}
+      {error && (
+        <motion.p
+          className="text-red-500 mb-4 text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          {error}
+        </motion.p>
+      )}
       {generationLog.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-gray-100 p-4 rounded-md"
+          className="bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-lg shadow-inner"
         >
-          <h2 className="text-xl font-semibold mb-2">Generation Log:</h2>
-          <ul className="list-disc pl-5">
+          <h2 className="text-2xl font-bold mb-4 text-gray-800">Generation Log:</h2>
+          <ul className="space-y-2">
             {generationLog.map((log, index) => (
-              <li key={index}>{log}</li>
+              <motion.li
+                key={index}
+                className="text-gray-700"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                {log}
+              </motion.li>
             ))}
           </ul>
         </motion.div>

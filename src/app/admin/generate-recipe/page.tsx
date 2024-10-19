@@ -2,6 +2,7 @@ import React from 'react';
 import GenerateRecipeForm from '@/components/GenerateRecipeForm';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import AdminLayout from '@/components/AdminLayout';
 
 export default function GenerateRecipePage() {
   const cookieStore = cookies();
@@ -18,9 +19,11 @@ export default function GenerateRecipePage() {
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Generate Recipe</h1>
-      <GenerateRecipeForm />
-    </div>
+    <AdminLayout>
+      <div className="container mx-auto p-8">
+        <h1 className="text-4xl font-bold mb-8 text-gray-800">Generate Recipe</h1>
+        <GenerateRecipeForm />
+      </div>
+    </AdminLayout>
   );
 }
