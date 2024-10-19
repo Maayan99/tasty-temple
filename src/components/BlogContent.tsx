@@ -13,12 +13,15 @@ interface BlogContentProps {
 const BlogContent: React.FC<BlogContentProps> = ({ content, images }) => {
   const contentWithImages = content.split('\n').map((paragraph, index) => {
     if (paragraph.startsWith('# ')) {
+      console.log("Found title: ", paragraph.slice(2))
       return { type: 'title', content: paragraph.slice(2) };
     }
     if (paragraph.match(/^<<IMAGE \d+>>$/)) {
       const imageIndex = parseInt(paragraph.match(/\d+/)![0]) - 1;
+      console.log("Found image")
       return { type: 'image', image: images[imageIndex] };
     }
+    console.log("Found paragraph: ", paragraph)
     return { type: 'paragraph', content: paragraph };
   });
 
