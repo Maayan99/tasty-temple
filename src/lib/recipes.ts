@@ -87,9 +87,9 @@ export async function getTrendingRecipes(limit: number = 3): Promise<Recipe[]> {
   })) as Recipe[];
 }
 
-export async function getRelatedRecipes(recipeId: number, limit: number = 3): Promise<Recipe[]> {
+export async function getRelatedRecipes(recipeSlug: string, limit: number = 3): Promise<Recipe[]> {
   const recipe = await prisma.recipe.findUnique({
-    where: { id: recipeId },
+    where: { slug: recipeSlug },
     include: { categories: { select: { categoryId: true } } },
   });
 
@@ -99,7 +99,7 @@ export async function getRelatedRecipes(recipeId: number, limit: number = 3): Pr
 
   const relatedRecipes = await prisma.recipe.findMany({
     where: {
-      id: { not: recipeId },
+      slug: { not: recipeSlug },
       categories: {
         some: {
           categoryId: { in: categoryIds },
