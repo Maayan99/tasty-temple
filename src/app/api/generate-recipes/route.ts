@@ -104,7 +104,7 @@ export async function POST(request: Request) {
         },
         "imagePrompt": "Detailed prompt for generating an appetizing image of this recipe",
         "imageAltText": "Descriptive alt text for the recipe image",
-        "blogContent": "Detailed 1000-2000 words blog post content about the recipe. Don't use enters, use newline \n characters to indicate a newline",
+        "blogContent": "Detailed 800-1200 words blog post content about the recipe. Don't use enters, use newline \n characters to indicate a newline",
         "blogImagePrompts": [
           { "prompt": "Image prompt 1", "altText": "SEO-optimized alt text for image 1" },
           { "prompt": "Image prompt 2", "altText": "SEO-optimized alt text for image 2" }
@@ -112,13 +112,15 @@ export async function POST(request: Request) {
       }
       <CRITICAL> Make sure to abide by the JSON format specified and provide a valid JSON object, as your response will be programmatically analyzed </CRITICAL>
 
+      If you do not use the correct format, your response will be useless. Make sure that it's a valid JSON object.
+
       Ensure all fields are filled with appropriate, realistic values, and that ingredient quantities are always numbers and enclosed in a string`;
 
       let recipeContent = '';
       for await (const chunk of inference.chatCompletionStream({
         model: 'meta-llama/Llama-3.1-70B-Instruct',
         messages: [{ role: 'user', content: recipePrompt }],
-        max_tokens: 4000,
+        max_tokens: 7000,
       })) {
         recipeContent += chunk.choices[0]?.delta?.content || '';
       }
