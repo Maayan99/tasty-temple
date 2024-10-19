@@ -87,7 +87,7 @@ const BlogContent: React.FC<BlogContentProps> = ({ content, images }) => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1, duration: 0.3 }}
               >
-                {formatContent(item.content)}
+                {formatContent(item.content || "")}
               </motion.p>
             );
           } else if (item.type === 'image') {
