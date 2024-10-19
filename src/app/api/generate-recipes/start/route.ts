@@ -26,6 +26,8 @@ export async function POST(request: Request) {
 
     const recipeIdeas = JSON.parse(cleanedIdeasJson);
 
+
+    console.log("Calling next stop, ", `${process.env.NEXT_PUBLIC_API_URL}/api/generate-recipes/generate-full-recipe`)
     // Call the next step in the process
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/generate-recipes/generate-full-recipe`, {
       method: 'POST',

@@ -38,6 +38,8 @@ async function parseJSON(content: string, retryCount: number = 0): Promise<any> 
 export async function POST(request: Request) {
   const { recipeIdeas } = await request.json();
 
+  console.log("Recieved recipe ideas: ", recipeIdeas)l
+
   try {
     for (const idea of recipeIdeas) {
       const recipePrompt = `Create a detailed, professional-quality recipe in English for "${idea.title}" based on this description: "${idea.description}". The recipe should be suitable for a high-quality food blog. Include precise measurements, clear instructions, and consider dietary variations or substitutions where appropriate. Also, generate a blog post content about this recipe, detailing things to know about the recipe, the creation process, and some of the decisions behind the recipe. The blog content should be focused on increasing SEO visibility. Additionally, provide 3-5 image prompts for generating visuals related to the recipe, along with SEO-optimized alt text for each image. Format the output as a JSON object with the following structure:
