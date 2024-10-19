@@ -6,13 +6,13 @@ const mockComments: Comment[] = [
   {
     id: 1,
     content: 'Great recipe! I loved it.',
-    user: { id: 1, name: 'John Doe', email: 'john@example.com' },
+    user: 'John Doe',
     createdAt: new Date().toISOString(),
   },
   {
     id: 2,
     content: 'I made this for dinner and it was delicious!',
-    user: { id: 2, name: 'Jane Smith', email: 'jane@example.com' },
+    user: 'Jane Smith',
     createdAt: new Date().toISOString(),
   },
 ];
@@ -34,7 +34,7 @@ export function useComments(recipeId: number) {
     const newComment: Comment = {
       id: comments.length + 1,
       content,
-      user: { id: 3, name: 'Current User', email: 'user@example.com' },
+      user: 'Current User',
       createdAt: new Date().toISOString(),
     };
     setComments([newComment, ...comments]);
