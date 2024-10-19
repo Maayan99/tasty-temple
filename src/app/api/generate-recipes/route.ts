@@ -71,7 +71,7 @@ export async function POST(request: Request) {
         "difficulty": "Easy|Medium|Hard",
         "servings": 4,
         "ingredients": [
-          { "name": "Ingredient", "quantity": "1", "unit": "cup" }
+          { "name": "Ingredient", "quantity": 1, "unit": "cup" }
         ],
         "instructions": [
           "Detailed step 1",
