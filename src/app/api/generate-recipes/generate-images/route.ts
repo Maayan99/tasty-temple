@@ -96,7 +96,7 @@ export async function POST(request: Request) {
               ingredient: {
                 connectOrCreate: {
                   where: { name: ing.name },
-                  create: { name: ing.name, unit: ing.unit },
+                  create: { name: ing.name, unit: ing.unit || "" },
                 },
               },
             })),
