@@ -26,6 +26,7 @@ export async function POST(request: Request) {
     const mainImageBuffer = Buffer.from(await mainImageBlob.arrayBuffer());
     
     // Upload main image to B2
+    console.log("Slufigying main image: ", generatedRecipe.title)
     const mainImageKey = `recipes/${slugify(generatedRecipe.title, { lower: true, strict: true })}-main-${Date.now()}.png`;
     const mainImageUrl = await uploadToB2(mainImageBuffer, mainImageKey);
 
@@ -35,7 +36,8 @@ export async function POST(request: Request) {
       const imagePrompt = generatedRecipe.blogImagePrompts[i];
       const blogImageBlob = await generateImage(imagePrompt.prompt);
       const blogImageBuffer = Buffer.from(await blogImageBlob.arrayBuffer());
-      
+
+      console.log("Slufigying blog image ", i, generatedRecipe.title)
       const blogImageKey = `recipes/${slugify(generatedRecipe.title, { lower: true, strict: true })}-blog-${i + 1}-${Date.now()}.png`;
       const blogImageUrl = await uploadToB2(blogImageBuffer, blogImageKey);
 
