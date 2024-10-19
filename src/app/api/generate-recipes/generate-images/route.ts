@@ -34,7 +34,7 @@ export async function POST(request: Request) {
       // Generate all images simultaneously
       const imagePromises = [
         generateImage(recipe.imagePrompt),
-        ...recipe.blogImagePrompts.map(prompt => generateImage(prompt.prompt))
+        ...recipe.blogImagePrompts.map((prompt: any) => generateImage(prompt.prompt))
       ];
 
       const generatedImages = await Promise.all(imagePromises);
