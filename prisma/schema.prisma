@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          Int      @id @default(autoincrement())
+  email       String   @unique
+  name        String?
+  password    String   // if authentication system is included
+  comments    Comment[]
+  ratings     Rating[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Recipe {
+  id            Int         @id @default(autoincrement())
+  title         String
+  description   String
+  cookingTime   Int         // in minutes
+  difficulty    String      // Easy, Medium, Hard
+  servings      Int
+  imageUrl      String
+  instructions  String
+  nutrition     Json        // JSON object for dynamic nutrition values
+  categories    RecipeCategory[]
+  ingredients   RecipeIngredient[]
+  comments      Comment[]
+  ratings       Rating[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model Ingredient {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  unit        String   // e.g., grams, cups, tbsp
+  recipes     RecipeIngredient[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model RecipeIngredient {
+  id           Int        @id @default(autoincrement())
+  recipe       Recipe     @relation(fields: [recipeId], references: [id])
+  recipeId     Int
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+  ingredientId Int
+  quantity     Float      // Amount of the ingredient used
+}
+
+model Category {
+  id          Int               @id @default(autoincrement())
+  name        String            @unique
+  description String?
+  recipes     RecipeCategory[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+}
+
+model RecipeCategory {
+  id        Int       @id @default(autoincrement())
+  recipe    Recipe    @relation(fields: [recipeId], references: [id])
+  recipeId  Int
+  category  Category  @relation(fields: [categoryId], references: [id])
+  categoryId Int
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  recipe    Recipe   @relation(fields: [recipeId], references: [id])
+  recipeId  Int
+  createdAt DateTime @default(now())
+}
+
+model Rating {
+  id        Int      @id @default(autoincrement())
+  value     Int      // e.g., 1-5 stars
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  recipe    Recipe   @relation(fields: [recipeId], references: [id])
+  recipeId  Int
+  createdAt DateTime @default(now())
+}
