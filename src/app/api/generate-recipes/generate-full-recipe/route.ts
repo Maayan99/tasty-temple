@@ -99,8 +99,12 @@ export async function POST(request: Request) {
       });
 
       if (!response.ok) {
+        console.error(`HTTP error! status: ${response.status}`);
+        console.error('Response:', await response.text());
         throw new Error(`HTTP error! status: ${response.status}`);
       }
+
+      console.log('Successfully called generate-images');
     }
 
     return NextResponse.json({ message: 'Full recipes generated' }, { status: 200 });

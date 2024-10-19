@@ -18,9 +18,10 @@ async function generateImage(prompt: string): Promise<Blob> {
 }
 
 export async function POST(request: Request) {
+  console.log("Received request at generate-images route");
   const { generatedRecipe } = await request.json();
 
-  console.log("Generated Recipe recieved at image route: ", generatedRecipe);
+  console.log("Generated Recipe received at image route: ", generatedRecipe);
 
   try {
     // Generate main recipe image
@@ -28,7 +29,7 @@ export async function POST(request: Request) {
     const mainImageBuffer = Buffer.from(await mainImageBlob.arrayBuffer());
     
     // Upload main image to B2
-    console.log("Slufigying main image: ", generatedRecipe.title)
+    console.log("Slugifying main image: ", generatedRecipe.title)
     const mainImageKey = `recipes/${slugify(generatedRecipe.title, { lower: true, strict: true })}-main-${Date.now()}.png`;
     const mainImageUrl = await uploadToB2(mainImageBuffer, mainImageKey);
     console.log("Main image url: ", mainImageUrl);
@@ -40,7 +41,7 @@ export async function POST(request: Request) {
       const blogImageBlob = await generateImage(imagePrompt.prompt);
       const blogImageBuffer = Buffer.from(await blogImageBlob.arrayBuffer());
 
-      console.log("Slufigying blog image ", i, generatedRecipe.title)
+      console.log("Slugifying blog image ", i, generatedRecipe.title)
       const blogImageKey = `recipes/${slugify(generatedRecipe.title, { lower: true, strict: true })}-blog-${i + 1}-${Date.now()}.png`;
       const blogImageUrl = await uploadToB2(blogImageBuffer, blogImageKey);
 
@@ -51,11 +52,19 @@ export async function POST(request: Request) {
     }
 
     // Call the next step in the process
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/generate-recipes/save-recipe`, {
+    const saveResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/generate-recipes/save-recipe`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ generatedRecipe, mainImageUrl, blogImages }),
     });
+
+    if (!saveResponse.ok) {
+      console.error(`HTTP error! status: ${saveResponse.status}`);
+      console.error('Response:', await saveResponse.text());
+      throw new Error(`Failed to save recipe. Status: ${saveResponse.status}`);
+    }
+
+    console.log('Successfully called save-recipe');
 
     return NextResponse.json({ message: 'Images generated and uploaded' }, { status: 200 });
   } catch (error) {
