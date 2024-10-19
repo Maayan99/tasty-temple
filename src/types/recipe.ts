@@ -11,6 +11,8 @@ export interface Recipe {
   nutrition: Record<string, number>;
   ingredients: RecipeIngredient[];
   categories: RecipeCategory[];
+  blogContent: string;
+  blogImages: BlogImage[];
   createdAt: string;
   updatedAt: string;
 }
@@ -51,4 +53,10 @@ export interface User {
   id: number;
   name: string;
   email: string;
+}
+
+export interface BlogImage {
+  id: number;
+  imageUrl: string;
+  altText: string;
 }
