@@ -69,7 +69,7 @@ const BlogContent: React.FC<BlogContentProps> = ({ content, images }) => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1, duration: 0.3 }}
-                dangerouslySetInnerHTML={{ __html: item.content }}
+                dangerouslySetInnerHTML={{ __html: item.content || "" }}
               />
             );
           } else if (item.type === 'paragraph') {
