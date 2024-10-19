@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 interface RecipeIdea {
@@ -34,6 +34,28 @@ const GenerateRecipeForm: React.FC = () => {
   const [selectedIdeas, setSelectedIdeas] = useState<number[]>([]);
   const [generatedRecipes, setGeneratedRecipes] = useState<GeneratedRecipe[]>([]);
   const [selectedRecipes, setSelectedRecipes] = useState<number[]>([]);
+  const [timer, setTimer] = useState(8);
+  const [currentStep, setCurrentStep] = useState(0);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (timer > 0 && currentStep > 0) {
+      interval = setInterval(() => {
+        setTimer((prevTimer) => prevTimer - 1);
+      }, 1000);
+    } else if (timer === 0) {
+      handleAutoProgress();
+    }
+    return () => clearInterval(interval);
+  }, [timer, currentStep]);
+
+  const handleAutoProgress = () => {
+    if (currentStep === 1) {
+      handleGenerateFullRecipes();
+    } else if (currentStep === 2) {
+      handlePublishRecipes();
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,6 +86,8 @@ const GenerateRecipeForm: React.FC = () => {
       setRecipeIdeas(allIdeas);
       setSelectedIdeas(allIdeas.map((_, index) => index));
       setGenerationLog(allIdeas.map((idea: RecipeIdea) => `Generated idea: ${idea.title}`));
+      setCurrentStep(1);
+      setTimer(8);
     } catch (err) {
       setError('Error generating recipe ideas. Please try again.');
     } finally {
@@ -116,6 +140,8 @@ const GenerateRecipeForm: React.FC = () => {
       setGeneratedRecipes(result.generatedRecipes);
       setSelectedRecipes(result.generatedRecipes.map((_: any, index: number) => index));
       setGenerationLog([...generationLog, 'Full recipes generated']);
+      setCurrentStep(2);
+      setTimer(8);
     } catch (err) {
       setError('Error generating full recipes. Please try again.');
     } finally {
@@ -154,6 +180,8 @@ const GenerateRecipeForm: React.FC = () => {
       setGeneratedRecipes([]);
       setSelectedIdeas([]);
       setSelectedRecipes([]);
+      setCurrentStep(0);
+      setTimer(8);
     } catch (err) {
       setError('Error publishing recipes. Please try again.');
     } finally {
@@ -257,7 +285,7 @@ const GenerateRecipeForm: React.FC = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            Generate Full Recipes for Selected Ideas
+            Generate Full Recipes for Selected Ideas ({timer}s)
           </motion.button>
         </motion.div>
       )}
@@ -298,7 +326,7 @@ const GenerateRecipeForm: React.FC = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            Publish Selected Recipes
+            Publish Selected Recipes ({timer}s)
           </motion.button>
         </motion.div>
       )}
