@@ -1,6 +1,6 @@
 {
-  "name": "untitled9",
-  "version": "0.1.0",
+  "name": "Tasty Temple",
+  "version": "1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
