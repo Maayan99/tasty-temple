@@ -23,6 +23,15 @@ const formatContent = (text: string) => {
 
 const BlogContent: React.FC<BlogContentProps> = ({ content, images }) => {
   const contentWithImages = content.split(/\\n|\n/).map((paragraph, index) => {
+    const imagePattern = /<<.*?IMAGE\s*(\d+).*?>>/i;
+    const imageMatch = paragraph.match(imagePattern);
+
+    if (imageMatch) {
+      const imageIndex = parseInt(imageMatch[1], 10) - 1;
+      return { type: 'image', image: images[imageIndex], text: paragraph.replace(imagePattern, '').trim() };
+    }
+
+
     if (paragraph.startsWith('# ')) {
       return { type: 'title', content: paragraph.slice(2) };
     }
@@ -34,10 +43,6 @@ const BlogContent: React.FC<BlogContentProps> = ({ content, images }) => {
     }
     if (paragraph.startsWith('# ')) {
       return { type: 'subtitle', level: 1, content: paragraph.slice(2) };
-    }
-    if (paragraph.match(/^<<IMAGE \d+>>$/)) {
-      const imageIndex = parseInt(paragraph.match(/\d+/)![0]) - 1;
-      return { type: 'image', image: images[imageIndex] };
     }
     return { type: 'paragraph', content: paragraph };
   });
