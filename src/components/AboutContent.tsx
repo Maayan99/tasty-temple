@@ -70,7 +70,7 @@ const AboutContent: React.FC = () => {
               { title: 'Community', description: 'We foster a supportive environment for food lovers to share and learn.' },
               { title: 'Sustainability', description: 'We promote eco-friendly cooking practices and responsible sourcing.' },
               { title: 'Diversity', description: 'We celebrate the rich tapestry of global cuisines and culinary traditions.' },
-              { title: 'Education', description: 'We're committed to helping our community develop their culinary skills.' },
+              { title: 'Education', description: 'We\'re committed to helping our community develop their culinary skills.' },
             ].map((value, index) => (
               <motion.div
                 key={value.title}
