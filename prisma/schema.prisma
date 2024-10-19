@@ -85,7 +85,6 @@ model Comment {
 model Rating {
   id        Int      @id @default(autoincrement())
   value     Int      // e.g., 1-5 stars
-  user      User     @relation(fields: [userId], references: [id])
   userId    Int
   recipe    Recipe   @relation(fields: [recipeId], references: [id])
   recipeId  Int
