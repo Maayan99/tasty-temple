@@ -41,6 +41,8 @@ export async function POST(request: Request) {
 
   console.log("Received recipe ideas: ", recipeIdeas);
 
+  const generatedRecipes = [];
+
   for (const idea of recipeIdeas) {
     try {
       const recipePrompt = `Create a detailed, professional-quality recipe in English for "${idea.title}" based on this description: "${idea.description}". The recipe should be suitable for a high-quality food blog. Include precise measurements, clear instructions, and consider dietary variations or substitutions where appropriate. Also, generate a blog post content about this recipe, detailing things to know about the recipe, the creation process, and some of the decisions behind the recipe. The blog content should be focused on increasing SEO visibility. Additionally, provide 3-5 image prompts for generating visuals related to the recipe, along with SEO-optimized alt text for each image. Format the output as a JSON object with the following structure:
@@ -92,19 +94,12 @@ export async function POST(request: Request) {
       console.log("Generated recipe: ", generatedRecipe);
       console.log("Recipe title: ", (generatedRecipe as any).title);
 
-      // Call the next step in the process
-     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/generate-recipes/generate-images`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ generatedRecipe }),
-      });
-
-      console.log('Successfully called generate-images');
+      generatedRecipes.push(generatedRecipe);
     } catch(error: any) {
       console.error('Error generating full recipes:', error);
       continue;
     }
-
-    return NextResponse.json({ message: 'Full recipes generated' }, { status: 200 });
   }
+
+  return NextResponse.json({ message: 'Full recipes generated', generatedRecipes }, { status: 200 });
 }

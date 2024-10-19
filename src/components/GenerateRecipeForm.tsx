@@ -8,6 +8,22 @@ interface RecipeIdea {
   description: string;
 }
 
+interface GeneratedRecipe {
+  title: string;
+  description: string;
+  cookingTime: number;
+  difficulty: string;
+  servings: number;
+  ingredients: { name: string; quantity: string; unit: string }[];
+  instructions: string[];
+  nutrition: { [key: string]: number };
+  imagePrompt: string;
+  imageAltText: string;
+  blogSummary: string;
+  blogImagePrompts: { prompt: string; altText: string }[];
+  blogContent: string;
+}
+
 const GenerateRecipeForm: React.FC = () => {
   const [direction, setDirection] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -16,6 +32,8 @@ const GenerateRecipeForm: React.FC = () => {
   const [isBulkGeneration, setIsBulkGeneration] = useState(false);
   const [recipeIdeas, setRecipeIdeas] = useState<RecipeIdea[]>([]);
   const [selectedIdeas, setSelectedIdeas] = useState<number[]>([]);
+  const [generatedRecipes, setGeneratedRecipes] = useState<GeneratedRecipe[]>([]);
+  const [selectedRecipes, setSelectedRecipes] = useState<number[]>([]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,13 +109,53 @@ const GenerateRecipeForm: React.FC = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to start full recipe generation');
+        throw new Error('Failed to generate full recipes');
       }
 
       const result = await response.json();
-      setGenerationLog([...generationLog, 'Full recipe generation started']);
+      setGeneratedRecipes(result.generatedRecipes);
+      setSelectedRecipes(result.generatedRecipes.map((_: any, index: number) => index));
+      setGenerationLog([...generationLog, 'Full recipes generated']);
     } catch (err) {
-      setError('Error starting full recipe generation. Please try again.');
+      setError('Error generating full recipes. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleRecipeSelection = (index: number) => {
+    setSelectedRecipes(prev =>
+      prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]
+    );
+  };
+
+  const handlePublishRecipes = async () => {
+    setIsLoading(true);
+    setError('');
+    setGenerationLog([]);
+
+    try {
+      const selectedRecipesToPublish = generatedRecipes.filter((_, index) => selectedRecipes.includes(index));
+
+      const response = await fetch('/api/generate-recipes/generate-images', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ generatedRecipes: selectedRecipesToPublish }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to publish recipes');
+      }
+
+      const result = await response.json();
+      setGenerationLog([...generationLog, 'Recipes published successfully']);
+      // Reset the form after successful publication
+      setRecipeIdeas([]);
+      setGeneratedRecipes([]);
+      setSelectedIdeas([]);
+      setSelectedRecipes([]);
+    } catch (err) {
+      setError('Error publishing recipes. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -200,6 +258,46 @@ const GenerateRecipeForm: React.FC = () => {
             whileTap={{ scale: 0.95 }}
           >
             Generate Full Recipes for Selected Ideas
+          </motion.button>
+        </motion.div>
+      )}
+      {generatedRecipes.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-lg shadow-inner mb-8"
+        >
+          <h2 className="text-2xl font-bold mb-4 text-gray-800">Generated Full Recipes:</h2>
+          <ul className="space-y-4">
+            {generatedRecipes.map((recipe, index) => (
+              <motion.li
+                key={index}
+                className="flex items-center space-x-4"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedRecipes.includes(index)}
+                  onChange={() => handleRecipeSelection(index)}
+                  className="form-checkbox h-5 w-5 text-blue-600"
+                />
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800">{recipe.title}</h3>
+                  <p className="text-gray-600">{recipe.description}</p>
+                </div>
+              </motion.li>
+            ))}
+          </ul>
+          <motion.button
+            onClick={handlePublishRecipes}
+            disabled={isLoading || selectedRecipes.length === 0}
+            className="mt-6 bg-green-600 text-white px-6 py-3 rounded-md font-semibold text-lg hover:bg-green-700 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Publish Selected Recipes
           </motion.button>
         </motion.div>
       )}
