@@ -70,10 +70,10 @@ export async function POST(request: Request) {
       console.log("About to save: ", recipe.servings);
       console.log("About to save: ", mainImageUrl);
       console.log("About to save: ", recipe.instructions.join('\n'));
-      console.log("About to save: ", JSON.stringify(recipe.nutrition);
+      console.log("About to save: ", JSON.stringify(recipe.nutrition));
       console.log("About to save: ", recipe.blogContent);
       console.log("About to save: ", recipe.ingredients);
-      console.log("About to save: ", comments;
+      console.log("About to save: ", comments);
 
       // Save the recipe to the database
       const savedRecipe = await prisma.recipe.create({
