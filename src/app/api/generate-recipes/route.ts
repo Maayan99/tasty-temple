@@ -24,6 +24,21 @@ interface GeneratedRecipe {
   imageAltText: string;
 }
 
+async function generateImage(prompt: string): Promise<Blob> {
+  const response = await fetch(
+    "https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-dev",
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify({ inputs: prompt }),
+    }
+  );
+  return await response.blob();
+}
+
 export async function POST(request: Request) {
   const { direction } = await request.json();
   const log: string[] = [];
@@ -113,6 +128,12 @@ export async function POST(request: Request) {
       try {
         generatedRecipe = JSON.parse(cleanedRecipeJson);
 
+        // Generate image
+        log.push(`Generating image for: ${generatedRecipe.title}`);
+        const imageBlob = await generateImage(generatedRecipe.imagePrompt);
+        const imageBuffer = Buffer.from(await imageBlob.arrayBuffer());
+        const imageBase64 = imageBuffer.toString('base64');
+
         // Save the recipe to the database
         log.push(`Saving recipe to database: ${generatedRecipe.title}`);
         await prisma.recipe.create({
@@ -123,7 +144,7 @@ export async function POST(request: Request) {
             cookingTime: generatedRecipe.cookingTime,
             difficulty: generatedRecipe.difficulty,
             servings: generatedRecipe.servings,
-            imageUrl: '', // We'll update this later when we implement image generation
+            imageUrl: `data:image/png;base64,${imageBase64}`, // Store image as base64 for now
             instructions: generatedRecipe.instructions.join('\n'),
             nutrition: JSON.stringify(generatedRecipe.nutrition),
             ingredients: {
