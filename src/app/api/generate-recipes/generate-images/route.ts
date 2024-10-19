@@ -75,7 +75,7 @@ export async function POST(request: Request) {
       console.log("About to save: ", comments);
 
       // Save the recipe to the database
-      const savedRecipe = await prisma.Recipe.create({
+      const savedRecipe = await prisma.recipe.create({
         data: {
           title: recipe.title,
           slug: slugify(recipe.title, { lower: true, strict: true }),
@@ -118,8 +118,20 @@ export async function POST(request: Request) {
     response.headers.set('Expires', '0');
 
     return response;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error publishing recipes:', error);
+    console.error('Error publishing recipes:', error.message);
+    console.error('Error publishing recipes:', error.message.substring(0, 100));
+    console.error('Error publishing recipes:', error.message.substring(100, 200));
+    console.error('Error publishing recipes:', error.message.substring(200, 300));
+    console.error('Error publishing recipes:', error.message.substring(300, 400));
+    console.error('Error publishing recipes:', error.message.substring(400, 500));
+    console.error('Error publishing recipes:', error.message.substring(500, 600));
+    console.error('Error publishing recipes:', error.message.substring(600, 700));
+    console.error('Error publishing recipes:', error.message.substring(700, 800));
+    console.error('Error publishing recipes:', error.message.substring(800, 900));
+    console.error('Error publishing recipes:', error.message.substring(900, 1000));
+    console.error('Error publishing recipes:', error.message.substring(1000, 1100));
     const response = NextResponse.json({
       message: 'Error publishing recipes',
       error: (error as Error).message,
