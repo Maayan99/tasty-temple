@@ -85,6 +85,7 @@ export async function POST(request: Request) {
         "imagePrompt": "Detailed prompt for generating an appetizing image of this recipe",
         "imageAltText": "Descriptive alt text for the recipe image"
       }
+      <CRITICAL> Make sure to adbide by the JSON format specified and provide a valid JSON object, as your response will be programatically analyzed </CRITICAL>
       Ensure all fields are filled with appropriate, realistic values.`;
 
       let recipeContent = '';
