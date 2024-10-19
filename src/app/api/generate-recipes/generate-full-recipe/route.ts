@@ -101,5 +101,15 @@ export async function POST(request: Request) {
     }
   }
 
-  return NextResponse.json({ message: 'Full recipes generated', generatedRecipes }, { status: 200 });
+  const response = NextResponse.json({
+    message: 'Full recipes generated',
+    generatedRecipes
+  }, { status: 200 });
+
+  // Add headers to prevent caching
+  response.headers.set('Cache-Control', 'no-store, max-age=0');
+  response.headers.set('Pragma', 'no-cache');
+  response.headers.set('Expires', '0');
+
+  return response;
 }
