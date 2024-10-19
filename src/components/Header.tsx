@@ -3,24 +3,34 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import Logo from './Logo';
 
 const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <motion.header
-      className="bg-white shadow-md"
+      className="bg-white shadow-md sticky top-0 z-50"
       initial={{ opacity: 0, y: -50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <Link href="/" className="text-2xl font-bold text-indigo-600">Tasty Temple</Link>
+        <Link href="/" className="flex items-center space-x-2">
+          <Logo />
+          <span className="text-2xl font-bold text-indigo-600">Tasty Temple</span>
+        </Link>
         <nav className="hidden md:flex space-x-6">
-          <Link href="/" className="text-gray-700 hover:text-indigo-600 transition duration-300">Home</Link>
-          <Link href="/recipes" className="text-gray-700 hover:text-indigo-600 transition duration-300">Recipes</Link>
-          <Link href="/categories" className="text-gray-700 hover:text-indigo-600 transition duration-300">Categories</Link>
-          <Link href="/about" className="text-gray-700 hover:text-indigo-600 transition duration-300">About</Link>
+          {['Home', 'Recipes', 'Categories', 'About'].map((item) => (
+            <Link
+              key={item}
+              href={item === 'Home' ? '/' : `/${item.toLowerCase()}`}
+              className="text-gray-700 hover:text-indigo-600 transition duration-300 relative group"
+            >
+              {item}
+              <span className="absolute left-0 right-0 bottom-0 h-0.5 bg-indigo-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></span>
+            </Link>
+          ))}
         </nav>
         <button
           className="md:hidden focus:outline-none"
@@ -38,10 +48,16 @@ const Header: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <Link href="/" className="block px-4 py-2 text-gray-700 hover:bg-indigo-100">Home</Link>
-          <Link href="/recipes" className="block px-4 py-2 text-gray-700 hover:bg-indigo-100">Recipes</Link>
-          <Link href="/categories" className="block px-4 py-2 text-gray-700 hover:bg-indigo-100">Categories</Link>
-          <Link href="/about" className="block px-4 py-2 text-gray-700 hover:bg-indigo-100">About</Link>
+          {['Home', 'Recipes', 'Categories', 'About'].map((item) => (
+            <Link
+              key={item}
+              href={item === 'Home' ? '/' : `/${item.toLowerCase()}`}
+              className="block px-4 py-2 text-gray-700 hover:bg-indigo-100 hover:text-indigo-600 transition duration-300"
+              onClick={() => setIsOpen(false)}
+            >
+              {item}
+            </Link>
+          ))}
         </motion.div>
       )}
     </motion.header>
