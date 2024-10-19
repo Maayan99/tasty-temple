@@ -11,7 +11,7 @@ interface BlogContentProps {
 }
 
 const BlogContent: React.FC<BlogContentProps> = ({ content, images }) => {
-  const contentWithImages = content.split('\n').map((paragraph, index) => {
+  const contentWithImages = content.split('\\n').map((paragraph, index) => {
     if (paragraph.startsWith('# ')) {
       console.log("Found title: ", paragraph.slice(2))
       return { type: 'title', content: paragraph.slice(2) };
