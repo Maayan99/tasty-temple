@@ -46,6 +46,48 @@ export async function getRecipeBySlug(slug: string): Promise<Recipe | null> {
   } as Recipe;
 }
 
+export async function getRecipeById(id: string): Promise<Recipe | null> {
+  const recipe = await prisma.recipe.findUnique({
+    where: { id },
+    include: {
+      ingredients: {
+        include: {
+          ingredient: true,
+        },
+      },
+      categories: {
+        include: {
+          category: true,
+        },
+      },
+      blogImages: true,
+      comments: true,
+    },
+  });
+
+  if (!recipe) return null;
+
+  return {
+    ...recipe,
+    nutrition: JSON.parse(recipe.nutrition as string),
+    createdAt: recipe.createdAt.toISOString(),
+    updatedAt: recipe.updatedAt.toISOString(),
+    categories: recipe.categories.map((rc): RecipeCategory => ({
+      id: rc.id,
+      category: {
+        ...rc.category,
+        slug: rc.category.name.toLowerCase().replace(/ /g, '-'),
+        recipeCount: 0, // You might want to fetch this separately if needed
+      },
+    })),
+    blogImages: recipe.blogImages.map((image) => ({
+      id: image.id,
+      imageUrl: image.imageUrl,
+      altText: image.altText,
+    })),
+  } as Recipe;
+}
+
 export async function getLatestRecipes(limit: number = 6): Promise<Recipe[]> {
   const recipes = await prisma.recipe.findMany({
     take: limit,
