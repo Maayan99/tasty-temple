@@ -33,7 +33,7 @@ const InstructionList: React.FC<InstructionListProps> = ({ instructions }) => {
       animate="visible"
     >
       <h2 className="text-3xl font-semibold mb-6 text-gray-800">Instructions</h2>
-      <ol className="space-y-6 bg-white p-6 rounded-2xl shadow-md">
+      <ol className="space-y-6 bg-white p-6 rounded-2xl shadow-sm">
         {instructionSteps.map((step, index) => (
           <motion.li key={index} variants={itemVariants} className="flex">
             <span className="flex-shrink-0 w-8 h-8 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mr-4 mt-1 font-semibold">{index + 1}</span>

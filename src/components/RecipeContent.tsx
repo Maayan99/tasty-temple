@@ -22,14 +22,14 @@ const RecipeContent: React.FC<RecipeContentProps> = ({ recipe }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="font-sans max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+      className="font-sans max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-white shadow-lg rounded-lg"
     >
       <h1 className="text-4xl sm:text-5xl font-bold mb-6 text-gray-800 tracking-tight">{recipe.title}</h1>
       <motion.div
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 0.2, duration: 0.3 }}
-        className="relative w-full h-96 mb-8 rounded-2xl overflow-hidden shadow-lg"
+        className="relative w-full h-96 mb-8 rounded-2xl overflow-hidden shadow-md"
       >
         <Image
           src={recipe.imageUrl}
@@ -69,7 +69,7 @@ const RecipeContent: React.FC<RecipeContentProps> = ({ recipe }) => {
             initial={{ x: 20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.6, duration: 0.3 }}
-            className="bg-gray-50 p-6 rounded-2xl shadow-md mb-8"
+            className="bg-gray-50 p-6 rounded-2xl shadow-sm mb-8"
           >
             <h2 className="text-2xl font-semibold mb-4 text-gray-800">Nutrition Information</h2>
             <ul className="space-y-2">
