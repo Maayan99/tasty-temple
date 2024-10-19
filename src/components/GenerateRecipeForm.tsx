@@ -47,7 +47,7 @@ const GenerateRecipeForm: React.FC = () => {
           value={direction}
           onChange={(e) => setDirection(e.target.value)}
           placeholder="Enter a direction for recipe ideas (optional)..."
-          className="w-full p-4 border border-gray-300 rounded-md mb-4 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full text-black p-4 border border-gray-300 rounded-md mb-4 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           rows={4}
           initial={{ scale: 0.95 }}
           whileFocus={{ scale: 1 }}
