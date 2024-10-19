@@ -10,7 +10,8 @@ export function useRelatedRecipes(recipeSlug: string) {
   useEffect(() => {
     async function fetchRelatedRecipes() {
       try {
-        const recipes = await getRelatedRecipes(recipeSlug);
+        setIsLoading(true);
+        const recipes = await getRelatedRecipes(recipeSlug, 3);
         setRelatedRecipes(recipes);
         setIsLoading(false);
       } catch (err) {

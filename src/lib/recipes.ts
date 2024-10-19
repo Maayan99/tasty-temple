@@ -192,11 +192,11 @@ export async function getRelatedRecipes(recipeSlug: string, limit: number = 3): 
   const relatedRecipes = await prisma.recipe.findMany({
     where: {
       slug: { not: recipeSlug },
-      categories: {
-        some: {
-          categoryId: { in: categoryIds },
-        },
-      },
+      OR: [
+        { categories: { some: { categoryId: { in: categoryIds } } } },
+        { title: { contains: recipe.title.split(' ')[0], mode: 'insensitive' } },
+        { description: { contains: recipe.title.split(' ')[0], mode: 'insensitive' } },
+      ],
     },
     include: {
       ingredients: {
