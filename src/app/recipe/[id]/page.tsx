@@ -4,7 +4,7 @@ import RecipeContent from '@/components/RecipeContent';
 import { getRecipeBySlug } from '@/lib/recipes';
 
 export default async function RecipePage({ params }: { params: { id: string } }) {
-  const recipe = await getRecipeBySlug(parseInt(params.id));
+  const recipe = await getRecipeBySlug(params.id);
 
   if (!recipe) {
     notFound();
