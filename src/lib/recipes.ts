@@ -46,7 +46,7 @@ export async function getRecipeBySlug(slug: string): Promise<Recipe | null> {
   } as Recipe;
 }
 
-export async function getRecipeById(id: string): Promise<Recipe | null> {
+export async function getRecipeById(id: number): Promise<Recipe | null> {
   const recipe = await prisma.recipe.findUnique({
     where: { id },
     include: {
