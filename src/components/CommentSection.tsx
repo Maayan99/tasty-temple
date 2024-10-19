@@ -59,7 +59,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ recipeId }) => {
           >
             <p className="text-gray-800 mb-4">{comment.content}</p>
             <div className="flex justify-between items-center text-sm text-gray-500">
-              <span>{comment.user.name}</span>
+              <span>{comment.user}</span>
               <span>{new Date(comment.createdAt).toLocaleDateString()}</span>
             </div>
           </motion.div>
