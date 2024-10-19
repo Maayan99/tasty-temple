@@ -38,7 +38,7 @@ async function parseJSON(content: string, retryCount: number = 0): Promise<any> 
 export async function POST(request: Request) {
   const { recipeIdeas } = await request.json();
 
-  console.log("Recieved recipe ideas: ", recipeIdeas)l
+  console.log("Recieved recipe ideas: ", recipeIdeas);
 
   try {
     for (const idea of recipeIdeas) {
