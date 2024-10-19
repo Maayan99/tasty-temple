@@ -41,8 +41,8 @@ export async function POST(request: Request) {
 
   console.log("Received recipe ideas: ", recipeIdeas);
 
-  try {
-    for (const idea of recipeIdeas) {
+  for (const idea of recipeIdeas) {
+    try {
       const recipePrompt = `Create a detailed, professional-quality recipe in English for "${idea.title}" based on this description: "${idea.description}". The recipe should be suitable for a high-quality food blog. Include precise measurements, clear instructions, and consider dietary variations or substitutions where appropriate. Also, generate a blog post content about this recipe, detailing things to know about the recipe, the creation process, and some of the decisions behind the recipe. The blog content should be focused on increasing SEO visibility. Additionally, provide 3-5 image prompts for generating visuals related to the recipe, along with SEO-optimized alt text for each image. Format the output as a JSON object with the following structure:
       {
         "title": "Recipe Title",
@@ -100,14 +100,11 @@ export async function POST(request: Request) {
       });
 
       console.log('Successfully called generate-images');
+    } catch(error: any) {
+      console.error('Error generating full recipes:', error);
+      continue;
     }
 
     return NextResponse.json({ message: 'Full recipes generated' }, { status: 200 });
-  } catch (error) {
-    console.error('Error generating full recipes:', error);
-    return NextResponse.json({
-      message: 'Error generating full recipes',
-      error: (error as Error).message,
-    }, { status: 500 });
   }
 }
