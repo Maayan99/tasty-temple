@@ -10,10 +10,15 @@ interface BlogContentProps {
   images: BlogImage[];
 }
 
-// Function to apply bold formatting
-const applyFormatting = (text: string) => {
-  // Replace *bold* with <strong>bold</strong>
-  return text.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
+// Function to format content and return as JSX
+const formatContent = (text: string) => {
+  const parts = text.split(/(\*[^*]+\*)/g); // Split text by bold markers
+  return parts.map((part, index) => {
+    if (part.startsWith('*') && part.endsWith('*')) {
+      return <strong key={index}>{part.slice(1, -1)}</strong>; // Render bold text
+    }
+    return part; // Render normal text
+  });
 };
 
 const BlogContent: React.FC<BlogContentProps> = ({ content, images }) => {
@@ -34,7 +39,7 @@ const BlogContent: React.FC<BlogContentProps> = ({ content, images }) => {
       const imageIndex = parseInt(paragraph.match(/\d+/)![0]) - 1;
       return { type: 'image', image: images[imageIndex] };
     }
-    return { type: 'paragraph', content: applyFormatting(paragraph) };
+    return { type: 'paragraph', content: paragraph };
   });
 
   return (
@@ -60,8 +65,8 @@ const BlogContent: React.FC<BlogContentProps> = ({ content, images }) => {
               </motion.h3>
             );
           } else if (item.type === 'subtitle') {
-            const Tag = `h${(item.level || 2) + 2}` as keyof JSX.IntrinsicElements;
-            const MotionTag = motion(Tag) || ""; // Dynamically create the motion component
+            const Tag = `h${item.level + 2}` as keyof JSX.IntrinsicElements;
+            const MotionTag = motion(Tag); // Dynamically create the motion component
             return (
               <MotionTag
                 key={index}
@@ -69,8 +74,9 @@ const BlogContent: React.FC<BlogContentProps> = ({ content, images }) => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1, duration: 0.3 }}
-                dangerouslySetInnerHTML={{ __html: item.content || "" }}
-              />
+              >
+                {formatContent(item.content)}
+              </MotionTag>
             );
           } else if (item.type === 'paragraph') {
             return (
@@ -80,8 +86,9 @@ const BlogContent: React.FC<BlogContentProps> = ({ content, images }) => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1, duration: 0.3 }}
-                dangerouslySetInnerHTML={{ __html: item.content }}
-              />
+              >
+                {formatContent(item.content)}
+              </motion.p>
             );
           } else if (item.type === 'image') {
             return (
