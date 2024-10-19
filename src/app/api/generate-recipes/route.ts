@@ -102,7 +102,8 @@ export async function POST(request: Request) {
         "imageAltText": "Descriptive alt text for the recipe image"
       }
       <CRITICAL> Make sure to abide by the JSON format specified and provide a valid JSON object, as your response will be programmatically analyzed </CRITICAL>
-      Ensure all fields are filled with appropriate, realistic values.`;
+
+      Ensure all fields are filled with appropriate, realistic values, and that ingredient quantities are always numbers and enclosed in a string`;
 
       let recipeContent = '';
       for await (const chunk of inference.chatCompletionStream({
