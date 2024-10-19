@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { HfInference } from "@huggingface/inference";
 import { PrismaClient } from '@prisma/client';
+import slugify from 'slugify';
 
 const inference = new HfInference(process.env.HUGGINGFACE_API_KEY);
 const prisma = new PrismaClient();
@@ -117,6 +118,7 @@ export async function POST(request: Request) {
       await prisma.recipe.create({
         data: {
           title: generatedRecipe.title,
+          slug: slugify(generatedRecipe.title, { lower: true, strict: true }),
           description: generatedRecipe.description,
           cookingTime: generatedRecipe.cookingTime,
           difficulty: generatedRecipe.difficulty,
