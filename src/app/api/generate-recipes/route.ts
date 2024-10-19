@@ -62,7 +62,7 @@ export async function POST(request: Request) {
     // Generate full recipes for each idea
     for (const idea of recipeIdeas) {
       log.push(`Generating full recipe for: ${idea.title}`);
-      const recipePrompt = `Create a detailed, professional-quality recipe for "${idea.title}" based on this description: "${idea.description}". The recipe should be suitable for a high-quality food blog. Include precise measurements, clear instructions, and consider dietary variations or substitutions where appropriate. Format the output as a JSON object with the following structure:
+      const recipePrompt = `Create a detailed, professional-quality recipe in English for "${idea.title}" based on this description: "${idea.description}". The recipe should be suitable for a high-quality food blog. Include precise measurements, clear instructions, and consider dietary variations or substitutions where appropriate. Format the output as a JSON object with the following structure:
       {
         "title": "Recipe Title",
         "description": "Engaging and appetizing description",
@@ -108,10 +108,6 @@ export async function POST(request: Request) {
       let generatedRecipe: GeneratedRecipe;
       try {
         generatedRecipe = JSON.parse(cleanedRecipeJson);
-      } catch (parseError) {
-        console.error('Error parsing recipe JSON:', parseError);
-        throw new Error(`Failed to parse recipe JSON: ${(parseError as Error).message}`);
-      }
 
       // Save the recipe to the database
       log.push(`Saving recipe to database: ${generatedRecipe.title}`);
@@ -139,6 +135,10 @@ export async function POST(request: Request) {
         },
       });
       log.push(`Recipe saved successfully: ${generatedRecipe.title}`);
+      } catch (parseError) {
+        console.error('Error parsing recipe JSON:', parseError);
+        // throw new Error(`Failed to parse recipe JSON: ${(parseError as Error).message}`);
+      }
     }
 
     return NextResponse.json({ message: 'Recipes generated and saved successfully', log }, { status: 200 });
