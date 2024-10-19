@@ -1,7 +1,4 @@
-"use client";
-
 import React from 'react';
-import { motion } from 'framer-motion';
 import Link from 'next/link';
 
 interface AdminLayoutProps {
@@ -16,14 +13,9 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           <div className="flex justify-between h-16">
             <div className="flex">
               <Link href="/admin/generate-recipe" className="flex-shrink-0 flex items-center">
-                <motion.span
-                  className="text-2xl font-bold text-gray-800"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5 }}
-                >
+                <span className="text-2xl font-bold text-gray-800">
                   Tasty Temple Admin
-                </motion.span>
+                </span>
               </Link>
             </div>
             <div className="flex items-center">
@@ -38,13 +30,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         </div>
       </nav>
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          {children}
-        </motion.div>
+        {children}
       </main>
     </div>
   );

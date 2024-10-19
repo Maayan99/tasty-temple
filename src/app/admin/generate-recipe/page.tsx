@@ -1,10 +1,8 @@
-"use client"
-
 import React from 'react';
 import GenerateRecipeForm from '@/components/GenerateRecipeForm';
+import AdminLayout from '@/components/AdminLayout';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import AdminLayout from '@/components/AdminLayout';
 
 export default function GenerateRecipePage() {
   const cookieStore = cookies();
