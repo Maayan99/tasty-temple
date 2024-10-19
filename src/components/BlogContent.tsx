@@ -62,7 +62,7 @@ const BlogContent: React.FC<BlogContentProps> = ({ content, images }) => {
           } else if (item.type === 'subtitle') {
             const Tag = `h${item.level + 2}` as keyof JSX.IntrinsicElements;
             return (
-              <motion[Tag]
+              <motion.h3
                 key={index}
                 className={`text-xl text-black font-semibold mt-4 mb-3 text-gray-700`}
                 initial={{ opacity: 0, y: 20 }}
