@@ -30,6 +30,63 @@ export async function getRecipeById(id: number): Promise<Recipe | null> {
   } as Recipe;
 }
 
+export async function getLatestRecipes(limit: number = 6): Promise<Recipe[]> {
+  const recipes = await prisma.recipe.findMany({
+    take: limit,
+    orderBy: { createdAt: 'desc' },
+    include: {
+      ingredients: {
+        include: {
+          ingredient: true,
+        },
+      },
+      categories: {
+        include: {
+          category: true,
+        },
+      },
+    },
+  });
+
+  return recipes.map((recipe) => ({
+    ...recipe,
+    nutrition: JSON.parse(recipe.nutrition as string),
+    createdAt: recipe.createdAt.toISOString(),
+    updatedAt: recipe.updatedAt.toISOString(),
+  })) as Recipe[];
+}
+
+export async function getTrendingRecipes(limit: number = 3): Promise<Recipe[]> {
+  // This is a simplified version. In a real application, you might want to
+  // implement a more sophisticated algorithm to determine trending recipes.
+  const recipes = await prisma.recipe.findMany({
+    take: limit,
+    orderBy: [
+      { ratings: { _count: 'desc' } },
+      { comments: { _count: 'desc' } },
+    ],
+    include: {
+      ingredients: {
+        include: {
+          ingredient: true,
+        },
+      },
+      categories: {
+        include: {
+          category: true,
+        },
+      },
+    },
+  });
+
+  return recipes.map((recipe) => ({
+    ...recipe,
+    nutrition: JSON.parse(recipe.nutrition as string),
+    createdAt: recipe.createdAt.toISOString(),
+    updatedAt: recipe.updatedAt.toISOString(),
+  })) as Recipe[];
+}
+
 export async function getRelatedRecipes(recipeId: number, limit: number = 3): Promise<Recipe[]> {
   const recipe = await prisma.recipe.findUnique({
     where: { id: recipeId },

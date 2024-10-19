@@ -22,7 +22,7 @@ const AnimatedBanner: React.FC = () => {
   }, []);
 
   return (
-    <div className="bg-gradient-to-r from-blue-500 to-purple-600 py-6">
+    <div className="bg-gradient-to-r from-indigo-500 to-purple-600 py-8">
       <div className="container mx-auto px-4">
         <div className="flex justify-center items-center h-16 overflow-hidden">
           <AnimatePresence mode="wait">

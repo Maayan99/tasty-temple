@@ -9,14 +9,14 @@ import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-
-const trendingRecipes = [
-  { id: 1, title: 'Spicy Thai Basil Chicken', image: '/images/thai-basil-chicken.jpg' },
-  { id: 2, title: 'Creamy Mushroom Risotto', image: '/images/mushroom-risotto.jpg' },
-  { id: 3, title: 'Grilled Salmon with Lemon Butter', image: '/images/grilled-salmon.jpg' },
-];
+import { useRecipes } from '@/hooks/useRecipes';
 
 const Hero: React.FC = () => {
+  const { recipes, isLoading, error } = useRecipes(3, 'trending');
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading trending recipes</div>;
+
   return (
     <motion.section
       initial={{ opacity: 0 }}
@@ -33,11 +33,11 @@ const Hero: React.FC = () => {
         modules={[Autoplay, Pagination, Navigation]}
         className="h-full"
       >
-        {trendingRecipes.map((recipe) => (
+        {recipes.map((recipe) => (
           <SwiperSlide key={recipe.id}>
             <div className="relative h-full">
               <Image
-                src={recipe.image}
+                src={recipe.imageUrl}
                 alt={recipe.title}
                 layout="fill"
                 objectFit="cover"
@@ -45,12 +45,19 @@ const Hero: React.FC = () => {
               />
               <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
                 <div className="text-center">
-                  <h2 className="text-4xl md:text-6xl font-bold text-white mb-4">{recipe.title}</h2>
+                  <motion.h2 
+                    className="text-4xl md:text-6xl font-bold text-white mb-4"
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    {recipe.title}
+                  </motion.h2>
                   <Link href={`/recipe/${recipe.id}`}>
                     <motion.span
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="inline-block bg-red-600 text-white px-6 py-3 rounded-full text-lg font-semibold cursor-pointer"
+                      className="inline-block bg-indigo-600 text-white px-6 py-3 rounded-full text-lg font-semibold cursor-pointer"
                     >
                       View Recipe
                     </motion.span>
