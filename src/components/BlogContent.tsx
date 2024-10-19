@@ -10,16 +10,31 @@ interface BlogContentProps {
   images: BlogImage[];
 }
 
+// Function to apply bold formatting
+const applyFormatting = (text: string) => {
+  // Replace *bold* with <strong>bold</strong>
+  return text.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
+};
+
 const BlogContent: React.FC<BlogContentProps> = ({ content, images }) => {
-  const contentWithImages = content.split('\\n').map((paragraph, index) => {
+  const contentWithImages = content.split(/\\n|\n/).map((paragraph, index) => {
     if (paragraph.startsWith('# ')) {
       return { type: 'title', content: paragraph.slice(2) };
+    }
+    if (paragraph.startsWith('### ')) {
+      return { type: 'subtitle', level: 3, content: paragraph.slice(4) };
+    }
+    if (paragraph.startsWith('## ')) {
+      return { type: 'subtitle', level: 2, content: paragraph.slice(3) };
+    }
+    if (paragraph.startsWith('# ')) {
+      return { type: 'subtitle', level: 1, content: paragraph.slice(2) };
     }
     if (paragraph.match(/^<<IMAGE \d+>>$/)) {
       const imageIndex = parseInt(paragraph.match(/\d+/)![0]) - 1;
       return { type: 'image', image: images[imageIndex] };
     }
-    return { type: 'paragraph', content: paragraph };
+    return { type: 'paragraph', content: applyFormatting(paragraph) };
   });
 
   return (
@@ -44,6 +59,18 @@ const BlogContent: React.FC<BlogContentProps> = ({ content, images }) => {
                 {item.content}
               </motion.h3>
             );
+          } else if (item.type === 'subtitle') {
+            const Tag = `h${item.level + 2}` as keyof JSX.IntrinsicElements;
+            return (
+              <motion[Tag]
+                key={index}
+                className={`text-xl text-black font-semibold mt-4 mb-3 text-gray-700`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1, duration: 0.3 }}
+                dangerouslySetInnerHTML={{ __html: item.content }}
+              />
+            );
           } else if (item.type === 'paragraph') {
             return (
               <motion.p
@@ -52,9 +79,8 @@ const BlogContent: React.FC<BlogContentProps> = ({ content, images }) => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1, duration: 0.3 }}
-              >
-                {item.content}
-              </motion.p>
+                dangerouslySetInnerHTML={{ __html: item.content }}
+              />
             );
           } else if (item.type === 'image') {
             return (
