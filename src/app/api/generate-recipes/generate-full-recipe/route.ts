@@ -36,9 +36,10 @@ async function parseJSON(content: string, retryCount: number = 0): Promise<any> 
 }
 
 export async function POST(request: Request) {
+  console.log("Received request at generate-full-recipe");
   const { recipeIdeas } = await request.json();
 
-  console.log("Recieved recipe ideas: ", recipeIdeas);
+  console.log("Received recipe ideas: ", recipeIdeas);
 
   try {
     for (const idea of recipeIdeas) {
@@ -87,16 +88,19 @@ export async function POST(request: Request) {
 
       const generatedRecipe = await parseJSON(cleanedRecipeJson);
 
-
       console.log("Generated recipe: ", generatedRecipe);
       console.log("Recipe title: ", (generatedRecipe as any).title);
 
       // Call the next step in the process
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/generate-recipes/generate-images`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/generate-recipes/generate-images`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ generatedRecipe }),
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
     }
 
     return NextResponse.json({ message: 'Full recipes generated' }, { status: 200 });
