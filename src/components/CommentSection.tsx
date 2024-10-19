@@ -41,14 +41,14 @@ const CommentSection: React.FC<CommentSectionProps> = ({ recipeId }) => {
       <form onSubmit={handleSubmit} className="mb-10">
         <input
           type="text"
-          className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-300 mb-4"
+          className="text-black w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-300 mb-4"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           placeholder="Your name"
           required
         />
         <textarea
-          className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-300"
+          className="text-black w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-300"
           rows={3}
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}

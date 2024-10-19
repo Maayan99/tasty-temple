@@ -60,7 +60,7 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({ recipe }) => {
           name="title"
           value={editedRecipe.title}
           onChange={handleInputChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          className="text-black mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
           required
         />
       </div>
@@ -73,7 +73,7 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({ recipe }) => {
           value={editedRecipe.description}
           onChange={handleInputChange}
           rows={3}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          className="text-black mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
           required
         ></textarea>
       </div>
@@ -86,7 +86,7 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({ recipe }) => {
           name="cookingTime"
           value={editedRecipe.cookingTime}
           onChange={handleInputChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          className="text-black mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
           required
         />
       </div>
@@ -98,7 +98,7 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({ recipe }) => {
           name="difficulty"
           value={editedRecipe.difficulty}
           onChange={handleInputChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          className="text-black mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
           required
         >
           <option value="Easy">Easy</option>
@@ -115,7 +115,7 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({ recipe }) => {
           name="servings"
           value={editedRecipe.servings}
           onChange={handleInputChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          className="text-black mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
           required
         />
       </div>
@@ -128,7 +128,7 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({ recipe }) => {
           value={editedRecipe.instructions}
           onChange={handleInputChange}
           rows={10}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          className="text-black mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
           required
         ></textarea>
       </div>
@@ -141,7 +141,7 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({ recipe }) => {
           value={editedRecipe.blogContent}
           onChange={handleInputChange}
           rows={15}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          className="text-black mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
           required
         ></textarea>
       </div>
@@ -153,7 +153,7 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({ recipe }) => {
       <motion.button
         type="submit"
         disabled={isLoading}
-        className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50"
+        className="text-black w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
