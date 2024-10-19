@@ -46,14 +46,8 @@ export interface Category {
 export interface Comment {
   id: number;
   content: string;
-  user: User;
+  user: string;
   createdAt: string;
-}
-
-export interface User {
-  id: number;
-  name: string;
-  email: string;
 }
 
 export interface BlogImage {
