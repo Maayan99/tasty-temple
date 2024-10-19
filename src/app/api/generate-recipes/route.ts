@@ -92,7 +92,7 @@ export async function POST(request: Request) {
       for await (const chunk of inference.chatCompletionStream({
         model: 'meta-llama/Llama-3.1-70B-Instruct',
         messages: [{ role: 'user', content: recipePrompt }],
-        max_tokens: 2000,
+        max_tokens: 4000,
       })) {
         recipeContent += chunk.choices[0]?.delta?.content || '';
       }
