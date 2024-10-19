@@ -66,15 +66,15 @@ const BlogContent: React.FC<BlogContentProps> = ({ content, images }) => {
                 transition={{ delay: index * 0.1, duration: 0.3 }}
               >
                 <Image
-                  src={item.image.imageUrl}
-                  alt={item.image.altText}
+                  src={item.image?.imageUrl || ""}
+                  alt={item.image?.altText || ""}
                   width={800}
                   height={600}
                   layout="responsive"
                   className="rounded-lg shadow-md"
                   unoptimized
                 />
-                <p className="text-sm text-gray-600 mt-2 text-center">{item.image.altText}</p>
+                <p className="text-sm text-gray-600 mt-2 text-center">{item.image?.altText}</p>
               </motion.div>
             );
           }
