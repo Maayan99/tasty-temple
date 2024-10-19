@@ -80,7 +80,7 @@ const GenerateRecipeForm: React.FC = () => {
       if (isBulkGeneration) {
         setBackloggedDirections(directions);
         setIsProcessingBacklog(true);
-        setGenerationLog([...generationLog, `Added ${directions.length} directions to the backlog`]);
+        setGenerationLog(prevLog => [...prevLog, `Added ${directions.length} directions to the backlog`]);
       } else {
         await processDirection(directions[0]);
       }
@@ -99,7 +99,7 @@ const GenerateRecipeForm: React.FC = () => {
       await processDirection(nextDirection);
     } else {
       setIsProcessingBacklog(false);
-      setGenerationLog([...generationLog, 'All backlogged directions processed']);
+      setGenerationLog(prevLog => [...prevLog, 'All backlogged directions processed']);
       setCurrentDirection('');
       setCurrentStepDescription('');
     }
@@ -121,12 +121,16 @@ const GenerateRecipeForm: React.FC = () => {
       const result = await response.json();
       setRecipeIdeas(result.recipeIdeas);
       setSelectedIdeas(result.recipeIdeas.map((_: any, index: number) => index));
-      setGenerationLog([...generationLog, `Generated ideas for: ${dir}`]);
+      setGenerationLog(prevLog => [...prevLog, `Generated ideas for: ${dir}`]);
       setCurrentStep(1);
       setTimer(8);
       setCurrentStepDescription('Selecting recipe ideas');
     } catch (err) {
       setError(`Error generating recipe ideas for: ${dir}. Please try again.`);
+      // Proceed to next direction on error
+      if (isProcessingBacklog) {
+        setBackloggedDirections(prev => prev.slice(1));
+      }
     } finally {
       setIsLoading(false);
     }
@@ -158,7 +162,7 @@ const GenerateRecipeForm: React.FC = () => {
   const handleGenerateFullRecipes = async () => {
     setIsLoading(true);
     setError('');
-    setGenerationLog([...generationLog, 'Generating full recipes']);
+    setGenerationLog(prevLog => [...prevLog, 'Generating full recipes']);
     setCurrentStepDescription('Generating full recipes');
 
     try {
@@ -177,12 +181,19 @@ const GenerateRecipeForm: React.FC = () => {
       const result = await response.json();
       setGeneratedRecipes(result.generatedRecipes);
       setSelectedRecipes(result.generatedRecipes.map((_: any, index: number) => index));
-      setGenerationLog([...generationLog, 'Full recipes generated']);
+      setGenerationLog(prevLog => [...prevLog, 'Full recipes generated']);
       setCurrentStep(2);
       setTimer(8);
       setCurrentStepDescription('Selecting recipes to publish');
     } catch (err) {
       setError('Error generating full recipes. Please try again.');
+      // Proceed to next direction on error
+      if (isProcessingBacklog) {
+        setBackloggedDirections(prev => prev.slice(1));
+        setCurrentStep(0);
+        setTimer(8);
+        setCurrentStepDescription('');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -197,7 +208,7 @@ const GenerateRecipeForm: React.FC = () => {
   const handlePublishRecipes = async () => {
     setIsLoading(true);
     setError('');
-    setGenerationLog([...generationLog, 'Publishing recipes']);
+    setGenerationLog(prevLog => [...prevLog, 'Publishing recipes']);
     setCurrentStepDescription('Publishing recipes');
 
     try {
@@ -214,7 +225,7 @@ const GenerateRecipeForm: React.FC = () => {
       }
 
       const result = await response.json();
-      setGenerationLog([...generationLog, 'Recipes published successfully']);
+      setGenerationLog(prevLog => [...prevLog, 'Recipes published successfully']);
       // Reset the form after successful publication
       setRecipeIdeas([]);
       setGeneratedRecipes([]);
@@ -226,10 +237,17 @@ const GenerateRecipeForm: React.FC = () => {
 
       if (isProcessingBacklog) {
         setBackloggedDirections(prev => prev.slice(1));
-        processNextBackloggedDirection();
+        // Let useEffect handle the next direction
       }
     } catch (err) {
       setError('Error publishing recipes. Please try again.');
+      // Proceed to next direction on error
+      if (isProcessingBacklog) {
+        setBackloggedDirections(prev => prev.slice(1));
+        setCurrentStep(0);
+        setTimer(8);
+        setCurrentStepDescription('');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -258,7 +276,11 @@ const GenerateRecipeForm: React.FC = () => {
         <motion.textarea
           value={direction}
           onChange={(e) => setDirection(e.target.value)}
-          placeholder={isBulkGeneration ? "Enter multiple directions, one per line..." : "Enter a direction for recipe ideas (optional)..."}
+          placeholder={
+            isBulkGeneration
+              ? 'Enter multiple directions, one per line...'
+              : 'Enter a direction for recipe ideas (optional)...'
+          }
           className="w-full text-black p-4 border border-gray-300 rounded-md mb-4 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           rows={isBulkGeneration ? 8 : 4}
           initial={{ scale: 0.95 }}
@@ -282,7 +304,11 @@ const GenerateRecipeForm: React.FC = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            {isLoading ? 'Processing...' : isBulkGeneration ? 'Add to Backlog' : 'Generate Recipe Ideas'}
+            {isLoading
+              ? 'Processing...'
+              : isBulkGeneration
+              ? 'Add to Backlog'
+              : 'Generate Recipe Ideas'}
           </motion.button>
         </div>
       </form>
@@ -307,7 +333,9 @@ const GenerateRecipeForm: React.FC = () => {
         <h3 className="text-xl font-semibold mt-4 mb-2">Backlogged Directions:</h3>
         <ul className="list-disc pl-5">
           {backloggedDirections.map((dir, index) => (
-            <li key={index} className={index === 0 ? 'font-bold' : ''}>{dir}</li>
+            <li key={index} className={index === 0 ? 'font-bold' : ''}>
+              {dir}
+            </li>
           ))}
         </ul>
       </motion.div>
@@ -376,7 +404,9 @@ const GenerateRecipeForm: React.FC = () => {
                 <div>
                   <h3 className="text-lg font-semibold text-gray-800">{recipe.title}</h3>
                   <p className="text-gray-600">{recipe.description}</p>
-                  <p className="text-sm text-gray-500">{recipe.cookingTime} mins | {recipe.difficulty} | Serves {recipe.servings}</p>
+                  <p className="text-sm text-gray-500">
+                    {recipe.cookingTime} mins | {recipe.difficulty} | Serves {recipe.servings}
+                  </p>
                 </div>
               </motion.li>
             ))}
