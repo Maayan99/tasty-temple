@@ -33,6 +33,7 @@ async function parseJSON(content: string, retryCount: number = 0): Promise<any> 
 
     return parseJSON(cleanedFixedContent, retryCount + 1);
   }
+}
 
 export async function POST(request: Request) {
   const { recipeIdeas } = await request.json();
