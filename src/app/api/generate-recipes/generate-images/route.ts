@@ -45,7 +45,7 @@ Servings: ${recipe.servings}
 Here's the original blog post:
 ${recipe.blogContent}
 
-Please rewrite and improve this blog post based on the given information and rules.`;
+Please rewrite and improve this blog post based on the given information and rules. Respond only with the rewritten blog post, nothing else around it, and make sure to abde by the rules provided`;
 
   let rewrittenContent = '';
   for await (const chunk of inference.chatCompletionStream({
@@ -114,11 +114,11 @@ export async function POST(request: Request) {
 
       // Generate random comments
       let comments: { user: string, content: string; createdAt: Date }[] = [];
-      try {
-        comments = await generateRandomComments(recipe);
-      } catch (e) {
-        console.warn("Failed to create comments");
-      }
+      // try {
+      //   comments = await generateRandomComments(recipe);
+      // } catch (e) {
+      //   console.warn("Failed to create comments");
+      // }
 
       console.log("About to save: ", recipe.title);
       console.log("About to save: ", recipe.description);
