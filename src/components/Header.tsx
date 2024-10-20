@@ -25,7 +25,7 @@ const Header: React.FC = () => {
           <div className="hidden md:flex items-center space-x-6">
             <SearchBar />
             <nav className="flex space-x-6">
-              {['Home', 'Recipes', 'Categories', 'About', 'Generate Recipe'].map((item) => (
+              {['Home', 'Recipes', 'About', 'Generate Recipe'].map((item) => (
                 <Link
                   key={item}
                   href={item === 'Home' ? '/' : `/${item.toLowerCase().replace(' ', '-')}`}
