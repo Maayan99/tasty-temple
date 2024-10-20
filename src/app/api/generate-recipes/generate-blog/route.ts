@@ -53,6 +53,7 @@ export async function POST(request: Request) {
     Servings: ${recipe.servings}
     Ingredients: ${JSON.stringify(recipe.ingredients)}
     Instructions: ${JSON.stringify(recipe.instructions)}
+    Main Image Prompt: ${recipe.imagePrompt}
 
     Please follow these guidelines:
     1. Write a blog post of about 800-1000 words.
