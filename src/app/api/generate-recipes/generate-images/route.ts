@@ -113,7 +113,7 @@ export async function POST(request: Request) {
       });
 
       // Generate random comments
-      let comments = [];
+      let comments: { user: string, content: string; createdAt: Date }[] = [];
       try {
         comments = await generateRandomComments(recipe);
       } catch (e) {
