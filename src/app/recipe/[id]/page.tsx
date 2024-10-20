@@ -34,12 +34,6 @@ export async function generateMetadata({ params }: RecipePageProps): Promise<Met
       description: recipe.description,
       images: [{ url: absoluteImageUrl, width: 1200, height: 630 }],
       siteName: 'Tasty Temple',
-      article: {
-        publishedTime: recipe.publishedAt,
-        modifiedTime: recipe.updatedAt,
-        authors: ['Tasty Temple'],
-        tags: [],
-      },
     },
     twitter: {
       card: 'summary_large_image',
