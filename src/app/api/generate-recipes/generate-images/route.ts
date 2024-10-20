@@ -107,10 +107,10 @@ export async function POST(request: Request) {
       }
 
       // Rewrite the blog post
-      const rewrittenBlogContent = await rewriteBlogPost({
-        ...recipe,
-        blogImages
-      });
+      // const rewrittenBlogContent = await rewriteBlogPost({
+      //   ...recipe,
+      //   blogImages
+      // });
 
       // Generate random comments
       let comments: { user: string, content: string; createdAt: Date }[] = [];
