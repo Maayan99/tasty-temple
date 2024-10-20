@@ -102,27 +102,37 @@ const UserGenerateRecipeForm: React.FC = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
-      className="bg-gradient-to-br from-white to-gray-100 shadow-xl rounded-lg p-8 max-w-2xl mx-auto"
+      className="bg-gradient-to-br from-white to-gray-100 shadow-xl rounded-lg p-8 max-w-2xl mx-auto relative overflow-hidden"
     >
-      <div className="mb-8">
-        <div className="flex justify-between mb-2">
-          {[1, 2, 3].map((step) => (
-            <div
-              key={step}
-              className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                currentStep >= step ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-500'
-              }`}
-            >
-              {step}
-            </div>
-          ))}
-        </div>
-        <div className="w-full bg-gray-200 rounded-full h-2.5">
-          <div
-            className="bg-blue-500 h-2.5 rounded-full transition-all duration-500 ease-in-out"
-            style={{ width: `${progress}%` }}
-          ></div>
-        </div>
+      <div className="absolute top-0 left-0 w-full h-2 bg-gray-200">
+        <motion.div
+          className="h-full bg-gradient-to-r from-blue-500 to-purple-600"
+          style={{ width: `${progress}%` }}
+          initial={{ width: 0 }}
+          animate={{ width: `${progress}%` }}
+          transition={{ duration: 0.5, ease: 'easeInOut' }}
+        />
+      </div>
+
+      <div className="mb-8 flex justify-between items-center">
+        {[1, 2, 3].map((step) => (
+          <motion.div
+            key={step}
+            className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold ${
+              currentStep >= step
+                ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white'
+                : 'bg-gray-200 text-gray-500'
+            }`}
+            initial={{ scale: 0.8, opacity: 0.5 }}
+            animate={{
+              scale: currentStep >= step ? 1 : 0.8,
+              opacity: currentStep >= step ? 1 : 0.5,
+            }}
+            transition={{ duration: 0.3 }}
+          >
+            {step}
+          </motion.div>
+        ))}
       </div>
 
       <AnimatePresence mode="wait">
@@ -173,7 +183,7 @@ const UserGenerateRecipeForm: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="bg-gradient-to-br from-blue-50 to-purple-50 p-6 rounded-lg shadow-md mb-8"
+            className="bg-white p-6 rounded-lg shadow-md mb-8 border border-gray-200"
           >
             <h2 className="text-2xl font-bold mb-4 text-gray-800">{recipeIdea.title}</h2>
             <p className="text-gray-600 mb-6">{recipeIdea.description}</p>
@@ -217,36 +227,36 @@ const UserGenerateRecipeForm: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="bg-gradient-to-br from-green-50 to-blue-50 p-6 rounded-lg shadow-md mb-8"
+            className="bg-white p-6 rounded-lg shadow-md mb-8 border border-gray-200"
           >
             <h2 className="text-2xl font-bold mb-4 text-gray-800">{fullRecipe.title}</h2>
             <p className="text-gray-600 mb-4">{fullRecipe.description}</p>
             <div className="mb-4">
-              <h3 className="text-xl font-semibold mb-2">Ingredients:</h3>
-              <ul className="list-disc pl-5">
+              <h3 className="text-xl font-semibold mb-2 text-gray-700">Ingredients:</h3>
+              <ul className="list-disc pl-5 space-y-1">
                 {fullRecipe.ingredients.map((ingredient: any, index: number) => (
-                  <li key={index}>{`${ingredient.quantity} ${ingredient.unit} ${ingredient.name}`}</li>
+                  <li key={index} className="text-gray-600">{`${ingredient.quantity} ${ingredient.unit} ${ingredient.name}`}</li>
                 ))}
               </ul>
             </div>
             <div className="mb-4">
-              <h3 className="text-xl font-semibold mb-2">Instructions:</h3>
-              <ol className="list-decimal pl-5">
+              <h3 className="text-xl font-semibold mb-2 text-gray-700">Instructions:</h3>
+              <ol className="list-decimal pl-5 space-y-2">
                 {fullRecipe.instructions.map((instruction: string, index: number) => (
-                  <li key={index}>{instruction}</li>
+                  <li key={index} className="text-gray-600">{instruction}</li>
                 ))}
               </ol>
             </div>
             <div className="mb-4">
-              <h3 className="text-xl font-semibold mb-2">Image Prompts:</h3>
-              <p>{fullRecipe.imagePrompt}</p>
+              <h3 className="text-xl font-semibold mb-2 text-gray-700">Image Prompts:</h3>
+              <p className="text-gray-600 mb-2">{fullRecipe.imagePrompt}</p>
               {fullRecipe.blogImagePrompts.map((prompt: any, index: number) => (
-                <p key={index}>{prompt.prompt}</p>
+                <p key={index} className="text-gray-600 mb-1">{prompt.prompt}</p>
               ))}
             </div>
             <motion.button
               onClick={handlePublishRecipe}
-              className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-md font-semibold text-lg hover:from-indigo-600 hover:to-purple-700 transition duration-300"
+              className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-md font-semibold text-lg hover:from-indigo-600 hover:to-purple-700 transition duration-300 shadow-md hover:shadow-lg"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
