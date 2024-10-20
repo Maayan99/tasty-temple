@@ -14,6 +14,13 @@ const UserGenerateRecipeForm: React.FC = () => {
   const [progress, setProgress] = useState(0);
   const router = useRouter();
 
+  const steps = [
+    { number: 1, name: 'Idea Generation' },
+    { number: 2, name: 'Recipe Refinement' },
+    { number: 3, name: 'Full Recipe Creation' },
+    { number: 4, name: 'Publication' }
+  ];
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -35,7 +42,7 @@ const UserGenerateRecipeForm: React.FC = () => {
       const data = await response.json();
       setRecipeIdea(data.recipeIdeas[0]);
       setCurrentStep(2);
-      setProgress(33);
+      setProgress(25);
     } catch (err) {
       setError('The server is currently overloaded. Please try again later.');
     } finally {
@@ -43,10 +50,16 @@ const UserGenerateRecipeForm: React.FC = () => {
     }
   };
 
+  const handleEditRecipeIdea = (field: 'title' | 'description', value: string) => {
+    if (recipeIdea) {
+      setRecipeIdea({ ...recipeIdea, [field]: value });
+    }
+  };
+
   const handleGenerateFullRecipe = async () => {
     setIsLoading(true);
     setError('');
-    setProgress(33);
+    setProgress(50);
 
     try {
       const response = await fetch('/api/generate-recipes/generate-full-recipe', {
@@ -62,7 +75,7 @@ const UserGenerateRecipeForm: React.FC = () => {
       const data = await response.json();
       setFullRecipe(data.generatedRecipes[0]);
       setCurrentStep(3);
-      setProgress(66);
+      setProgress(75);
     } catch (err) {
       setError('The server is currently overloaded. Please try again later.');
     } finally {
@@ -73,7 +86,7 @@ const UserGenerateRecipeForm: React.FC = () => {
   const handlePublishRecipe = async () => {
     setIsLoading(true);
     setError('');
-    setProgress(66);
+    setProgress(90);
 
     try {
       const response = await fetch('/api/generate-recipes/generate-images', {
@@ -102,7 +115,7 @@ const UserGenerateRecipeForm: React.FC = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
-      className="bg-gradient-to-br from-white to-gray-100 shadow-xl rounded-lg p-8 max-w-2xl mx-auto relative overflow-hidden"
+      className="bg-gradient-to-br from-white to-gray-100 shadow-xl rounded-lg p-4 sm:p-8 max-w-2xl mx-auto relative overflow-hidden"
     >
       <div className="absolute top-0 left-0 w-full h-2 bg-gray-200">
         <motion.div
@@ -114,23 +127,32 @@ const UserGenerateRecipeForm: React.FC = () => {
         />
       </div>
 
-      <div className="mb-8 flex justify-between items-center">
-        {[1, 2, 3].map((step) => (
+      <div className="mb-8 flex justify-between items-center overflow-x-auto py-2">
+        {steps.map((step) => (
           <motion.div
-            key={step}
-            className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold ${
-              currentStep >= step
-                ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white'
-                : 'bg-gray-200 text-gray-500'
+            key={step.number}
+            className={`flex flex-col items-center justify-center px-2 ${
+              currentStep >= step.number
+                ? 'text-indigo-600'
+                : 'text-gray-400'
             }`}
             initial={{ scale: 0.8, opacity: 0.5 }}
             animate={{
-              scale: currentStep >= step ? 1 : 0.8,
-              opacity: currentStep >= step ? 1 : 0.5,
+              scale: currentStep >= step.number ? 1 : 0.8,
+              opacity: currentStep >= step.number ? 1 : 0.5,
             }}
             transition={{ duration: 0.3 }}
           >
-            {step}
+            <div
+              className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold mb-1 ${
+                currentStep >= step.number
+                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white'
+                  : 'bg-gray-200 text-gray-500'
+              }`}
+            >
+              {step.number}
+            </div>
+            <span className="text-xs text-center">{step.name}</span>
           </motion.div>
         ))}
       </div>
@@ -185,8 +207,27 @@ const UserGenerateRecipeForm: React.FC = () => {
             exit={{ opacity: 0, y: -20 }}
             className="bg-white p-6 rounded-lg shadow-md mb-8 border border-gray-200"
           >
-            <h2 className="text-2xl font-bold mb-4 text-gray-800">{recipeIdea.title}</h2>
-            <p className="text-gray-600 mb-6">{recipeIdea.description}</p>
+            <h2 className="text-2xl font-bold mb-4 text-gray-800">Recipe Idea</h2>
+            <div className="mb-4">
+              <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+              <input
+                type="text"
+                id="title"
+                value={recipeIdea.title}
+                onChange={(e) => handleEditRecipeIdea('title', e.target.value)}
+                className="w-full text-black p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <div className="mb-6">
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+              <textarea
+                id="description"
+                value={recipeIdea.description}
+                onChange={(e) => handleEditRecipeIdea('description', e.target.value)}
+                className="w-full text-black p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                rows={3}
+              />
+            </div>
             <div className="flex justify-between">
               <motion.button
                 onClick={() => {
