@@ -45,7 +45,6 @@ export async function generateMetadata({ params }: RecipePageProps): Promise<Met
     icons: {
       icon: '/favicon.ico',
     },
-    themeColor: '#ffffff',
   };
 }
 
