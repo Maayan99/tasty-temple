@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: RecipePageProps): Promise<Met
     };
   }
 
-  const absoluteImageUrl = `${process.env.NEXT_PUBLIC_SITE_URL}${recipe.imageUrl}`;
+  const absoluteImageUrl = `${process.env.NEXT_PUBLIC_SITE_URL}${encodeURIComponent(recipe.imageUrl.toLowerCase())}`;
   const absoluteUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/recipes/${params.id}`;
 
   return {
@@ -55,7 +55,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
     notFound();
   }
 
-  console.log('Recipe Image URL:', recipe.imageUrl);
+  console.log('Recipe Image URL:', encodeURIComponent(recipe.imageUrl.toLowerCase()));
 
   return (
     <div className="min-h-screen bg-gray-50">
