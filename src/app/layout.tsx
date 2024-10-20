@@ -15,7 +15,7 @@ export const metadata = {
     siteName: 'Tasty Temple',
     images: [
       {
-        url: 'https://tastytemple.com/cover.png',
+        url: 'https://tastytemple.com/og-image.jpg',
         width: 1200,
         height: 630,
       },
@@ -27,7 +27,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: 'Tasty Temple',
     description: 'Discover delicious recipes and culinary inspiration',
-    images: ['https://tastytemple.com/cover.png'],
+    images: ['https://tastytemple.com/og-image.jpg'],
   },
 }
 
@@ -44,6 +44,10 @@ export default function RootLayout({
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7456835418426502"
           crossOrigin="anonymous"
         />
+        <meta property="og:image" content="https://tastytemple.com/og-image.jpg" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:image" content="https://tastytemple.com/og-image.jpg" />
       </head>
       <body className={inter.className}>{children}</body>
       <Analytics />
