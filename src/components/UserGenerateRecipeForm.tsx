@@ -10,6 +10,7 @@ const UserGenerateRecipeForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [fullRecipe, setFullRecipe] = useState<any>(null);
+  const [blogContent, setBlogContent] = useState<any>(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [progress, setProgress] = useState(0);
   const router = useRouter();
@@ -18,7 +19,8 @@ const UserGenerateRecipeForm: React.FC = () => {
     { number: 1, name: 'Idea Generation' },
     { number: 2, name: 'Recipe Refinement' },
     { number: 3, name: 'Full Recipe Creation' },
-    { number: 4, name: 'Image Generation and Finalization' }
+    { number: 4, name: 'Blog Content Generation' },
+    { number: 5, name: 'Image Generation and Finalization' }
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -42,7 +44,7 @@ const UserGenerateRecipeForm: React.FC = () => {
       const data = await response.json();
       setRecipeIdea(data.recipeIdeas[0]);
       setCurrentStep(2);
-      setProgress(25);
+      setProgress(20);
     } catch (err) {
       setError('The server is currently overloaded. Please try again later.');
     } finally {
@@ -59,10 +61,10 @@ const UserGenerateRecipeForm: React.FC = () => {
   const handleGenerateFullRecipe = async () => {
     setIsLoading(true);
     setError('');
-    setProgress(50);
+    setProgress(40);
 
     try {
-      const response = await fetch('/api/generate-recipes/generate-full-recipe', {
+      const response = await fetch('/api/generate-recipes/generate-recipe-without-blog', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ recipeIdeas: [recipeIdea] }),
@@ -75,7 +77,7 @@ const UserGenerateRecipeForm: React.FC = () => {
       const data = await response.json();
       setFullRecipe(data.generatedRecipes[0]);
       setCurrentStep(3);
-      setProgress(75);
+      setProgress(60);
     } catch (err) {
       setError('The server is currently overloaded. Please try again later.');
     } finally {
@@ -108,10 +110,44 @@ const UserGenerateRecipeForm: React.FC = () => {
     }));
   };
 
+  const handleGenerateBlogContent = async () => {
+    setIsLoading(true);
+    setError('');
+    setProgress(80);
+
+    try {
+      const response = await fetch('/api/generate-recipes/generate-blog', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ recipe: fullRecipe }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate blog content');
+      }
+
+      const data = await response.json();
+      setBlogContent(data.generatedBlog);
+      setCurrentStep(4);
+      setProgress(80);
+    } catch (err) {
+      setError('The server is currently overloaded. Please try again later.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleEditBlogContent = (field: string, value: string) => {
+    setBlogContent((prevBlog: any) => ({
+      ...prevBlog,
+      [field]: value,
+    }));
+  };
+
   const handleEditImagePrompt = (index: number, field: string, value: string) => {
-    setFullRecipe((prevRecipe: any) => ({
-      ...prevRecipe,
-      blogImagePrompts: prevRecipe.blogImagePrompts?.map((prompt: any, i: number) =>
+    setBlogContent((prevBlog: any) => ({
+      ...prevBlog,
+      blogImagePrompts: prevBlog.blogImagePrompts?.map((prompt: any, i: number) =>
         i === index ? { ...prompt, [field]: value } : prompt
       ),
     }));
@@ -123,10 +159,15 @@ const UserGenerateRecipeForm: React.FC = () => {
     setProgress(90);
 
     try {
+      const finalRecipe = {
+        ...fullRecipe,
+        ...blogContent,
+      };
+
       const response = await fetch('/api/generate-recipes/generate-images', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ generatedRecipes: [fullRecipe] }),
+        body: JSON.stringify({ generatedRecipes: [finalRecipe] }),
       });
 
       if (!response.ok) {
@@ -369,22 +410,62 @@ const UserGenerateRecipeForm: React.FC = () => {
             </div>
 
             <div className="mb-4">
-              <h3 className="text-xl font-semibold mb-2 text-gray-700">Image Prompts:</h3>
-              <div className="mb-2">
-                <label htmlFor="mainImagePrompt" className="block text-sm font-medium text-gray-700 mb-1">Main Image Prompt</label>
-                <textarea
-                  id="mainImagePrompt"
-                  value={fullRecipe.imagePrompt}
-                  onChange={(e) => handleEditFullRecipe('imagePrompt', e.target.value)}
-                  className="w-full text-black p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  rows={2}
-                />
-              </div>
-              {fullRecipe.blogImagePrompts?.map((prompt: any, index: number) => (
+              <h3 className="text-xl font-semibold mb-2 text-gray-700">Main Image Prompt:</h3>
+              <textarea
+                value={fullRecipe.imagePrompt}
+                onChange={(e) => handleEditFullRecipe('imagePrompt', e.target.value)}
+                className="w-full text-black p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                rows={2}
+              />
+            </div>
+
+            <motion.button
+              onClick={handleGenerateBlogContent}
+              className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-md font-semibold text-lg hover:from-indigo-600 hover:to-purple-700 transition duration-300 shadow-md hover:shadow-lg"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {isLoading ? (
+                <span className="flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Generating Blog Content...
+                </span>
+              ) : (
+                'Generate Blog Content'
+              )}
+            </motion.button>
+          </motion.div>
+        )}
+
+        {currentStep === 4 && blogContent && (
+          <motion.div
+            key="blog-content"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="bg-white p-6 rounded-lg shadow-md mb-8 border border-gray-200"
+          >
+            <h2 className="text-2xl font-bold mb-4 text-gray-800">Blog Content</h2>
+            
+            <div className="mb-4">
+              <label htmlFor="blogContent" className="block text-sm font-medium text-gray-700 mb-1">Blog Content</label>
+              <textarea
+                id="blogContent"
+                value={blogContent.blogContent}
+                onChange={(e) => handleEditBlogContent('blogContent', e.target.value)}
+                className="w-full text-black p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                rows={10}
+              />
+            </div>
+
+            <div className="mb-4">
+              <h3 className="text-xl font-semibold mb-2 text-gray-700">Blog Image Prompts:</h3>
+              {blogContent.blogImagePrompts?.map((prompt: any, index: number) => (
                 <div key={index} className="mb-2">
-                  <label htmlFor={`blogImagePrompt${index}`} className="block text-sm font-medium text-gray-700 mb-1">Blog Image Prompt {index + 1}</label>
                   <textarea
-                    id={`blogImagePrompt${index}`}
                     value={prompt.prompt}
                     onChange={(e) => handleEditImagePrompt(index, 'prompt', e.target.value)}
                     className="w-full text-black p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -396,7 +477,7 @@ const UserGenerateRecipeForm: React.FC = () => {
 
             <motion.button
               onClick={handleGenerateImagesAndFinalize}
-              className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-md font-semibold text-lg hover:from-indigo-600 hover:to-purple-700 transition duration-300 shadow-md hover:shadow-lg"
+              className="w-full bg-gradient-to-r from-green-500 to-blue-600 text-white px-6 py-3 rounded-md font-semibold text-lg hover:from-green-600 hover:to-blue-700 transition duration-300 shadow-md hover:shadow-lg"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
