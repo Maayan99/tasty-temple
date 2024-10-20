@@ -46,15 +46,6 @@ const AIRecipeSection: React.FC = () => {
           <svg className="w-full h-auto" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
             <path fill="#FFFFFF" d="M47.1,-57.4C59.9,-47.1,68.5,-31.6,71.4,-15.1C74.3,1.4,71.4,18.9,63.3,33.2C55.2,47.5,41.9,58.6,26.8,64.8C11.7,71,-5.2,72.3,-20.6,67.6C-36,62.9,-49.9,52.3,-60.1,38.5C-70.3,24.7,-76.8,7.8,-74.3,-7.9C-71.8,-23.5,-60.4,-37.8,-47,-49.6C-33.6,-61.4,-18.3,-70.6,-1.2,-69.2C15.9,-67.8,34.3,-67.7,47.1,-57.4Z" transform="translate(100 100)" />
           </svg>
-          <motion.div
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          >
-            <svg className="w-32 h-32" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-            </svg>
-          </motion.div>
         </motion.div>
       </div>
     </motion.section>
