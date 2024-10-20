@@ -37,7 +37,7 @@ Here's the recipe information:
 Title: ${recipe.title}
 Description: ${recipe.description}
 Ingredients: ${JSON.stringify(recipe.ingredients)}
-Instructions: ${recipe.instructions.join('\n')}
+Instructions: ${recipe.instructions?.join('\n')}
 Cooking Time: ${recipe.cookingTime} minutes
 Difficulty: ${recipe.difficulty}
 Servings: ${recipe.servings}
@@ -126,7 +126,7 @@ export async function POST(request: Request) {
       console.log("About to save: ", recipe.difficulty);
       console.log("About to save: ", recipe.servings);
       console.log("About to save: ", mainImageUrl);
-      console.log("About to save: ", recipe.instructions.join('\n'));
+      console.log("About to save: ", recipe.instructions?.join('\n'));
       console.log("About to save: ", recipe.nutrition);
       console.log("About to save: ", rewrittenBlogContent);
       console.log("About to save: ", recipe.ingredients);
@@ -142,7 +142,7 @@ export async function POST(request: Request) {
           difficulty: recipe.difficulty,
           servings: recipe.servings,
           imageUrl: mainImageUrl,
-          instructions: recipe.instructions.join('\n'),
+          instructions: recipe.instructions?.join('\n') || "",
           nutrition: recipe.nutrition || {},
           blogContent: rewrittenBlogContent,
           blogImages: {
