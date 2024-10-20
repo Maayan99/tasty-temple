@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: RecipePageProps): Promise<Met
       title: `${recipe.title} - Tasty Temple`,
       description: recipe.description,
       images: [{ url: absoluteImageUrl, width: 1200, height: 630 }],
-      site_name: 'Tasty Temple',
+      siteName: 'Tasty Temple',
       article: {
         publishedTime: recipe.publishedAt,
         modifiedTime: recipe.updatedAt,
