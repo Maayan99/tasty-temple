@@ -182,7 +182,12 @@ export async function POST(request: Request) {
     console.error('Error publishing recipes:', error.message.substring(7000, 8000));
     console.error('Error publishing recipes:', error.message.substring(8000, 9000));
     console.error('Error publishing recipes:', error.message.substring(9000, 10000));
-    console.error('Error publishing recipes:', error.message.substring(10000, 11000));
+    console.error('Error publishing recipes:', error.message.substring(11000, 12000));
+    console.error('Error publishing recipes:', error.message.substring(12000, 13000));
+    console.error('Error publishing recipes:', error.message.substring(13000, 14000));
+    console.error('Error publishing recipes:', error.message.substring(14000, 15000));
+    console.error('Error publishing recipes:', error.message.substring(15000, 16000));
+    console.error('Error publishing recipes:', error.message.substring(16000, 17000));
 
     // Delete blog images from B2
     for (const image of photoUrls) {
