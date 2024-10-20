@@ -19,7 +19,9 @@ export async function generateMetadata({ params }: RecipePageProps): Promise<Met
     };
   }
 
-  const absoluteImageUrl = encodeURIComponent(recipe.imageUrl.toLowerCase());
+// Check if the imageUrl is absolute by looking for 'http' or 'https' at the start
+  const isAbsoluteUrl = recipe.imageUrl.startsWith('http://') || recipe.imageUrl.startsWith('https://');
+  const imageUrl = isAbsoluteUrl ? recipe.imageUrl : `${process.env.NEXT_PUBLIC_SITE_URL}${recipe.imageUrl}`;
   const absoluteUrl = `${process.env.NEXT_PUBLIC_SITE_URL}recipes/${params.id}`;
 
   return {
@@ -31,14 +33,14 @@ export async function generateMetadata({ params }: RecipePageProps): Promise<Met
       url: absoluteUrl,
       title: `${recipe.title} - Tasty Temple`,
       description: recipe.description,
-      images: [{ url: absoluteImageUrl, width: 1200, height: 630 }],
+      images: [{ url: imageUrl, width: 1200, height: 630 }],
       siteName: 'Tasty Temple',
     },
     twitter: {
       card: 'summary_large_image',
       title: `${recipe.title} - Tasty Temple`,
       description: recipe.description,
-      images: [absoluteImageUrl],
+      images: [imageUrl],
     },
     icons: {
       icon: '/favicon.ico',
