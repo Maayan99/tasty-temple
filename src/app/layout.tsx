@@ -48,6 +48,7 @@ export default function RootLayout({
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:image" content="https://tastytemple.com/og-image.jpg" />
+        <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
       </head>
       <body className={inter.className}>{children}</body>
       <Analytics />

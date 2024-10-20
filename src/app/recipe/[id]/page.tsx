@@ -5,6 +5,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import RecipeContent from '@/components/RecipeContent';
 import { getRecipeBySlug } from '@/lib/recipes';
+import { Recipe } from '@/types/recipe';
 
 interface RecipePageProps {
   params: { id: string };
@@ -19,7 +20,6 @@ export async function generateMetadata({ params }: RecipePageProps): Promise<Met
     };
   }
 
-// Check if the imageUrl is absolute by looking for 'http' or 'https' at the start
   const isAbsoluteUrl = recipe.imageUrl.startsWith('http://') || recipe.imageUrl.startsWith('https://');
   const imageUrl = isAbsoluteUrl ? recipe.imageUrl : `${process.env.NEXT_PUBLIC_SITE_URL}${recipe.imageUrl}`;
   const absoluteUrl = `${process.env.NEXT_PUBLIC_SITE_URL}recipes/${params.id}`;
@@ -48,6 +48,40 @@ export async function generateMetadata({ params }: RecipePageProps): Promise<Met
   };
 }
 
+function generateSchemaOrgScript(recipe: Recipe): string {
+  const schemaOrgData = {
+    '@context': 'https://schema.org',
+    '@type': 'Recipe',
+    name: recipe.title,
+    description: recipe.description,
+    image: recipe.imageUrl,
+    author: {
+      '@type': 'Organization',
+      name: 'Tasty Temple',
+    },
+    datePublished: recipe.createdAt,
+    prepTime: `PT${recipe.cookingTime}M`,
+    cookTime: `PT${recipe.cookingTime}M`,
+    totalTime: `PT${recipe.cookingTime}M`,
+    recipeYield: `${recipe.servings} servings`,
+    recipeCategory: recipe.categories.map(cat => cat.category.name).join(', '),
+    recipeCuisine: recipe.categories.map(cat => cat.category.name).join(', '),
+    recipeIngredient: recipe.ingredients.map(ing => `${ing.quantity} ${ing.ingredient.unit} ${ing.ingredient.name}`),
+    recipeInstructions: recipe.instructions.split('\n').map(step => ({
+      '@type': 'HowToStep',
+      text: step,
+    })),
+    nutrition: {
+      '@type': 'NutritionInformation',
+      calories: `${recipe.nutrition.calories} calories`,
+      proteinContent: `${recipe.nutrition.protein}g`,
+      carbohydrateContent: `${recipe.nutrition.carbs}g`,
+      fatContent: `${recipe.nutrition.fat}g`,
+    },
+  };
+
+  return `<script type="application/ld+json">${JSON.stringify(schemaOrgData)}</script>`;
+}
 
 export default async function RecipePage({ params }: RecipePageProps) {
   const recipe = await getRecipeBySlug(params.id);
@@ -56,7 +90,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
     notFound();
   }
 
-  console.log('Recipe Image URL:', encodeURIComponent(recipe.imageUrl.toLowerCase()));
+  const schemaOrgScript = generateSchemaOrgScript(recipe);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -65,6 +99,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
         <RecipeContent recipe={recipe} />
       </main>
       <Footer />
+      <div dangerouslySetInnerHTML={{ __html: schemaOrgScript }} />
     </div>
   );
 }
