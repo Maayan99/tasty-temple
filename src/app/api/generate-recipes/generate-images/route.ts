@@ -4,6 +4,7 @@ import slugify from 'slugify';
 import { PrismaClient } from '@prisma/client';
 import { generateRandomComments } from '@/lib/comments';
 import { HfInference } from "@huggingface/inference";
+import { deleteImageFromB2 } from '@/lib/b2';
 
 const prisma = new PrismaClient();
 const inference = new HfInference(process.env.HUGGINGFACE_API_KEY);
@@ -64,6 +65,8 @@ export async function POST(request: Request) {
 
   console.log("Generated Recipes received at image route: ", generatedRecipes);
 
+  const photoUrls: string[] = [];
+
   try {
     const publishedRecipes = [];
 
@@ -84,6 +87,7 @@ export async function POST(request: Request) {
       console.log("Slugifying main image: ", recipe.title);
       const mainImageKey = `recipes/${slugify(recipe.title, { lower: true, strict: true })}-main-${Date.now()}.png`;
       const mainImageUrl = await uploadToB2(mainImageBuffer, mainImageKey);
+      photoUrls.push(mainImageUrl);
       console.log("Main image url: ", mainImageUrl);
 
       // Upload blog images to B2
@@ -93,6 +97,7 @@ export async function POST(request: Request) {
         console.log("Slugifying blog image ", i, recipe.title);
         const blogImageKey = `recipes/${slugify(recipe.title, { lower: true, strict: true })}-blog-${i + 1}-${Date.now()}.png`;
         const blogImageUrl = await uploadToB2(blogImageBuffer, blogImageKey);
+        photoUrls.push(blogImageUrl);
         blogImages.push({
           imageUrl: blogImageUrl,
           altText: recipe.blogImagePrompts[i].altText
@@ -178,6 +183,13 @@ export async function POST(request: Request) {
     console.error('Error publishing recipes:', error.message.substring(8000, 9000));
     console.error('Error publishing recipes:', error.message.substring(9000, 10000));
     console.error('Error publishing recipes:', error.message.substring(10000, 11000));
+
+    // Delete blog images from B2
+    for (const image of photoUrls) {
+      await deleteImageFromB2(image);
+    }
+
+
     const response = NextResponse.json({
       message: 'Error publishing recipes',
       error: (error as Error).message,
