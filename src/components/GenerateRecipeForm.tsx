@@ -138,7 +138,7 @@ const processNextBackloggedDirection = async () => {
 
       const result = await response.json();
       setRecipeIdeas(result.recipeIdeas);
-      setSelectedIdeas([0]);
+      setSelectedIdeas(result.recipeIdeas.map((_: any, index: number) => index));
       setGenerationLog((prevLog) => [...prevLog, `Generated ideas for: ${dir}`]);
       setCurrentStep(1);
       setCurrentStepDescription('Selecting recipe ideas');
