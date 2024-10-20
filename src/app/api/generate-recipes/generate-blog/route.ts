@@ -69,6 +69,10 @@ export async function POST(request: Request) {
     11. Conclude with a call-to-action encouraging readers to try the recipe.
     12. Use '<<IMAGE X>>' placeholders where X is the image number (1, 2, 3, etc.) to indicate where images should be placed.
     13. Generate 3-5 image prompts for AI image generation, along with SEO-optimized alt text for each image.
+    14. Do not include any external links or phrases like '[Insert Link]' in the blog content.
+    15. Ensure that image prompts are not part of the blog content itself.
+    16. Use '\n' for line breaks and ensure there are at least 8 paragraphs in the blog content.
+    17. Follow the structure and style of the example blog post provided, maintaining a similar tone and level of detail.
 
     Format the output as a JSON object with the following structure:
     {
