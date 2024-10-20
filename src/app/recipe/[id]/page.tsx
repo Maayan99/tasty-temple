@@ -19,8 +19,8 @@ export async function generateMetadata({ params }: RecipePageProps): Promise<Met
     };
   }
 
-  const absoluteImageUrl = `${process.env.NEXT_PUBLIC_SITE_URL}${encodeURIComponent(recipe.imageUrl.toLowerCase())}`;
-  const absoluteUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/recipes/${params.id}`;
+  const absoluteImageUrl = encodeURIComponent(recipe.imageUrl.toLowerCase());
+  const absoluteUrl = `${process.env.NEXT_PUBLIC_SITE_URL}recipes/${params.id}`;
 
   return {
     title: `${recipe.title} - Tasty Temple`,
