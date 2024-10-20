@@ -10,6 +10,7 @@ import InstructionList from './InstructionList';
 import RelatedRecipes from './RelatedRecipes';
 import CommentSection from './CommentSection';
 import BlogContent from './BlogContent';
+import { useRelatedRecipes } from '@/hooks/useRelatedRecipes';
 
 interface RecipeContentProps {
   recipe: Recipe;
@@ -17,6 +18,7 @@ interface RecipeContentProps {
 
 const RecipeContent: React.FC<RecipeContentProps> = ({ recipe }) => {
   const [servings, setServings] = useState(recipe.servings);
+  const { relatedRecipes, isLoading, error } = useRelatedRecipes(recipe.slug);
 
   return (
     <motion.div
@@ -86,7 +88,7 @@ const RecipeContent: React.FC<RecipeContentProps> = ({ recipe }) => {
           </motion.div>
         </div>
       </div>
-      <RelatedRecipes recipeSlug={recipe.slug} />
+      {!isLoading && !error && <RelatedRecipes recipes={relatedRecipes} />}
       <CommentSection recipeId={recipe.id} />
     </motion.div>
   );
