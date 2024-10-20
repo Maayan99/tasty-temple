@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: RecipePageProps): Promise<Met
   return {
     title: `${recipe.title} - Tasty Temple`,
     description: recipe.description,
-    keywords: recipe.keywords || 'cooking, recipes, Tasty Temple, baking',
+    keywords: 'cooking, recipes, Tasty Temple, baking',
     canonical: absoluteUrl,
     openGraph: {
       type: 'article',
@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: RecipePageProps): Promise<Met
         publishedTime: recipe.publishedAt,
         modifiedTime: recipe.updatedAt,
         authors: ['Tasty Temple'],
-        tags: recipe.keywords || [],
+        tags: [],
       },
     },
     twitter: {
