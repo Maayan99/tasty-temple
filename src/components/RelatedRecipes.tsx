@@ -5,18 +5,12 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Recipe } from '@/types/recipe';
-import { useRelatedRecipes } from '@/hooks/useRelatedRecipes';
 
 interface RelatedRecipesProps {
-  recipeSlug: string;
+  recipes: Recipe[];
 }
 
-const RelatedRecipes: React.FC<RelatedRecipesProps> = ({ recipeSlug }) => {
-  const { relatedRecipes, isLoading, error } = useRelatedRecipes(recipeSlug);
-
-  if (isLoading) return <div>Loading related recipes...</div>;
-  if (error) return <div>Error loading related recipes</div>;
-
+const RelatedRecipes: React.FC<RelatedRecipesProps> = ({ recipes }) => {
   return (
     <motion.div
       className="mt-16"
@@ -26,7 +20,7 @@ const RelatedRecipes: React.FC<RelatedRecipesProps> = ({ recipeSlug }) => {
     >
       <h2 className="text-3xl font-semibold mb-6 text-gray-800">Related Recipes</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {relatedRecipes.map((recipe: Recipe) => (
+        {recipes.map((recipe: Recipe) => (
           <Link href={`/recipe/${recipe.slug}`} key={recipe.id}>
             <motion.div
               className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300"
