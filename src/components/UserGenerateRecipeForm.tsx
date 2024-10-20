@@ -18,7 +18,7 @@ const UserGenerateRecipeForm: React.FC = () => {
     { number: 1, name: 'Idea Generation' },
     { number: 2, name: 'Recipe Refinement' },
     { number: 3, name: 'Full Recipe Creation' },
-    { number: 4, name: 'Publication' }
+    { number: 4, name: 'Image Generation and Finalization' }
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -83,7 +83,41 @@ const UserGenerateRecipeForm: React.FC = () => {
     }
   };
 
-  const handlePublishRecipe = async () => {
+  const handleEditFullRecipe = (field: string, value: any) => {
+    setFullRecipe((prevRecipe: any) => ({
+      ...prevRecipe,
+      [field]: value,
+    }));
+  };
+
+  const handleEditIngredient = (index: number, field: string, value: string) => {
+    setFullRecipe((prevRecipe: any) => ({
+      ...prevRecipe,
+      ingredients: prevRecipe.ingredients.map((ingredient: any, i: number) =>
+        i === index ? { ...ingredient, [field]: value } : ingredient
+      ),
+    }));
+  };
+
+  const handleEditInstruction = (index: number, value: string) => {
+    setFullRecipe((prevRecipe: any) => ({
+      ...prevRecipe,
+      instructions: prevRecipe.instructions.map((instruction: string, i: number) =>
+        i === index ? value : instruction
+      ),
+    }));
+  };
+
+  const handleEditImagePrompt = (index: number, field: string, value: string) => {
+    setFullRecipe((prevRecipe: any) => ({
+      ...prevRecipe,
+      blogImagePrompts: prevRecipe.blogImagePrompts.map((prompt: any, i: number) =>
+        i === index ? { ...prompt, [field]: value } : prompt
+      ),
+    }));
+  };
+
+  const handleGenerateImagesAndFinalize = async () => {
     setIsLoading(true);
     setError('');
     setProgress(90);
@@ -96,7 +130,7 @@ const UserGenerateRecipeForm: React.FC = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to publish recipe');
+        throw new Error('Failed to generate images and finalize recipe');
       }
 
       const data = await response.json();
@@ -270,33 +304,98 @@ const UserGenerateRecipeForm: React.FC = () => {
             exit={{ opacity: 0, y: -20 }}
             className="bg-white p-6 rounded-lg shadow-md mb-8 border border-gray-200"
           >
-            <h2 className="text-2xl font-bold mb-4 text-gray-800">{fullRecipe.title}</h2>
-            <p className="text-gray-600 mb-4">{fullRecipe.description}</p>
+            <h2 className="text-2xl font-bold mb-4 text-gray-800">Full Recipe</h2>
+            
+            <div className="mb-4">
+              <label htmlFor="fullTitle" className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+              <input
+                type="text"
+                id="fullTitle"
+                value={fullRecipe.title}
+                onChange={(e) => handleEditFullRecipe('title', e.target.value)}
+                className="w-full text-black p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="fullDescription" className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+              <textarea
+                id="fullDescription"
+                value={fullRecipe.description}
+                onChange={(e) => handleEditFullRecipe('description', e.target.value)}
+                className="w-full text-black p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                rows={3}
+              />
+            </div>
+
             <div className="mb-4">
               <h3 className="text-xl font-semibold mb-2 text-gray-700">Ingredients:</h3>
-              <ul className="list-disc pl-5 space-y-1">
-                {fullRecipe.ingredients.map((ingredient: any, index: number) => (
-                  <li key={index} className="text-gray-600">{`${ingredient.quantity} ${ingredient.unit} ${ingredient.name}`}</li>
-                ))}
-              </ul>
-            </div>
-            <div className="mb-4">
-              <h3 className="text-xl font-semibold mb-2 text-gray-700">Instructions:</h3>
-              <ol className="list-decimal pl-5 space-y-2">
-                {fullRecipe.instructions.map((instruction: string, index: number) => (
-                  <li key={index} className="text-gray-600">{instruction}</li>
-                ))}
-              </ol>
-            </div>
-            <div className="mb-4">
-              <h3 className="text-xl font-semibold mb-2 text-gray-700">Image Prompts:</h3>
-              <p className="text-gray-600 mb-2">{fullRecipe.imagePrompt}</p>
-              {fullRecipe.blogImagePrompts.map((prompt: any, index: number) => (
-                <p key={index} className="text-gray-600 mb-1">{prompt.prompt}</p>
+              {fullRecipe.ingredients.map((ingredient: any, index: number) => (
+                <div key={index} className="flex mb-2">
+                  <input
+                    type="text"
+                    value={ingredient.quantity}
+                    onChange={(e) => handleEditIngredient(index, 'quantity', e.target.value)}
+                    className="w-20 text-black p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent mr-2"
+                  />
+                  <input
+                    type="text"
+                    value={ingredient.unit}
+                    onChange={(e) => handleEditIngredient(index, 'unit', e.target.value)}
+                    className="w-20 text-black p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent mr-2"
+                  />
+                  <input
+                    type="text"
+                    value={ingredient.name}
+                    onChange={(e) => handleEditIngredient(index, 'name', e.target.value)}
+                    className="flex-grow text-black p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
               ))}
             </div>
+
+            <div className="mb-4">
+              <h3 className="text-xl font-semibold mb-2 text-gray-700">Instructions:</h3>
+              {fullRecipe.instructions.map((instruction: string, index: number) => (
+                <div key={index} className="mb-2">
+                  <textarea
+                    value={instruction}
+                    onChange={(e) => handleEditInstruction(index, e.target.value)}
+                    className="w-full text-black p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    rows={2}
+                  />
+                </div>
+              ))}
+            </div>
+
+            <div className="mb-4">
+              <h3 className="text-xl font-semibold mb-2 text-gray-700">Image Prompts:</h3>
+              <div className="mb-2">
+                <label htmlFor="mainImagePrompt" className="block text-sm font-medium text-gray-700 mb-1">Main Image Prompt</label>
+                <textarea
+                  id="mainImagePrompt"
+                  value={fullRecipe.imagePrompt}
+                  onChange={(e) => handleEditFullRecipe('imagePrompt', e.target.value)}
+                  className="w-full text-black p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  rows={2}
+                />
+              </div>
+              {fullRecipe.blogImagePrompts.map((prompt: any, index: number) => (
+                <div key={index} className="mb-2">
+                  <label htmlFor={`blogImagePrompt${index}`} className="block text-sm font-medium text-gray-700 mb-1">Blog Image Prompt {index + 1}</label>
+                  <textarea
+                    id={`blogImagePrompt${index}`}
+                    value={prompt.prompt}
+                    onChange={(e) => handleEditImagePrompt(index, 'prompt', e.target.value)}
+                    className="w-full text-black p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    rows={2}
+                  />
+                </div>
+              ))}
+            </div>
+
             <motion.button
-              onClick={handlePublishRecipe}
+              onClick={handleGenerateImagesAndFinalize}
               className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-md font-semibold text-lg hover:from-indigo-600 hover:to-purple-700 transition duration-300 shadow-md hover:shadow-lg"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -307,10 +406,10 @@ const UserGenerateRecipeForm: React.FC = () => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Publishing...
+                  Generating Images and Finalizing...
                 </span>
               ) : (
-                'Publish Recipe'
+                'Generate Images and Finalize'
               )}
             </motion.button>
           </motion.div>
