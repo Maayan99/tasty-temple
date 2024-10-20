@@ -10,6 +10,8 @@ const UserGenerateRecipeForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [fullRecipe, setFullRecipe] = useState<any>(null);
+  const [currentStep, setCurrentStep] = useState(1);
+  const [progress, setProgress] = useState(0);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -17,6 +19,7 @@ const UserGenerateRecipeForm: React.FC = () => {
     setIsLoading(true);
     setError('');
     setRecipeIdea(null);
+    setProgress(0);
 
     try {
       const response = await fetch('/api/generate-recipes/start', {
@@ -31,8 +34,10 @@ const UserGenerateRecipeForm: React.FC = () => {
 
       const data = await response.json();
       setRecipeIdea(data.recipeIdeas[0]);
+      setCurrentStep(2);
+      setProgress(33);
     } catch (err) {
-      setError('Error generating recipe idea. Please try again.');
+      setError('The server is currently overloaded. Please try again later.');
     } finally {
       setIsLoading(false);
     }
@@ -41,6 +46,7 @@ const UserGenerateRecipeForm: React.FC = () => {
   const handleGenerateFullRecipe = async () => {
     setIsLoading(true);
     setError('');
+    setProgress(33);
 
     try {
       const response = await fetch('/api/generate-recipes/generate-full-recipe', {
@@ -55,8 +61,10 @@ const UserGenerateRecipeForm: React.FC = () => {
 
       const data = await response.json();
       setFullRecipe(data.generatedRecipes[0]);
+      setCurrentStep(3);
+      setProgress(66);
     } catch (err) {
-      setError('Error generating full recipe. Please try again.');
+      setError('The server is currently overloaded. Please try again later.');
     } finally {
       setIsLoading(false);
     }
@@ -65,6 +73,7 @@ const UserGenerateRecipeForm: React.FC = () => {
   const handlePublishRecipe = async () => {
     setIsLoading(true);
     setError('');
+    setProgress(66);
 
     try {
       const response = await fetch('/api/generate-recipes/generate-images', {
@@ -79,9 +88,10 @@ const UserGenerateRecipeForm: React.FC = () => {
 
       const data = await response.json();
       const publishedRecipe = data.publishedRecipes[0];
+      setProgress(100);
       router.push(`/recipe/${publishedRecipe.slug}`);
     } catch (err) {
-      setError('Error publishing recipe. Please try again.');
+      setError('The server is currently overloaded. Please try again later.');
     } finally {
       setIsLoading(false);
     }
@@ -94,8 +104,29 @@ const UserGenerateRecipeForm: React.FC = () => {
       exit={{ opacity: 0 }}
       className="bg-gradient-to-br from-white to-gray-100 shadow-xl rounded-lg p-8 max-w-2xl mx-auto"
     >
+      <div className="mb-8">
+        <div className="flex justify-between mb-2">
+          {[1, 2, 3].map((step) => (
+            <div
+              key={step}
+              className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                currentStep >= step ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-500'
+              }`}
+            >
+              {step}
+            </div>
+          ))}
+        </div>
+        <div className="w-full bg-gray-200 rounded-full h-2.5">
+          <div
+            className="bg-blue-500 h-2.5 rounded-full transition-all duration-500 ease-in-out"
+            style={{ width: `${progress}%` }}
+          ></div>
+        </div>
+      </div>
+
       <AnimatePresence mode="wait">
-        {!recipeIdea && (
+        {currentStep === 1 && (
           <motion.form
             key="direction-form"
             onSubmit={handleSubmit}
@@ -121,12 +152,22 @@ const UserGenerateRecipeForm: React.FC = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              {isLoading ? 'Generating...' : 'Generate Recipe Idea'}
+              {isLoading ? (
+                <span className="flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Generating...
+                </span>
+              ) : (
+                'Generate Recipe Idea'
+              )}
             </motion.button>
           </motion.form>
         )}
 
-        {recipeIdea && !fullRecipe && (
+        {currentStep === 2 && recipeIdea && (
           <motion.div
             key="recipe-idea"
             initial={{ opacity: 0, y: 20 }}
@@ -138,7 +179,10 @@ const UserGenerateRecipeForm: React.FC = () => {
             <p className="text-gray-600 mb-6">{recipeIdea.description}</p>
             <div className="flex justify-between">
               <motion.button
-                onClick={() => setRecipeIdea(null)}
+                onClick={() => {
+                  setCurrentStep(1);
+                  setProgress(0);
+                }}
                 className="bg-gray-200 text-gray-800 px-4 py-2 rounded-md font-semibold hover:bg-gray-300 transition duration-300"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -151,13 +195,23 @@ const UserGenerateRecipeForm: React.FC = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Generate Full Recipe
+                {isLoading ? (
+                  <span className="flex items-center justify-center">
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Generating...
+                  </span>
+                ) : (
+                  'Generate Full Recipe'
+                )}
               </motion.button>
             </div>
           </motion.div>
         )}
 
-        {fullRecipe && (
+        {currentStep === 3 && fullRecipe && (
           <motion.div
             key="full-recipe"
             initial={{ opacity: 0, y: 20 }}
@@ -196,7 +250,17 @@ const UserGenerateRecipeForm: React.FC = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              Publish Recipe
+              {isLoading ? (
+                <span className="flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Publishing...
+                </span>
+              ) : (
+                'Publish Recipe'
+              )}
             </motion.button>
           </motion.div>
         )}
