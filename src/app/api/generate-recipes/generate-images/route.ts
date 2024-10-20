@@ -143,7 +143,7 @@ export async function POST(request: Request) {
           imageUrl: mainImageUrl,
           instructions: recipe.instructions?.join('\n') || "",
           nutrition: recipe.nutrition || {},
-          blogContent: rewrittenBlogContent,
+          blogContent: recipe.blogContent,
           blogImages: {
             create: blogImages
           },
