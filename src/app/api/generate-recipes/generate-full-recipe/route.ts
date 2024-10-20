@@ -6,10 +6,12 @@ const inference = new HfInference(process.env.HUGGINGFACE_API_KEY);
 async function parseJSON(content: string, retryCount: number = 0): Promise<any> {
   try {
     return JSON.parse(content);
-  } catch (error) {
+  } catch (error: any) {
     if (retryCount >= 2) {
       throw error;
     }
+
+    console.log("Failed parseJSON with retry ", retryCount, " on error: ", error.message);
 
     const errorMessage = (error as Error).message;
     const match = errorMessage.match(/position (\d+)/);
@@ -92,7 +94,21 @@ export async function POST(request: Request) {
         recipeContent.lastIndexOf('}') + 1
       );
 
+      console.log("Received full recipe resp from huggingface: ", cleanedRecipeJson);
+      console.log("Received full recipe resp from huggingface: ", cleanedRecipeJson.substring(0, 1000));
+      console.log("Received full recipe resp from huggingface: ", cleanedRecipeJson.substring(1000, 2000));
+      console.log("Received full recipe resp from huggingface: ", cleanedRecipeJson.substring(2000, 3000));
+      console.log("Received full recipe resp from huggingface: ", cleanedRecipeJson.substring(3000, 4000));
+      console.log("Received full recipe resp from huggingface: ", cleanedRecipeJson.substring(4000, 5000));
+      console.log("Received full recipe resp from huggingface: ", cleanedRecipeJson.substring(5000, 6000));
+      console.log("Received full recipe resp from huggingface: ", cleanedRecipeJson.substring(6000, 7000));
+      console.log("Received full recipe resp from huggingface: ", cleanedRecipeJson.substring(7000, 8000));
+      console.log("Received full recipe resp from huggingface: ", cleanedRecipeJson.substring(8000, 9000));
+      console.log("Received full recipe resp from huggingface: ", cleanedRecipeJson.substring(9000, 10000));
+
       const generatedRecipe = await parseJSON(cleanedRecipeJson);
+
+      console.log("Generated recipe keys: ", Object.keys(generatedRecipe));
 
       console.log("Generated recipe: ", generatedRecipe);
       console.log("Recipe title: ", (generatedRecipe as any).title);
