@@ -25,10 +25,10 @@ const Header: React.FC = () => {
           <div className="hidden md:flex items-center space-x-6">
             <SearchBar />
             <nav className="flex space-x-6">
-              {['Home', 'Recipes', 'Categories', 'About'].map((item) => (
+              {['Home', 'Recipes', 'Categories', 'About', 'Generate Recipe'].map((item) => (
                 <Link
                   key={item}
-                  href={item === 'Home' ? '/' : `/${item.toLowerCase()}`}
+                  href={item === 'Home' ? '/' : `/${item.toLowerCase().replace(' ', '-')}`}
                   className="text-gray-700 hover:text-indigo-600 transition duration-300 relative group"
                 >
                   {item}
@@ -55,10 +55,10 @@ const Header: React.FC = () => {
           transition={{ duration: 0.3 }}
         >
           <SearchBar />
-          {['Home', 'Recipes', 'Categories', 'About'].map((item) => (
+          {['Home', 'Recipes', 'Categories', 'About', 'Generate Recipe'].map((item) => (
             <Link
               key={item}
-              href={item === 'Home' ? '/' : `/${item.toLowerCase()}`}
+              href={item === 'Home' ? '/' : `/${item.toLowerCase().replace(' ', '-')}`}
               className="block px-4 py-2 text-gray-700 hover:bg-indigo-100 hover:text-indigo-600 transition duration-300"
               onClick={() => setIsOpen(false)}
             >
