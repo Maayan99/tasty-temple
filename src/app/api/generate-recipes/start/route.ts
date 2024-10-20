@@ -56,7 +56,7 @@ export async function POST(request: Request) {
       ideasContent.lastIndexOf(']') + 1
     );
 
-    const recipeIdeas = parseJSON(cleanedIdeasJson);
+    const recipeIdeas = await parseJSON(cleanedIdeasJson);
 
     console.log('Recipe ideas generated', recipeIdeas);
 
