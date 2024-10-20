@@ -19,22 +19,41 @@ export async function generateMetadata({ params }: RecipePageProps): Promise<Met
     };
   }
 
+  const absoluteImageUrl = `${process.env.NEXT_PUBLIC_SITE_URL}${recipe.imageUrl}`;
+  const absoluteUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/recipes/${params.id}`;
+
   return {
     title: `${recipe.title} - Tasty Temple`,
     description: recipe.description,
+    keywords: recipe.keywords || 'cooking, recipes, Tasty Temple, baking',
+    canonical: absoluteUrl,
     openGraph: {
+      type: 'article',
+      url: absoluteUrl,
       title: `${recipe.title} - Tasty Temple`,
       description: recipe.description,
-      images: [{ url: recipe.imageUrl, width: 1200, height: 630 }],
+      images: [{ url: absoluteImageUrl, width: 1200, height: 630 }],
+      site_name: 'Tasty Temple',
+      article: {
+        publishedTime: recipe.publishedAt,
+        modifiedTime: recipe.updatedAt,
+        authors: ['Tasty Temple'],
+        tags: recipe.keywords || [],
+      },
     },
     twitter: {
       card: 'summary_large_image',
       title: `${recipe.title} - Tasty Temple`,
       description: recipe.description,
-      images: [recipe.imageUrl],
+      images: [absoluteImageUrl],
     },
+    icons: {
+      icon: '/favicon.ico',
+    },
+    themeColor: '#ffffff',
   };
 }
+
 
 export default async function RecipePage({ params }: RecipePageProps) {
   const recipe = await getRecipeBySlug(params.id);
