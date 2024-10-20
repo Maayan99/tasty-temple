@@ -111,7 +111,12 @@ export async function POST(request: Request) {
       });
 
       // Generate random comments
-      const comments = await generateRandomComments(recipe);
+      let comments = [];
+      try {
+        comments = await generateRandomComments(recipe);
+      } catch (e) {
+        console.warn("Failed to create comments");
+      }
 
       console.log("About to save: ", recipe.title);
       console.log("About to save: ", recipe.description);

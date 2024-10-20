@@ -3,6 +3,38 @@ import { GeneratedRecipe } from '@/types/recipe';
 
 const inference = new HfInference(process.env.HUGGINGFACE_API_KEY);
 
+async function parseJSON(content: string, retryCount: number = 0): Promise<any> {
+  try {
+    return JSON.parse(content);
+  } catch (error) {
+    if (retryCount >= 2) {
+      throw error;
+    }
+
+    const errorMessage = (error as Error).message;
+    const match = errorMessage.match(/position (\d+)/);
+    const position = match ? parseInt(match[1]) : null;
+
+    const fixPrompt = `The following JSON has an error ${position ? `at position ${position}` : ''}. Please fix and rewrite the entire JSON correctly:\n\n${content}`;
+
+    let fixedContent = '';
+    for await (const chunk of inference.chatCompletionStream({
+      model: 'meta-llama/Llama-3.1-70B-Instruct',
+      messages: [{ role: 'user', content: fixPrompt }],
+      max_tokens: 7000,
+    })) {
+      fixedContent += chunk.choices[0]?.delta?.content || '';
+    }
+
+    const cleanedFixedContent = fixedContent.substring(
+      fixedContent.indexOf('{'),
+      fixedContent.lastIndexOf('}') + 1
+    );
+
+    return parseJSON(cleanedFixedContent, retryCount + 1);
+  }
+}
+
 export async function generateRandomComments(recipe: GeneratedRecipe): Promise<{ user: string, content: string; createdAt: Date }[]> {
   const commentCount = Math.floor(Math.random() * 5) + 3; // Random number between 3 and 7
   const comments = [];
@@ -27,7 +59,7 @@ export async function generateRandomComments(recipe: GeneratedRecipe): Promise<{
     commentContent.lastIndexOf(']') + 1
   );
 
-  const generatedComments: {content: string, name: string}[] = JSON.parse(cleanedCommentJson);
+  const generatedComments: {content: string, name: string}[] = await parseJSON(cleanedCommentJson);
 
   const currentDate = new Date();
   for (const comment of generatedComments) {
