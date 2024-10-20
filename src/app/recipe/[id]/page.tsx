@@ -55,6 +55,8 @@ export default async function RecipePage({ params }: RecipePageProps) {
     notFound();
   }
 
+  console.log('Recipe Image URL:', recipe.imageUrl);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
