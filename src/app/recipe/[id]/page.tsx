@@ -26,7 +26,6 @@ export async function generateMetadata({ params }: RecipePageProps): Promise<Met
     title: `${recipe.title} - Tasty Temple`,
     description: recipe.description,
     keywords: 'cooking, recipes, Tasty Temple, baking',
-    canonical: absoluteUrl,
     openGraph: {
       type: 'article',
       url: absoluteUrl,
