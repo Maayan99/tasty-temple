@@ -93,7 +93,7 @@ const UserGenerateRecipeForm: React.FC = () => {
   const handleEditIngredient = (index: number, field: string, value: string) => {
     setFullRecipe((prevRecipe: any) => ({
       ...prevRecipe,
-      ingredients: prevRecipe.ingredients.map((ingredient: any, i: number) =>
+      ingredients: prevRecipe.ingredients?.map((ingredient: any, i: number) =>
         i === index ? { ...ingredient, [field]: value } : ingredient
       ),
     }));
@@ -102,7 +102,7 @@ const UserGenerateRecipeForm: React.FC = () => {
   const handleEditInstruction = (index: number, value: string) => {
     setFullRecipe((prevRecipe: any) => ({
       ...prevRecipe,
-      instructions: prevRecipe.instructions.map((instruction: string, i: number) =>
+      instructions: prevRecipe.instructions?.map((instruction: string, i: number) =>
         i === index ? value : instruction
       ),
     }));
@@ -111,7 +111,7 @@ const UserGenerateRecipeForm: React.FC = () => {
   const handleEditImagePrompt = (index: number, field: string, value: string) => {
     setFullRecipe((prevRecipe: any) => ({
       ...prevRecipe,
-      blogImagePrompts: prevRecipe.blogImagePrompts.map((prompt: any, i: number) =>
+      blogImagePrompts: prevRecipe.blogImagePrompts?.map((prompt: any, i: number) =>
         i === index ? { ...prompt, [field]: value } : prompt
       ),
     }));
@@ -330,7 +330,7 @@ const UserGenerateRecipeForm: React.FC = () => {
 
             <div className="mb-4">
               <h3 className="text-xl font-semibold mb-2 text-gray-700">Ingredients:</h3>
-              {fullRecipe.ingredients.map((ingredient: any, index: number) => (
+              {fullRecipe.ingredients?.map((ingredient: any, index: number) => (
                 <div key={index} className="flex mb-2">
                   <input
                     type="text"
@@ -356,7 +356,7 @@ const UserGenerateRecipeForm: React.FC = () => {
 
             <div className="mb-4">
               <h3 className="text-xl font-semibold mb-2 text-gray-700">Instructions:</h3>
-              {fullRecipe.instructions.map((instruction: string, index: number) => (
+              {fullRecipe.instructions?.map((instruction: string, index: number) => (
                 <div key={index} className="mb-2">
                   <textarea
                     value={instruction}
@@ -380,7 +380,7 @@ const UserGenerateRecipeForm: React.FC = () => {
                   rows={2}
                 />
               </div>
-              {fullRecipe.blogImagePrompts.map((prompt: any, index: number) => (
+              {fullRecipe.blogImagePrompts?.map((prompt: any, index: number) => (
                 <div key={index} className="mb-2">
                   <label htmlFor={`blogImagePrompt${index}`} className="block text-sm font-medium text-gray-700 mb-1">Blog Image Prompt {index + 1}</label>
                   <textarea
