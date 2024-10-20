@@ -45,7 +45,7 @@ export async function POST(request: Request) {
 
   const idea = recipeIdeas[0];
     try {
-      const recipePrompt = `Create a detailed, professional-quality recipe in English for "${idea.title}" based on this description: "${idea.description}". The recipe should be suitable for a high-quality food blog. Include precise measurements, clear instructions, and consider dietary variations or substitutions where appropriate. Also, generate a blog post content about this recipe, detailing things to know about the recipe, the creation process, and some of the decisions behind the recipe. The blog content should be focused on increasing SEO visibility. Additionally, provide 3-5 image prompts for generating visuals related to the recipe, along with SEO-optimized alt text for each image. The image prompts should never request text inside the image. Format the output as a JSON object with the following structure:
+      const recipePrompt = `Create a detailed, professional-quality recipe in English for "${idea.title}" based on this description: "${idea.description}". The recipe should be suitable for a high-quality food blog. Include precise measurements, clear instructions, and consider dietary variations or substitutions where appropriate. Also, generate a blog post content about this recipe, detailing things to know about the recipe, the creation process, and some of the decisions behind the recipe. Do not repeat ingredient lists or instructions in the blog. The blog content should be focused on increasing SEO visibility, and include important keywords. Additionally, provide 3-5 image prompts for generating visuals related to the recipe, along with SEO-optimized alt text for each image. The image prompts should never request text inside the image. Format the output as a JSON object with the following structure:
       {
         "title": "Recipe Title",
         "description": "Engaging and appetizing description",
@@ -67,13 +67,16 @@ export async function POST(request: Request) {
         },
         "imagePrompt": "Detailed prompt for generating an appetizing image of this recipe - VERY IMPORTANT",
         "imageAltText": "Descriptive alt text for the recipe image",
-        "blogSummary": "Summary of the blog that will accompany this recipe",
+        "blogSummary": "50 word summary of the blog that will accompany this recipe",
         "blogImagePrompts": [
           { "prompt": "Image prompt 1 - never request text in the images", "altText": "SEO-optimized alt text for image 1" },
           { "prompt": "Image prompt 2", "altText": "SEO-optimized alt text for image 2" }
         ],  
-        "blogContent": "Detailed 450-550 words blog post content about the recipe. You must use <<IMAGE 1>>, <<IMAGE 2>>, etc. to indicate where images should be placed in the blog content, and include titles using # in the beggining of a line to indicate title. Use \\n for a newline, must include at least 8 paragraphs. Place all the images in the blog.",
-      }`;
+        "blogContent": "Detailed 450-550 words blog post content about the recipe. You must use <<IMAGE 1>>, <<IMAGE 2>>, etc. to indicate where images should be placed in the blog content, and make sure not to use more images than you requested in the previous step. You must include titles using # in the beggining of a line to indicate title. Use \\n for a newline, must include at least 8 paragraphs. Place all the images in the blog.",
+      }
+      
+      <CRITICAL> Respond with a valid JSON object with the exact fields and structure described. Your repsonse will be programatically analyzed, so this is super important </CRITICAL>
+      `;
 
       let recipeContent = '';
       for await (const chunk of inference.chatCompletionStream({
