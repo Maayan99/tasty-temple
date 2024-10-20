@@ -2,6 +2,7 @@ import React from 'react';
 import { Metadata } from 'next';
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
+import AIRecipeSection from '@/components/AIRecipeSection';
 import LatestRecipes from '@/components/LatestRecipes';
 import FeaturedRecipes from '@/components/FeaturedRecipes';
 import AnimatedBanner from '@/components/AnimatedBanner';
@@ -28,6 +29,7 @@ export default async function Home() {
       <Header />
       <main>
         <Hero recipes={featuredRecipes} />
+        <AIRecipeSection />
         <FeaturedRecipes recipes={featuredRecipes} />
         <LatestRecipes recipes={latestRecipes} />
         <AnimatedBanner />
