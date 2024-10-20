@@ -92,16 +92,18 @@ export async function POST(request: Request) {
 
       // Upload blog images to B2
       const blogImages = [];
-      for (let i = 0; i < recipe.blogImagePrompts.length; i++) {
-        const blogImageBuffer = Buffer.from(await generatedImages[i + 1].arrayBuffer());
-        console.log("Slugifying blog image ", i, recipe.title);
-        const blogImageKey = `recipes/${slugify(recipe.title, { lower: true, strict: true })}-blog-${i + 1}-${Date.now()}.png`;
-        const blogImageUrl = await uploadToB2(blogImageBuffer, blogImageKey);
-        photoUrls.push(blogImageUrl);
-        blogImages.push({
-          imageUrl: blogImageUrl,
-          altText: recipe.blogImagePrompts[i].altText
-        });
+      if (recipe.blogImagePrompts) {
+        for (let i = 0; i < recipe.blogImagePrompts.length; i++) {
+          const blogImageBuffer = Buffer.from(await generatedImages[i + 1].arrayBuffer());
+          console.log("Slugifying blog image ", i, recipe.title);
+          const blogImageKey = `recipes/${slugify(recipe.title, { lower: true, strict: true })}-blog-${i + 1}-${Date.now()}.png`;
+          const blogImageUrl = await uploadToB2(blogImageBuffer, blogImageKey);
+          photoUrls.push(blogImageUrl);
+          blogImages.push({
+            imageUrl: blogImageUrl,
+            altText: recipe.blogImagePrompts[i].altText
+          });
+        }
       }
 
       // Rewrite the blog post
