@@ -56,7 +56,7 @@ export async function POST(request: Request) {
     Main Image Prompt: ${recipe.imagePrompt}
 
     Please follow these guidelines:
-    1. Write a blog post of about 800-1000 words.
+    1. Write a blog post of about 400-600 words.
     2. Include an engaging introduction that hooks the reader.
     3. Discuss the origin or history of the dish, if relevant.
     4. Explain why this recipe is special or worth trying.
@@ -84,6 +84,8 @@ export async function POST(request: Request) {
     }
 
     <CRITICAL> Respond with a valid JSON object with the exact fields and structure described. Your response will be programmatically analyzed, so this is super important </CRITICAL>
+
+    If you do not respond with the correct format, your response will be useless to me. Please make sure to respond correctly.
     `;
 
     let blogContent = '';
