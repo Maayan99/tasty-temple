@@ -12,25 +12,31 @@ interface BlogContentProps {
 
 // Function to format content and return as JSX
 const formatContent = (text: string) => {
-  const parts = text.split(/(\*[^*]+\*)/g); // Split text by bold markers
+  const parts = text.split(/([*][^*]+[*]|\n\*\s.+)/g); // Split text by bold markers and list items
   return parts.map((part, index) => {
     if (part.startsWith('*') && part.endsWith('*')) {
       return <strong key={index}>{part.slice(1, -1)}</strong>; // Render bold text
+    } else if (part.startsWith('\n* ')) {
+      return <li key={index}>{part.slice(3)}</li>; // Render list item
     }
     return part; // Render normal text
   });
 };
 
 const BlogContent: React.FC<BlogContentProps> = ({ content, images }) => {
-  const contentWithImages = content.split(/\\n|\n/).map((paragraph, index) => {
+  const usedImageIndexes = new Set<number>();
+
+  const contentWithImages = content.split(/\n|\r\n/).map((paragraph, index) => {
     const imagePattern = /<<.*?IMAGE\s*(\d+).*?>>/i;
     const imageMatch = paragraph.match(imagePattern);
 
     if (imageMatch) {
       const imageIndex = parseInt(imageMatch[1], 10) - 1;
-      return { type: 'image', image: images[imageIndex], text: paragraph.replace(imagePattern, '').trim() };
+      if (imageIndex >= 0 && imageIndex < images.length) {
+        usedImageIndexes.add(imageIndex);
+        return { type: 'image', image: images[imageIndex], text: paragraph.replace(imagePattern, '').trim() };
+      }
     }
-
 
     if (paragraph.startsWith('# ')) {
       return { type: 'title', content: paragraph.slice(2) };
@@ -46,6 +52,8 @@ const BlogContent: React.FC<BlogContentProps> = ({ content, images }) => {
     }
     return { type: 'paragraph', content: paragraph };
   });
+
+  const unusedImages = images.filter((_, index) => !usedImageIndexes.has(index));
 
   return (
     <motion.div
@@ -95,7 +103,7 @@ const BlogContent: React.FC<BlogContentProps> = ({ content, images }) => {
                 {formatContent(item.content || "")}
               </motion.p>
             );
-          } else if (item.type === 'image') {
+          } else if (item.type === 'image' && item.image) {
             return (
               <motion.div
                 key={index}
@@ -105,20 +113,47 @@ const BlogContent: React.FC<BlogContentProps> = ({ content, images }) => {
                 transition={{ delay: index * 0.1, duration: 0.3 }}
               >
                 <Image
-                  src={item.image?.imageUrl || ""}
-                  alt={item.image?.altText || ""}
+                  src={item.image.imageUrl}
+                  alt={item.image.altText}
                   width={800}
                   height={600}
                   layout="responsive"
                   className="rounded-lg shadow-md"
                   unoptimized
                 />
-                <p className="text-sm text-gray-600 mt-2 text-center">{item.image?.altText}</p>
+                <p className="text-sm text-gray-600 mt-2 text-center">{item.image.altText}</p>
               </motion.div>
             );
           }
         })}
       </div>
+      {unusedImages.length > 0 && (
+        <div className="mt-12">
+          <h3 className="text-2xl font-semibold mb-6 text-gray-800">Additional Images</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {unusedImages.map((image, index) => (
+              <motion.div
+                key={index}
+                className="my-4"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: index * 0.1, duration: 0.3 }}
+              >
+                <Image
+                  src={image.imageUrl}
+                  alt={image.altText}
+                  width={800}
+                  height={600}
+                  layout="responsive"
+                  className="rounded-lg shadow-md"
+                  unoptimized
+                />
+                <p className="text-sm text-gray-600 mt-2 text-center">{image.altText}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 };
