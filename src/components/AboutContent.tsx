@@ -1,7 +1,6 @@
 "use client";
 
 import React from 'react';
-import Image from 'next/image';
 import { motion } from 'framer-motion';
 
 const AboutContent: React.FC = () => {
@@ -21,7 +20,7 @@ const AboutContent: React.FC = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              Our Story
+              Revolutionizing Recipe Creation with AI
             </motion.h2>
             <motion.p
               className="mt-4 text-xl text-gray-600"
@@ -29,7 +28,7 @@ const AboutContent: React.FC = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
             >
-              Tasty Temple was born out of a passion for culinary exploration and a desire to share the joy of cooking with food enthusiasts around the world. Our journey began in a small kitchen, experimenting with flavors and techniques from diverse cuisines.
+              At Tasty Temple, we're on a mission to make culinary creativity accessible to everyone. Our AI-powered platform empowers food enthusiasts to craft personalized recipes, bringing their unique culinary visions to life.
             </motion.p>
             <motion.p
               className="mt-4 text-xl text-gray-600"
@@ -37,7 +36,7 @@ const AboutContent: React.FC = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.6 }}
             >
-              Today, we've grown into a vibrant community of food lovers, chefs, and home cooks, all united by our love for delicious, inspiring recipes. Our mission is to make cooking accessible, enjoyable, and exciting for everyone, from novice cooks to seasoned chefs.
+              We believe in the power of AI to inspire and assist, not replace human creativity. That's why we've designed our platform to allow users to intervene at every step of the recipe creation process, ensuring that each dish is a true reflection of their tastes and preferences.
             </motion.p>
           </div>
           <motion.div
@@ -46,13 +45,36 @@ const AboutContent: React.FC = () => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.8 }}
           >
-            <Image
-              src="/about-image.jpg"
-              alt="Tasty Temple Team"
-              width={600}
-              height={400}
-              className="rounded-lg shadow-xl"
-            />
+            <svg
+              className="w-full h-auto"
+              viewBox="0 0 200 200"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle cx="100" cy="100" r="80" fill="#4F46E5" />
+              <path
+                d="M100 20
+                   A80 80 0 0 1 180 100
+                   A80 80 0 0 1 100 180
+                   A80 80 0 0 1 20 100"
+                fill="none"
+                stroke="#FFF"
+                strokeWidth="4"
+              />
+              <path
+                d="M100 40
+                   A60 60 0 0 1 160 100
+                   A60 60 0 0 1 100 160
+                   A60 60 0 0 1 40 100"
+                fill="none"
+                stroke="#FFF"
+                strokeWidth="4"
+              />
+              <circle cx="100" cy="100" r="10" fill="#FFF" />
+              <circle cx="140" cy="60" r="5" fill="#FFF" />
+              <circle cx="60" cy="140" r="5" fill="#FFF" />
+              <circle cx="140" cy="140" r="5" fill="#FFF" />
+              <circle cx="60" cy="60" r="5" fill="#FFF" />
+            </svg>
           </motion.div>
         </motion.div>
 
@@ -62,25 +84,25 @@ const AboutContent: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 1 }}
         >
-          <h3 className="text-3xl font-bold text-gray-900">Our Values</h3>
+          <h3 className="text-3xl font-bold text-gray-900">Our AI-Powered Features</h3>
           <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
             {[
-              { title: 'Quality', description: 'We believe in using the finest ingredients and techniques to create exceptional dishes.' },
-              { title: 'Creativity', description: 'We encourage culinary innovation and unique flavor combinations.' },
-              { title: 'Community', description: 'We foster a supportive environment for food lovers to share and learn.' },
-              { title: 'Sustainability', description: 'We promote eco-friendly cooking practices and responsible sourcing.' },
-              { title: 'Diversity', description: 'We celebrate the rich tapestry of global cuisines and culinary traditions.' },
-              { title: 'Education', description: 'We\'re committed to helping our community develop their culinary skills.' },
-            ].map((value, index) => (
+              { title: 'Custom Recipe Generation', description: 'Create unique recipes tailored to your preferences and dietary needs.' },
+              { title: 'Step-by-Step Customization', description: 'Intervene at any point in the recipe creation process to add your personal touch.' },
+              { title: 'Ingredient Substitution', description: 'Easily swap ingredients based on availability or dietary restrictions.' },
+              { title: 'Scaling and Conversion', description: 'Automatically adjust serving sizes and convert between measurement units.' },
+              { title: 'Recipe Sharing', description: 'Share your culinary creations with the Tasty Temple community.' },
+              { title: 'Continuous Learning', description: 'Our AI improves with each recipe, offering increasingly personalized suggestions.' },
+            ].map((feature, index) => (
               <motion.div
-                key={value.title}
+                key={feature.title}
                 className="bg-gray-50 p-6 rounded-lg shadow-md"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.2 + index * 0.1 }}
               >
-                <h4 className="text-xl font-semibold text-gray-900 mb-2">{value.title}</h4>
-                <p className="text-gray-600">{value.description}</p>
+                <h4 className="text-xl font-semibold text-gray-900 mb-2">{feature.title}</h4>
+                <p className="text-gray-600">{feature.description}</p>
               </motion.div>
             ))}
           </div>
@@ -92,9 +114,9 @@ const AboutContent: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 1.8 }}
         >
-          <h3 className="text-3xl font-bold text-gray-900 mb-4">Join Our Culinary Adventure</h3>
+          <h3 className="text-3xl font-bold text-gray-900 mb-4">Join Our AI-Powered Culinary Revolution</h3>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Whether you're a seasoned chef or just starting your culinary journey, Tasty Temple is here to inspire, educate, and celebrate the art of cooking. Join us in exploring the wonderful world of flavors, techniques, and culinary creativity!
+            Whether you're a seasoned chef or a cooking novice, Tasty Temple's AI-powered platform is here to inspire, assist, and elevate your culinary journey. Join us in exploring the exciting intersection of artificial intelligence and gastronomy!
           </p>
         </motion.div>
       </div>
