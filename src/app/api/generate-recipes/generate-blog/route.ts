@@ -55,6 +55,8 @@ export async function POST(request: Request) {
     Instructions: ${JSON.stringify(recipe.instructions)}
     Main Image Prompt: ${recipe.imagePrompt}
 
+    Don't use actual newlines, instead write out '\n'. Otherwise it won't get parsed correctly.
+
     Please follow these guidelines:
     1. Write a blog post of about 400-600 words.
     2. Include an engaging introduction that hooks the reader.
