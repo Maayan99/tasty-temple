@@ -36,11 +36,31 @@ async function parseJSON(content: string, retryCount: number = 0): Promise<any> 
 }
 
 export async function POST(request: Request) {
-  const { direction } = await request.json();
+  const { direction, selectedCuisines, innovationLevel } = await request.json();
 
   try {
     // Generate 3 recipe ideas
-    const ideasPrompt = `Generate 1 unique and creative recipe idea ${direction ? `based on the following direction: ${direction}` : ''}. Each recipe should be innovative, delicious, and suitable for a food blog. Include a catchy title and a brief, appetizing description for each. Ensure diversity in cuisines, cooking methods, and ingredients. Format the output as a JSON array of objects with 'title' and 'description' fields.`;
+    let ideasPrompt = `Generate 1 unique and creative recipe idea`;
+    
+    if (direction) {
+      ideasPrompt += ` based on the following direction: ${direction}`;
+    }
+    
+    if (selectedCuisines && selectedCuisines.length > 0) {
+      ideasPrompt += ` The recipe should incorporate elements from the following cuisines: ${selectedCuisines.join(', ')}.`;
+    }
+    
+    if (innovationLevel !== undefined) {
+      if (innovationLevel < 30) {
+        ideasPrompt += ` The recipe should be relatively classic and traditional.`;
+      } else if (innovationLevel > 70) {
+        ideasPrompt += ` The recipe should be highly innovative and incorporate unexpected twists.`;
+      } else {
+        ideasPrompt += ` The recipe should balance traditional elements with some innovative touches.`;
+      }
+    }
+    
+    ideasPrompt += ` Each recipe should be innovative, delicious, and suitable for a food blog. Include a catchy title and a brief, appetizing description for each. Ensure diversity in cooking methods and ingredients. Format the output as a JSON array of objects with 'title' and 'description' fields.`;
     
     let ideasContent = '';
     for await (const chunk of inference.chatCompletionStream({
