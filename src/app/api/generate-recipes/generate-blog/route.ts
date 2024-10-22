@@ -55,10 +55,8 @@ export async function POST(request: Request) {
     Instructions: ${JSON.stringify(recipe.instructions)}
     Main Image Prompt: ${recipe.imagePrompt}
 
-    Don't use actual newlines, instead write out \\n. Otherwise it won't get parsed correctly.
-
     Please follow these guidelines:
-    1. Write a blog post of about 400-600 words.
+    1. Write a blog post of about 600-800 words.
     2. Include an engaging introduction that hooks the reader.
     3. Discuss the origin or history of the dish, if relevant.
     4. Explain why this recipe is special or worth trying.
@@ -73,8 +71,11 @@ export async function POST(request: Request) {
     13. Generate 3-5 image prompts for AI image generation, along with SEO-optimized alt text for each image.
     14. Do not include any external links or phrases like '[Insert Link]' in the blog content.
     15. Ensure that image prompts are not part of the blog content itself.
-    16. Use '\\n' for line breaks and ensure there are at least 8 paragraphs in the blog content.
+    16. Use '\n' for line breaks and ensure there are at least 8 paragraphs in the blog content.
     17. Follow the structure and style of the example blog post provided, maintaining a similar tone and level of detail.
+    18. Make sure the content is coherent, flows well, and provides value to the reader.
+    19. Avoid repetition and ensure each section of the blog post adds new information or insights.
+    20. Write in a conversational yet informative tone, as if you're explaining the recipe to a friend.
 
     Format the output as a JSON object with the following structure:
     {
@@ -85,10 +86,9 @@ export async function POST(request: Request) {
       ]
     }
 
-    <CRITICAL> Respond with a valid JSON object with the exact fields and structure described. Your response will be programmatically analyzed, so this is super important </CRITICAL>
+    IMPORTANT: Ensure that the JSON is valid and properly formatted. Double-check that all quotation marks, brackets, and commas are correctly placed. Escape any special characters in the content that might break the JSON structure.
 
-    If you do not respond with the correct format, your response will be useless to me. Please make sure to respond correctly.
-    `;
+    If you do not respond with the correct format, your response will be useless. Please make sure to respond correctly.`;
 
     let blogContent = '';
     console.log("Making huggingface request for blog generation");
