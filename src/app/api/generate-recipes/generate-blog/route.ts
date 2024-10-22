@@ -67,7 +67,7 @@ export async function POST(request: Request) {
     9. Use headings and subheadings to structure the content (use # for main headings and ## for subheadings).
     10. Incorporate relevant keywords naturally throughout the text for SEO.
     11. Conclude with a call-to-action encouraging readers to try the recipe.
-    12. Use '<<IMAGE X>>' placeholders where X is the image number (1, 2, 3, etc.) to indicate where images should be placed.
+    12. Use '<<IMAGE X>>' placeholders where X is the image number (1, 2, 3, etc.) to indicate where images should be placed. Please use all the images you generate.
     13. Generate 3-5 image prompts for AI image generation, along with SEO-optimized alt text for each image.
     14. Do not include any external links or phrases like '[Insert Link]' in the blog content.
     15. Ensure that image prompts are not part of the blog content itself.
