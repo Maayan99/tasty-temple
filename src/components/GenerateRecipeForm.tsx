@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 interface RecipeIdea {
   title: string;
@@ -114,8 +115,6 @@ const GenerateRecipeForm: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-
-    setShowPopup(true);
   };
 
   const processNextBackloggedDirection = async () => {
@@ -152,6 +151,7 @@ const GenerateRecipeForm: React.FC = () => {
       setGenerationLog((prevLog) => [...prevLog, `Generated ideas for: ${dir}`]);
       setCurrentStep(1);
       setCurrentStepDescription('Selecting recipe ideas');
+      setShowPopup(true);
     } catch (err) {
       setError(`Error generating recipe ideas for: ${dir}. Please try again.`);
       if (isProcessingBacklog) {
@@ -190,6 +190,7 @@ const GenerateRecipeForm: React.FC = () => {
     setError('');
     setGenerationLog((prevLog) => [...prevLog, 'Generating full recipes']);
     setCurrentStepDescription('Generating full recipes');
+    setShowPopup(true);
 
     try {
       const selectedRecipeIdeas = recipeIdeas.filter((_, index) =>
@@ -477,17 +478,36 @@ const GenerateRecipeForm: React.FC = () => {
           >
             <h2 className="text-2xl font-bold mb-4">Recipe Generation in Progress</h2>
             <p className="mb-6">The recipe generation process takes a bit of time. You're welcome to browse other recipes while waiting. We'll notify you when the next step is ready.</p>
-            <motion.button
-              onClick={() => {
-                setShowPopup(false);
-                router.push('/');
-              }}
-              className="bg-indigo-600 text-white px-6 py-2 rounded-md font-semibold hover:bg-indigo-700 transition duration-300"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Browse Recipes
-            </motion.button>
+            {recipeIdeas.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-xl font-semibold mb-2">Latest Recipe Idea</h3>
+                <div className="bg-gray-100 p-4 rounded-md">
+                  <h4 className="text-lg font-medium">{recipeIdeas[0].title}</h4>
+                  <p className="text-gray-600">{recipeIdeas[0].description}</p>
+                </div>
+              </div>
+            )}
+            <div className="flex justify-between">
+              <motion.button
+                onClick={() => {
+                  setShowPopup(false);
+                  router.push('/recipes');
+                }}
+                className="bg-indigo-600 text-white px-6 py-2 rounded-md font-semibold hover:bg-indigo-700 transition duration-300"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Browse Recipes
+              </motion.button>
+              <motion.button
+                onClick={() => setShowPopup(false)}
+                className="bg-gray-300 text-gray-800 px-6 py-2 rounded-md font-semibold hover:bg-gray-400 transition duration-300"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Stay Here
+              </motion.button>
+            </div>
           </motion.div>
         </motion.div>
       )}
