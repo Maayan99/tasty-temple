@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 
 interface RecipeIdea {
   title: string;
@@ -34,32 +35,48 @@ const GenerateRecipeForm: React.FC = () => {
   const [selectedIdeas, setSelectedIdeas] = useState<number[]>([]);
   const [generatedRecipes, setGeneratedRecipes] = useState<GeneratedRecipe[]>([]);
   const [selectedRecipes, setSelectedRecipes] = useState<number[]>([]);
-  const [timer, setTimer] = useState(8);
   const [currentStep, setCurrentStep] = useState(0);
   const [backloggedDirections, setBackloggedDirections] = useState<string[]>([]);
   const [isProcessingBacklog, setIsProcessingBacklog] = useState(false);
   const [currentDirection, setCurrentDirection] = useState('');
   const [currentStepDescription, setCurrentStepDescription] = useState('');
+  const [showPopup, setShowPopup] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (currentStep > 0) {
-      setTimer(3); // Reset the timer when currentStep changes
-      interval = setInterval(() => {
-        setTimer((prevTimer) => {
-          if (prevTimer > 1) {
-            return prevTimer - 1;
-          } else {
-            clearInterval(interval);
-            handleAutoProgress();
-            return 0;
-          }
-        });
-      }, 1000);
+    const savedState = sessionStorage.getItem('recipeGenerationState');
+    if (savedState) {
+      const parsedState = JSON.parse(savedState);
+      setDirection(parsedState.direction);
+      setIsBulkGeneration(parsedState.isBulkGeneration);
+      setRecipeIdeas(parsedState.recipeIdeas);
+      setSelectedIdeas(parsedState.selectedIdeas);
+      setGeneratedRecipes(parsedState.generatedRecipes);
+      setSelectedRecipes(parsedState.selectedRecipes);
+      setCurrentStep(parsedState.currentStep);
+      setBackloggedDirections(parsedState.backloggedDirections);
+      setIsProcessingBacklog(parsedState.isProcessingBacklog);
+      setCurrentDirection(parsedState.currentDirection);
+      setCurrentStepDescription(parsedState.currentStepDescription);
     }
-    return () => clearInterval(interval);
-  }, [currentStep]);
+  }, []);
 
+  useEffect(() => {
+    const state = {
+      direction,
+      isBulkGeneration,
+      recipeIdeas,
+      selectedIdeas,
+      generatedRecipes,
+      selectedRecipes,
+      currentStep,
+      backloggedDirections,
+      isProcessingBacklog,
+      currentDirection,
+      currentStepDescription
+    };
+    sessionStorage.setItem('recipeGenerationState', JSON.stringify(state));
+  }, [direction, isBulkGeneration, recipeIdeas, selectedIdeas, generatedRecipes, selectedRecipes, currentStep, backloggedDirections, isProcessingBacklog, currentDirection, currentStepDescription]);
 
   useEffect(() => {
     if (isProcessingBacklog && backloggedDirections.length > 0 && !isLoading && currentStep === 0) {
@@ -69,14 +86,6 @@ const GenerateRecipeForm: React.FC = () => {
       setGenerationLog((prevLog) => [...prevLog, 'All backlogged directions processed']);
     }
   }, [isProcessingBacklog, backloggedDirections, isLoading, currentStep]);
-
-  const handleAutoProgress = () => {
-    if (currentStep === 1) {
-      handleGenerateFullRecipes();
-    } else if (currentStep === 2) {
-      handlePublishRecipes();
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -105,23 +114,24 @@ const GenerateRecipeForm: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
+
+    setShowPopup(true);
   };
 
-const processNextBackloggedDirection = async () => {
-  if (backloggedDirections.length > 0 && !isLoading) {
-    const nextDirection = backloggedDirections[0];
-    // Remove the direction from the backlog immediately
-    setBackloggedDirections((prev) => prev.slice(1));
-    setCurrentDirection(nextDirection);
-    setCurrentStepDescription('Generating recipe ideas');
-    await processDirection(nextDirection);
-  } else {
-    setIsProcessingBacklog(false);
-    setGenerationLog((prevLog) => [...prevLog, 'All backlogged directions processed']);
-    setCurrentDirection('');
-    setCurrentStepDescription('');
-  }
-};
+  const processNextBackloggedDirection = async () => {
+    if (backloggedDirections.length > 0 && !isLoading) {
+      const nextDirection = backloggedDirections[0];
+      setBackloggedDirections((prev) => prev.slice(1));
+      setCurrentDirection(nextDirection);
+      setCurrentStepDescription('Generating recipe ideas');
+      await processDirection(nextDirection);
+    } else {
+      setIsProcessingBacklog(false);
+      setGenerationLog((prevLog) => [...prevLog, 'All backlogged directions processed']);
+      setCurrentDirection('');
+      setCurrentStepDescription('');
+    }
+  };
 
   const processDirection = async (dir: string) => {
     setIsLoading(true);
@@ -144,7 +154,6 @@ const processNextBackloggedDirection = async () => {
       setCurrentStepDescription('Selecting recipe ideas');
     } catch (err) {
       setError(`Error generating recipe ideas for: ${dir}. Please try again.`);
-      // Proceed to next direction on error
       if (isProcessingBacklog) {
         setBackloggedDirections((prev) => prev.slice(1));
       }
@@ -205,7 +214,6 @@ const processNextBackloggedDirection = async () => {
       setCurrentStepDescription('Selecting recipes to publish');
     } catch (err) {
       setError('Error generating full recipes. Please try again.');
-      // Proceed to next direction on error
       if (isProcessingBacklog) {
         setBackloggedDirections((prev) => prev.slice(1));
         setCurrentStep(0);
@@ -222,7 +230,6 @@ const processNextBackloggedDirection = async () => {
     );
   };
 
-  
   const handlePublishRecipes = async () => {
     setIsLoading(true);
     setError('');
@@ -246,7 +253,6 @@ const processNextBackloggedDirection = async () => {
 
       const result = await response.json();
       setGenerationLog((prevLog) => [...prevLog, 'Recipes published successfully']);
-      // Reset the form after successful publication
       setRecipeIdeas([]);
       setGeneratedRecipes([]);
       setSelectedIdeas([]);
@@ -256,15 +262,12 @@ const processNextBackloggedDirection = async () => {
     } catch (err) {
       setError('Error publishing recipes. Please try again.');
       setGenerationLog((prevLog) => [...prevLog, 'Error publishing recipes']);
-      // Proceed to next direction on error
       if (isProcessingBacklog) {
         setCurrentStep(0);
         setCurrentStepDescription('');
       }
     } finally {
       setIsLoading(false);
-      // Remove the direct call to processNextBackloggedDirection()
-      // Let useEffect handle the next direction
     }
   };
 
@@ -275,7 +278,6 @@ const processNextBackloggedDirection = async () => {
       exit={{ opacity: 0 }}
       className="bg-white shadow-xl rounded-lg p-8"
     >
-
       <form onSubmit={handleSubmit} className="mb-8">
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="bulkGeneration">
@@ -391,7 +393,7 @@ const processNextBackloggedDirection = async () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            Generate Full Recipes for Selected Ideas ({timer}s)
+            Generate Full Recipes for Selected Ideas
           </motion.button>
         </motion.div>
       )}
@@ -434,7 +436,7 @@ const processNextBackloggedDirection = async () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            Publish Selected Recipes ({timer}s)
+            Publish Selected Recipes
           </motion.button>
         </motion.div>
       )}
@@ -459,7 +461,37 @@ const processNextBackloggedDirection = async () => {
             ))}
           </ul>
         </motion.div>
-      )}    </motion.div>
+      )}
+      {showPopup && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+        >
+          <motion.div
+            initial={{ scale: 0.9 }}
+            animate={{ scale: 1 }}
+            exit={{ scale: 0.9 }}
+            className="bg-white p-8 rounded-lg shadow-xl max-w-md"
+          >
+            <h2 className="text-2xl font-bold mb-4">Recipe Generation in Progress</h2>
+            <p className="mb-6">The recipe generation process takes a bit of time. You're welcome to browse other recipes while waiting. We'll notify you when the next step is ready.</p>
+            <motion.button
+              onClick={() => {
+                setShowPopup(false);
+                router.push('/');
+              }}
+              className="bg-indigo-600 text-white px-6 py-2 rounded-md font-semibold hover:bg-indigo-700 transition duration-300"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Browse Recipes
+            </motion.button>
+          </motion.div>
+        </motion.div>
+      )}
+    </motion.div>
   );
 };
 

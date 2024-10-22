@@ -2,6 +2,7 @@ import './globals.css'
 import { Inter } from 'next/font/google'
 import { Analytics } from "@vercel/analytics/react"
 import Script from 'next/script'
+import RecipeGenerationStatus from '@/components/RecipeGenerationStatus'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -50,7 +51,10 @@ export default function RootLayout({
         <meta name="twitter:image" content="https://tastytemple.com/og-image.jpg" />
         <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
       </head>
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <RecipeGenerationStatus />
+        {children}
+      </body>
       <Analytics />
     </html>
   )
