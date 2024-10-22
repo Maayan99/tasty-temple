@@ -55,7 +55,7 @@ export async function POST(request: Request) {
     Instructions: ${JSON.stringify(recipe.instructions)}
     Main Image Prompt: ${recipe.imagePrompt}
 
-    Don't use actual newlines, instead write out '\n'. Otherwise it won't get parsed correctly.
+    Don't use actual newlines, instead write out \\n. Otherwise it won't get parsed correctly.
 
     Please follow these guidelines:
     1. Write a blog post of about 400-600 words.
@@ -73,7 +73,7 @@ export async function POST(request: Request) {
     13. Generate 3-5 image prompts for AI image generation, along with SEO-optimized alt text for each image.
     14. Do not include any external links or phrases like '[Insert Link]' in the blog content.
     15. Ensure that image prompts are not part of the blog content itself.
-    16. Use '\n' for line breaks and ensure there are at least 8 paragraphs in the blog content.
+    16. Use '\\n' for line breaks and ensure there are at least 8 paragraphs in the blog content.
     17. Follow the structure and style of the example blog post provided, maintaining a similar tone and level of detail.
 
     Format the output as a JSON object with the following structure:
