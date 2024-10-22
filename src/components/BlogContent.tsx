@@ -35,6 +35,8 @@ const BlogContent: React.FC<BlogContentProps> = ({ content, images }) => {
       if (imageIndex >= 0 && imageIndex < images.length) {
         usedImageIndexes.add(imageIndex);
         return { type: 'image', image: images[imageIndex], text: paragraph.replace(imagePattern, '').trim() };
+      } else {
+        return { type: 'paragraph', content: '' }
       }
     }
 
