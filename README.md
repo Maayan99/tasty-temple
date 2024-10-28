@@ -1,2 +1,2 @@
 # tasty-temple
-OverviewTasty Temple is an AI-powered cooking and baking blog designed to automatically generate and publish new recipes every 10 minutes. The blog aims to achieve high SEO rankings, build a massive library of recipes, and generate revenue through ad monetization. It will utilize Prisma with PostgreSQL as the database layer and Next.js as the fr...
+Tasty Temple is an AI-powered cooking and baking blog designed to automatically generate and publish new recipes every so often, as well as allow users to generate their own recipes.
